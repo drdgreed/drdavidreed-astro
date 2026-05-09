@@ -1,0 +1,24 @@
+---
+/**
+ * <PullQuote> — usable inside MDX articles for emphasized callouts.
+ *
+ * Usage in .mdx:
+ *   import PullQuote from '../../components/PullQuote.astro';
+ *   <PullQuote attribution="Optional source">
+ *     The quote text goes here.
+ *   </PullQuote>
+ */
+interface Props {
+  attribution?: string;
+}
+const { attribution } = Astro.props;
+---
+
+<figure class="my-10 border-l-2 border-accent pl-6 md:pl-8">
+  <blockquote class="font-serif text-2xl md:text-3xl leading-snug text-text-primary">
+    <slot />
+  </blockquote>
+  {attribution && (
+    <figcaption class="mt-3 text-sm text-text-tertiary">— {attribution}</figcaption>
+  )}
+</figure>

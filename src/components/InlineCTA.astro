@@ -1,0 +1,35 @@
+---
+/**
+ * <InlineCTA> — short call-to-action card placed mid-article (or at the
+ * end of the body before the author bio). Used by the [slug] template;
+ * also available inside MDX for ad-hoc placement.
+ */
+import { SITE } from '../lib/site-meta';
+
+interface Props {
+  heading?: string;
+  body?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+}
+
+const {
+  heading = 'Working on something hard?',
+  body = 'I help senior teams ship production agentic systems. If that sounds useful, let\'s talk.',
+  ctaLabel = 'Book a call',
+  ctaHref = SITE.calendlyUrl,
+} = Astro.props;
+---
+
+<div class="my-12 bg-accent-dark/30 border border-accent/30 rounded-xl p-6 md:p-8">
+  <h4 class="font-serif text-xl mb-2">{heading}</h4>
+  <p class="text-text-secondary text-sm mb-4 leading-relaxed">{body}</p>
+  <a
+    href={ctaHref}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="inline-flex items-center gap-2 px-4 py-2 bg-accent text-bg-primary rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors"
+  >
+    {ctaLabel} →
+  </a>
+</div>

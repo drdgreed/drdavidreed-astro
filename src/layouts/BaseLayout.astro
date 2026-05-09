@@ -1,0 +1,125 @@
+---
+/**
+ * BaseLayout — the chrome around every page.
+ *
+ * Responsibilities:
+ *   - HTML scaffolding (lang, charset, viewport)
+ *   - Global stylesheet
+ *   - <SEO /> with prop pass-through
+ *   - Sticky top nav with logo, links, Ask-AI button
+ *   - Footer with social links (LinkedIn, Calendly, Email, RSS)
+ *   - Mount point for the AskAI React island (controlled by nav button)
+ *
+ * Pages render their content via <slot />.
+ */
+import '../styles/global.css';
+import SEO from '../components/SEO.astro';
+import { SITE } from '../lib/site-meta';
+import type { SeoProps } from '../lib/seo-types';
+import AskAIDrawer from '../components/AskAIDrawer.tsx';
+
+type Props = SeoProps;
+
+const { title, description, path, ogImage, articleData, pageType } = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE.language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/logo.png" />
+
+    {/* RSS auto-discovery — feed readers surface this in the URL bar. */}
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${SITE.name} — Writing`}
+      href="/rss.xml"
+    />
+
+    {/* Google Fonts — Inter (body) + Playfair Display (headings). */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap"
+    />
+
+    <SEO
+      title={title}
+      description={description}
+      path={path}
+      ogImage={ogImage}
+      articleData={articleData}
+      pageType={pageType}
+    />
+
+    <meta name="generator" content={Astro.generator} />
+  </head>
+  <body class="bg-background text-foreground min-h-screen flex flex-col">
+    {/* ── Sticky nav ──────────────────────────────────────────────── */}
+    <header class="fixed top-0 left-0 right-0 z-40 backdrop-blur-md bg-background/80 border-b border-border">
+      <nav class="section-container">
+        <div class="flex items-center justify-between h-16">
+          {/* Logo — clickable home link */}
+          <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <img src="/logo.png" alt="" class="h-8 w-8 rounded-full object-cover" />
+            <span class="hidden md:inline font-serif text-base tracking-tight">David Reed, PhD</span>
+          </a>
+
+          {/* Primary links */}
+          <ul class="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
+            <li><a href="/" class={`hover:text-foreground transition-colors ${path === '/' ? 'text-primary font-medium' : ''}`}>Home</a></li>
+            <li><a href="/experience/" class={`hover:text-foreground transition-colors ${path?.startsWith('/experience') ? 'text-primary font-medium' : ''}`}>Experience</a></li>
+            <li><a href="/portfolio/" class={`hover:text-foreground transition-colors ${path?.startsWith('/portfolio') ? 'text-primary font-medium' : ''}`}>Portfolio</a></li>
+            <li><a href="/blog/" class={`hover:text-foreground transition-colors ${path?.startsWith('/blog') ? 'text-primary font-medium' : ''}`}>Writing</a></li>
+            <li><a href="/fit-check/" class={`hover:text-foreground transition-colors ${path?.startsWith('/fit-check') ? 'text-primary font-medium' : ''}`}>Fit Check</a></li>
+          </ul>
+
+          {/* Ask AI button — opens the React drawer island. */}
+          <button
+            type="button"
+            data-ask-ai-trigger
+            class="btn-glow inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+            </svg>
+            <span>Ask AI</span>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-1 pt-16">
+      <slot />
+    </main>
+
+    {/* ── Footer ──────────────────────────────────────────────────── */}
+    <footer class="border-t border-border mt-24">
+      <div class="section-container py-12">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 text-sm">
+          <div>
+            <p class="font-serif text-base text-foreground">{SITE.name}</p>
+            <p class="text-muted-foreground mt-1">{SITE.description}</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <a href={SITE.linkedinUrl} target="_blank" rel="noopener noreferrer" class="text-muted-foreground hover:text-foreground transition-colors">LinkedIn</a>
+            <a href={SITE.calendlyUrl} target="_blank" rel="noopener noreferrer" class="text-muted-foreground hover:text-foreground transition-colors">Calendly</a>
+            <a href={`mailto:${SITE.email}`} class="text-muted-foreground hover:text-foreground transition-colors">Email</a>
+            <a href="/rss.xml" class="text-muted-foreground hover:text-foreground transition-colors">RSS</a>
+            <a href="/sitemap-index.xml" class="text-muted-foreground hover:text-foreground transition-colors">Sitemap</a>
+          </div>
+        </div>
+        <p class="text-xs text-text-tertiary mt-6 text-center md:text-left">
+          © {new Date().getFullYear()} David Reed, PhD · Built with Astro
+        </p>
+      </div>
+    </footer>
+
+    {/* ── Ask-AI drawer island ─────────────────────────────────────── */}
+    {/* Hydrated on page load; listens for clicks on [data-ask-ai-trigger]. */}
+    <AskAIDrawer client:load />
+  </body>
+</html>

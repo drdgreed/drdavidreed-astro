@@ -1,0 +1,51 @@
+---
+title: "Production Patterns for Multi-Agent LLM Systems"
+description: "What actually breaks when you put a multi-agent system in front of real traffic — and the patterns that keep it standing."
+category: "agentic-ai"
+publishDate: 2026-05-09
+readTime: 12
+featured: true
+draft: false
+---
+
+import PullQuote from '../../components/PullQuote.astro';
+import InlineCTA from '../../components/InlineCTA.astro';
+
+This is a placeholder body for the starter article. Replace with the real
+content once the template renders correctly.
+
+## Why this matters
+
+Most teams discover multi-agent failure modes the same way: a critical demo,
+a senior stakeholder, a confidently-wrong agent. The patterns below come from
+shipping these systems into customer-facing flows where "model picked the
+wrong tool" is a P1.
+
+<PullQuote attribution="A senior staff engineer, after a long week">
+  The hard part of multi-agent isn't the agents — it's the protocol they
+  use to talk to each other.
+</PullQuote>
+
+## Three patterns that pay off
+
+1. **Strict tool schemas with provenance.** Every tool call records which
+   agent invoked it, with what arguments, and what came back. Replay
+   becomes trivial; debugging stops being archeology.
+2. **Bounded autonomy ladders.** Each agent has a maximum number of
+   self-directed steps before control returns to a supervisor. This caps
+   blast radius without sacrificing the value of agentic loops.
+3. **Eval-as-deployment-gate.** A regression suite of real customer
+   prompts, run on every model swap. If win-rate drops, the deploy
+   doesn't ship.
+
+<InlineCTA
+  heading="Building one of these systems?"
+  body="I help senior teams ship production agentic systems. Happy to compare notes."
+  ctaLabel="Book a 30-min call"
+  ctaHref="https://calendly.com/drdgreed/30min"
+/>
+
+## Closing
+
+More on each of these in follow-up posts. If you've hit a failure mode
+that doesn't fit one of the three above, I want to hear about it.

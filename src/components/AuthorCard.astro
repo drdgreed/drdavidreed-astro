@@ -1,0 +1,74 @@
+---
+/**
+ * AuthorCard — appears on the blog index (CTA card) and at the bottom of
+ * every article (bio block). Centralizes the LinkedIn / Calendly / email
+ * trio so updating links once propagates everywhere.
+ */
+import { SITE } from '../lib/site-meta';
+
+interface Props {
+  /** Variant: 'cta' (listing page) shows status pill; 'bio' (article footer) is fuller. */
+  variant?: 'cta' | 'bio';
+  /** "Open to ..." status — null/undefined hides the pill. */
+  status?: string;
+}
+
+const {
+  variant = 'cta',
+  status = 'Open to senior AI/ML leadership roles',
+} = Astro.props;
+
+// Pulled from SITE so updating once cascades everywhere.
+const linkedinUrl = SITE.linkedinUrl;
+const calendlyUrl = SITE.calendlyUrl;
+const emailUrl = `mailto:${SITE.email}`;
+---
+
+<aside
+  class={`bg-bg-card border border-border-subtle rounded-2xl p-8 ${
+    variant === 'bio' ? 'mt-16' : ''
+  }`}
+>
+  <div class="flex flex-col md:flex-row md:items-start gap-6">
+    <div class="flex-1">
+      {status && (
+        <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-dark text-accent text-xs font-medium">
+          <span class="w-1.5 h-1.5 rounded-full bg-accent animate-pulse"></span>
+          {status}
+        </span>
+      )}
+      <h3 class="font-serif text-2xl mt-4 mb-2">David Reed, PhD</h3>
+      <p class="text-text-secondary text-sm leading-relaxed">
+        Head of AI/ML & Agentic Delivery at Interview Kickstart. Production
+        agentic systems, ML engineering at scale, US Patent 6,850,988.
+        I write for senior technical leaders who ship.
+      </p>
+    </div>
+    <div class="flex flex-col gap-2 md:min-w-[180px]">
+      <a
+        href={linkedinUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-accent text-bg-primary rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors"
+      >
+        Connect on LinkedIn
+      </a>
+      <a
+        href={calendlyUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-border-subtle text-text-primary rounded-lg text-sm font-medium hover:border-accent transition-colors"
+      >
+        Book a call
+      </a>
+      {variant === 'bio' && (
+        <a
+          href={emailUrl}
+          class="inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-border-subtle text-text-primary rounded-lg text-sm font-medium hover:border-accent transition-colors"
+        >
+          Email me
+        </a>
+      )}
+    </div>
+  </div>
+</aside>

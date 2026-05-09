@@ -1,0 +1,55 @@
+---
+/**
+ * ArticleCard — used in the blog grid and "related articles" footer.
+ * `featured` prop swaps to a wider, image-forward variant for the hero
+ * card on the listing page.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { CATEGORY_META } from '../lib/categories';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  featured?: boolean;
+}
+
+const { post, featured = false } = Astro.props;
+const { title, description, category, publishDate, readTime, coverImage } = post.data;
+const cat = CATEGORY_META[category];
+const href = `/blog/${post.id}/`;
+
+const formattedDate = publishDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+---
+
+<article
+  data-category={category}
+  class={`group bg-bg-card border border-border-subtle rounded-2xl overflow-hidden hover:border-accent transition-colors ${
+    featured ? 'md:flex md:gap-8' : ''
+  }`}
+>
+  {coverImage && (
+    <a href={href} class={featured ? 'md:w-1/2 block' : 'block'}>
+      <img
+        src={coverImage}
+        alt=""
+        class={`w-full ${featured ? 'h-full object-cover aspect-[4/3] md:aspect-auto' : 'aspect-[16/9] object-cover'}`}
+        loading="lazy"
+      />
+    </a>
+  )}
+  <div class={`p-6 md:p-8 ${featured ? 'md:w-1/2 md:p-10 flex flex-col justify-center' : ''}`}>
+    <div class="flex items-center gap-3 text-xs text-text-tertiary mb-3">
+      <span class="px-2 py-0.5 rounded bg-accent-dark text-accent">{cat.label}</span>
+      <time datetime={publishDate.toISOString()}>{formattedDate}</time>
+      <span aria-hidden="true">·</span>
+      <span>{readTime} min read</span>
+    </div>
+    <h3 class={`font-serif ${featured ? 'text-3xl md:text-4xl' : 'text-xl'} leading-tight mb-3`}>
+      <a href={href} class="group-hover:text-accent transition-colors">{title}</a>
+    </h3>
+    <p class="text-text-secondary text-sm leading-relaxed line-clamp-3">{description}</p>
+  </div>
+</article>

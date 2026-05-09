@@ -1,0 +1,88 @@
+---
+/**
+ * <SkillsMatrix /> — three-column honest skill assessment.
+ * Strong / Moderate / Gaps.
+ * Pulls from src/data/skills.ts.
+ */
+import { skills, type SkillCategory } from '../data/skills';
+
+const buckets: Array<{
+  category: SkillCategory;
+  title: string;
+  emoji: string;
+  ringClass: string;
+  bgClass: string;
+  pillClass: string;
+}> = [
+  {
+    category: 'strong',
+    title: 'Strong',
+    emoji: '✓',
+    ringClass: 'border-primary/40',
+    bgClass: 'bg-primary/5',
+    pillClass: 'bg-primary/10 text-foreground border-primary/20 hover:bg-primary/20',
+  },
+  {
+    category: 'moderate',
+    title: 'Moderate',
+    emoji: '○',
+    ringClass: 'border-border',
+    bgClass: 'bg-muted/20',
+    pillClass: 'bg-muted/50 text-muted-foreground border-border hover:bg-muted',
+  },
+  {
+    category: 'gap',
+    title: 'Gaps',
+    emoji: '⚠',
+    ringClass: 'border-secondary/30',
+    bgClass: 'bg-secondary/5',
+    pillClass: 'bg-secondary/10 text-muted-foreground border-secondary/20 hover:bg-secondary/20',
+  },
+];
+
+const groupBy = (cat: SkillCategory) => skills.filter((s) => s.category === cat);
+---
+
+<div class="grid md:grid-cols-3 gap-6">
+  {buckets.map((b) => {
+    const items = groupBy(b.category);
+    return (
+      <div class={`glass-card p-6 border-2 ${b.ringClass} ${b.bgClass} hover:-translate-y-0.5 transition-transform duration-200`}>
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-2.5">
+            <span
+              class={`text-xl ${
+                b.category === 'strong' ? 'text-primary' : b.category === 'gap' ? 'text-secondary' : 'text-muted-foreground'
+              }`}
+            >
+              {b.emoji}
+            </span>
+            <h3 class="text-xl font-serif font-semibold">{b.title}</h3>
+          </div>
+          <span
+            class={`px-2.5 py-1 rounded-full text-xs font-medium ${
+              b.category === 'strong'
+                ? 'bg-primary/20 text-primary'
+                : b.category === 'gap'
+                  ? 'bg-secondary/20 text-secondary'
+                  : 'bg-muted text-muted-foreground'
+            }`}
+          >
+            {items.length}
+          </span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          {items.length > 0 ? (
+            items.map((s) => (
+              <span class={`px-3 py-1.5 rounded-full text-sm border transition-colors duration-200 ${b.pillClass}`}>
+                {s.name}
+              </span>
+            ))
+          ) : (
+            <span class="text-sm text-muted-foreground italic">No items in this bucket.</span>
+          )}
+        </div>
+      </div>
+    );
+  })}
+</div>

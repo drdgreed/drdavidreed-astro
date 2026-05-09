@@ -1,0 +1,46 @@
+---
+/**
+ * <NewsletterCapture> — stub. Wire up to ConvertKit / Buttondown / Substack
+ * when picking a provider. For now it posts nowhere; the form prevents the
+ * default submit and shows a friendly placeholder message.
+ */
+---
+
+<aside class="my-12 bg-bg-card border border-border-subtle rounded-2xl p-8">
+  <h4 class="font-serif text-2xl mb-2">Get the next post in your inbox.</h4>
+  <p class="text-text-secondary text-sm mb-5">
+    Roughly every other week. Production patterns, agentic systems, hiring signals.
+    No spam — unsubscribe one click.
+  </p>
+  <form class="flex flex-col sm:flex-row gap-3" data-newsletter-stub>
+    <input
+      type="email"
+      required
+      placeholder="you@example.com"
+      class="flex-1 px-4 py-2.5 bg-bg-primary border border-border-subtle rounded-lg text-text-primary text-sm focus:border-accent outline-none"
+    />
+    <button
+      type="submit"
+      class="px-5 py-2.5 bg-accent text-bg-primary rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors"
+    >
+      Subscribe
+    </button>
+  </form>
+  <p class="hidden text-accent text-sm mt-3" data-newsletter-success>
+    Thanks — once I wire up the email provider, you'll be on the list.
+  </p>
+</aside>
+
+<script>
+  /* Stub handler — replace when provider is configured. */
+  document.querySelectorAll<HTMLFormElement>('[data-newsletter-stub]').forEach((form) => {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const success = form.parentElement?.querySelector<HTMLElement>(
+        '[data-newsletter-success]',
+      );
+      if (success) success.classList.remove('hidden');
+      form.reset();
+    });
+  });
+</script>
