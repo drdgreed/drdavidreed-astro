@@ -36,7 +36,10 @@ interface AnalysisResult {
 }
 
 // Default to our Vercel Edge function; override per-environment if needed.
-const ANALYZE_URL = (import.meta as any).env?.PUBLIC_ANALYZE_URL ?? '/api/analyze';
+// Trailing slash required: vercel.json sets `trailingSlash: true` which
+// would 308-redirect `/api/analyze` → `/api/analyze/` and drop the POST
+// body. Hit the canonical URL directly.
+const ANALYZE_URL = (import.meta as any).env?.PUBLIC_ANALYZE_URL ?? '/api/analyze/';
 
 const EXAMPLE_STRONG = `Head of Applied AI — Series C SaaS
 We're hiring a Head of Applied AI to lead our agentic platform.

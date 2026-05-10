@@ -32,7 +32,11 @@ const SUGGESTED_QUESTIONS = [
 ];
 
 // Default to our Vercel Edge function; override per-environment if needed.
-const CHAT_URL = (import.meta as any).env?.PUBLIC_CHAT_URL ?? '/api/chat';
+// Trailing slash matters: vercel.json sets `trailingSlash: true`, which
+// would otherwise redirect (308) any POST to `/api/chat` → `/api/chat/`,
+// and browsers drop POST bodies through redirects. Hit the redirected URL
+// directly to avoid the redirect entirely.
+const CHAT_URL = (import.meta as any).env?.PUBLIC_CHAT_URL ?? '/api/chat/';
 
 export default function AskAIDrawer() {
   const [isOpen, setIsOpen] = useState(false);
