@@ -16,10 +16,11 @@ After you have an Anthropic API key, the entire flow is:
 ```bash
 # 1) Local test
 cd /Users/davidreed/David_Portfolio/drdavidreed-astro
-npm install -g vercel
 cp .env.example .env.development.local
 # → edit .env.development.local, paste your sk-ant-... key
-vercel dev                                  # http://localhost:3000
+npx vercel dev                              # http://localhost:3000
+                                            # (npx auto-fetches the CLI; no
+                                            # global install required)
 
 # 2) Push to GitHub (already authed as Chaos-6)
 gh repo create drdavidreed-astro --public \
@@ -132,16 +133,25 @@ git remote -v                       # should be EMPTY until step 3
 
 Catches every bug *before* it reaches the public site.
 
-### 2.1 Install Vercel CLI
+### 2.1 Vercel CLI: use `npx`, don't install globally
+
+You don't need to install Vercel CLI globally. `npx` (which ships with npm)
+will fetch and cache the latest version on demand. Verify:
 
 ```bash
-npm install -g vercel
+npx vercel --version       # should print 32.x or higher
+                           # first run downloads + caches; subsequent runs are instant
 ```
 
-Verify:
-```bash
-vercel --version       # should print 32.x or higher
-```
+> **Why not `npm install -g vercel`?** On macOS where Node was installed via
+> the official `.pkg` installer, `/usr/local/lib/node_modules/` is owned by
+> `root` and global installs error with EACCES. You can work around with `sudo`,
+> but that creates downstream permission tangles when other tools try to write
+> there as your user. `npx` is functionally identical and avoids the whole
+> issue. If you really want a global install, switch to a Node version
+> manager (fnm / nvm / volta) so global packages land in your home directory.
+
+In every command below, substitute `npx vercel` wherever you see `vercel`.
 
 ### 2.2 Create the local env file
 
@@ -164,7 +174,7 @@ ANTHROPIC_API_KEY=sk-ant-api03-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ### 2.3 Start the dev server
 
 ```bash
-vercel dev
+npx vercel dev
 ```
 
 First time only:
@@ -209,10 +219,11 @@ When everything works, press `Ctrl+C` in the terminal.
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `/api/chat` returns 500 with "ANTHROPIC_API_KEY not configured" | Key not loaded | Verify `.env.development.local` exists and has no extra whitespace; restart `vercel dev` |
+| `npm install -g vercel` errors with EACCES | Node installed system-wide as root | Don't install globally — use `npx vercel ...` everywhere instead. See § 2.1. |
+| `/api/chat` returns 500 with "ANTHROPIC_API_KEY not configured" | Key not loaded | Verify `.env.development.local` exists and has no extra whitespace; restart `npx vercel dev` |
 | `/api/analyze` returns 500 with `auth error` | Invalid key or insufficient credits | Double-check key in Anthropic Console; add credit |
-| Chat drawer says "couldn't reach the chat backend" | Network or backend error | Check terminal logs from `vercel dev`; the function error appears there |
-| Page loads but is unstyled | Tailwind didn't compile | Run `npm install` again, then restart `vercel dev` |
+| Chat drawer says "couldn't reach the chat backend" | Network or backend error | Check terminal logs from `npx vercel dev`; the function error appears there |
+| Page loads but is unstyled | Tailwind didn't compile | Run `npm install` again, then restart `npx vercel dev` |
 
 **Done? Move to Step 3.**
 
@@ -545,7 +556,7 @@ $EDITOR src/data/experience.ts
 # 2) Test
 npm run dev    # http://localhost:4321 — Astro pages only
 # OR
-vercel dev     # http://localhost:3000 — Astro + functions
+npx vercel dev # http://localhost:3000 — Astro + functions
 
 # 3) Commit + push — Vercel auto-deploys on push to main
 git add -A
@@ -592,12 +603,12 @@ If you blow away `.vercel/` or work from a fresh checkout:
 
 ```bash
 cd /Users/davidreed/David_Portfolio/drdavidreed-astro
-vercel link                 # re-creates .vercel/ with the linked project ID
-vercel env pull .env.development.local  # downloads current env vars
-vercel dev
+npx vercel link                          # re-creates .vercel/ with the linked project ID
+npx vercel env pull .env.development.local  # downloads current env vars
+npx vercel dev
 ```
 
-`vercel env pull` fetches the same `ANTHROPIC_API_KEY` you set in the
+`npx vercel env pull` fetches the same `ANTHROPIC_API_KEY` you set in the
 dashboard, so you don't have to re-paste it.
 
 ### Cost monitoring
@@ -640,9 +651,9 @@ expect under $5/month total in Anthropic costs.
 
 | Symptom | Fix |
 |---|---|
-| `vercel: command not found` | `npm install -g vercel` |
-| Login prompt every time | The `.vercel/` directory may be ignored or wiped. Run `vercel link` once. |
-| `/api/*` returns 500 in `vercel dev` only | Check `.env.development.local` has the key; restart `vercel dev` after editing env file (no hot-reload of env). |
+| `vercel: command not found` | Use `npx vercel ...` instead of `vercel ...` (no global install needed). See § 2.1. |
+| Login prompt every time | The `.vercel/` directory may be ignored or wiped. Run `npx vercel link` once. |
+| `/api/*` returns 500 in `npx vercel dev` only | Check `.env.development.local` has the key; restart `npx vercel dev` after editing env file (no hot-reload of env). |
 | Browser shows old build | Vercel dev caches aggressively. Hard-refresh with `Cmd+Shift+R`. |
 
 ### Where to get help
