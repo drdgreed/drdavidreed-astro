@@ -26,9 +26,12 @@
  *   CLAUDE_MODEL       optional, defaults to claude-sonnet-4-5
  */
 import Anthropic from '@anthropic-ai/sdk';
-import { DAVID_CONTEXT } from './_lib/profile-context';
+// `.js` extension required by Node ESM strict mode at runtime, even though
+// the actual source file is `.ts`. TypeScript's resolver maps this back to
+// `./_lib/profile-context.ts` at compile time.
+import { DAVID_CONTEXT } from './_lib/profile-context.js';
 
-export const config = { runtime: 'edge' } as const;
+export const config = { runtime: 'edge' };
 
 const SYSTEM_PROMPT = `You are evaluating job descriptions for fit against
 David Reed, PhD. Return an HONEST assessment — including when David is NOT

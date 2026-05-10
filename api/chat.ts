@@ -21,9 +21,12 @@
  * Anthropic SDK 0.27+ supports fetch-based transport which works in Edge.
  */
 import Anthropic from '@anthropic-ai/sdk';
-import { DAVID_CONTEXT } from './_lib/profile-context';
+// `.js` extension required by Node ESM strict mode at runtime, even though
+// the actual source file is `.ts`. TypeScript's resolver maps this back to
+// `./_lib/profile-context.ts` at compile time.
+import { DAVID_CONTEXT } from './_lib/profile-context.js';
 
-export const config = { runtime: 'edge' } as const;
+export const config = { runtime: 'edge' };
 
 const SYSTEM_PROMPT = `You are an AI assistant representing David Reed, PhD,
 helping a visitor on his portfolio site. You speak in first person as David
