@@ -1,38 +1,24 @@
 /**
- * /api/analyze — Vercel Edge function for the Fit Check page.
+ * /api/analyze — Vercel Node serverless function. JD fit assessment.
  *
- * Takes a job description, returns a structured honest fit assessment.
+ * We use raw fetch() to Anthropic's REST API instead of @anthropic-ai/sdk
+ * (SDK hangs at module-init in Vercel's Node 22 — see api/chat.ts).
  *
  * Request:
- *   POST /api/analyze
+ *   POST /api/analyze/
  *   { jobDescription: string }
  *
- * Response (200):
+ * Response (200 JSON):
  *   {
- *     verdict: "strong_fit" | "worth_conversation" | "probably_not",
- *     headline: string,        // one-line summary
- *     opening: string,         // 1–2 sentence framing
- *     gaps: [{ requirement, gap_title, explanation }],
- *     transfers: string,       // what skills/experience transfer
- *     recommendation: string   // what David recommends to the hirer
+ *     verdict: 'strong_fit' | 'worth_conversation' | 'probably_not',
+ *     headline, opening, gaps[], transfers, recommendation
  *   }
  *
- * Strategy: Claude tool use to enforce the JSON schema. The model can't
- * deviate from the shape because we only let it call the `submit_fit_check`
- * tool — its output is validated client-side too as a safety net.
- *
- * Env vars (Vercel project settings):
- *   ANTHROPIC_API_KEY  required
- *   CLAUDE_MODEL       optional, defaults to claude-sonnet-4-5
+ * Strategy: Claude tool_use forces structured output. We POST messages
+ * with `tools` + `tool_choice: { type: 'tool', name: 'submit_fit_check' }`,
+ * then extract the tool's `input` from the response.
  */
-import Anthropic from '@anthropic-ai/sdk';
-// `.js` extension required by Node ESM strict mode at runtime, even though
-// the actual source file is `.ts`. TypeScript's resolver maps this back to
-// `./_lib/profile-context.ts` at compile time.
 import { DAVID_CONTEXT } from './_lib/profile-context.js';
-
-// No `runtime` config — Vercel default Node.js serverless.
-// See api/chat.ts for the full reason — Anthropic SDK needs Node modules.
 
 const SYSTEM_PROMPT = `You are evaluating job descriptions for fit against
 David Reed, PhD. Return an HONEST assessment — including when David is NOT
@@ -62,7 +48,7 @@ const SUBMIT_FIT_CHECK_TOOL = {
   name: 'submit_fit_check',
   description: 'Submit the structured fit check for the given job description.',
   input_schema: {
-    type: 'object' as const,
+    type: 'object',
     properties: {
       verdict: {
         type: 'string',
@@ -89,7 +75,7 @@ const SUBMIT_FIT_CHECK_TOOL = {
             gap_title: { type: 'string', description: 'Short label for the gap' },
             explanation: {
               type: 'string',
-              description: 'Why David doesn\'t meet it. First person.',
+              description: "Why David doesn't meet it. First person.",
             },
           },
           required: ['requirement', 'gap_title', 'explanation'],
@@ -103,23 +89,19 @@ const SUBMIT_FIT_CHECK_TOOL = {
       recommendation: {
         type: 'string',
         description:
-          'David\'s recommendation to the hirer. First person. If gaps are critical, suggest someone else; if mixed, suggest a conversation; if strong fit, propose next steps.',
+          "David's recommendation to the hirer. First person. If gaps are critical, suggest someone else; if mixed, suggest a conversation; if strong fit, propose next steps.",
       },
     },
     required: ['verdict', 'headline', 'opening', 'gaps', 'transfers', 'recommendation'],
   },
 };
-// Note: no outer `as const` here. Anthropic's SDK Tool type expects
-// `required: string[]` (mutable). The outer const was over-aggressive
-// and made the array readonly, breaking the type check.
 
-interface FitResult {
-  verdict: 'strong_fit' | 'worth_conversation' | 'probably_not';
-  headline: string;
-  opening: string;
-  gaps: Array<{ requirement: string; gap_title: string; explanation: string }>;
-  transfers: string;
-  recommendation: string;
+interface ContentBlock {
+  type: string;
+  input?: unknown;
+}
+interface AnthropicResponse {
+  content?: ContentBlock[];
 }
 
 export default async function handler(req: Request): Promise<Response> {
@@ -129,10 +111,10 @@ export default async function handler(req: Request): Promise<Response> {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } },
+    );
   }
 
   let jobDescription: string;
@@ -145,7 +127,6 @@ export default async function handler(req: Request): Promise<Response> {
         headers: { 'Content-Type': 'application/json' },
       });
     }
-    // Cap to 8K chars to control cost / prompt-length
     jobDescription = jobDescription.slice(0, 8000);
   } catch {
     return new Response(JSON.stringify({ error: 'invalid JSON' }), {
@@ -154,42 +135,61 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  // Fail fast — default SDK retries (2x) with 60s timeout means hung calls
-  // can take 3 minutes to surface. We'd rather see the real error in <15s.
-  const client = new Anthropic({
-    apiKey,
-    maxRetries: 0,
-    timeout: 20_000,
-  });
   const model = process.env.CLAUDE_MODEL ?? 'claude-sonnet-4-5';
-  console.log('[analyze] calling Anthropic', { model, jdLength: jobDescription.length });
+  console.log('[analyze] entering', { model, jdLength: jobDescription.length });
 
   try {
-    const response = await client.messages.create({
-      model,
-      max_tokens: 2048,
-      system: SYSTEM_PROMPT,
-      tools: [SUBMIT_FIT_CHECK_TOOL],
-      // `as const` on the .type literal so TS resolves it to `'tool'` not `string`.
-      tool_choice: { type: 'tool' as const, name: 'submit_fit_check' },
-      messages: [
-        {
-          // Same reason — SDK expects literal `'user'` not `string`.
-          role: 'user' as const,
-          content: `Job description:\n\n${jobDescription}\n\nCall submit_fit_check with the structured assessment.`,
-        },
-      ],
-    });
+    const aborter = new AbortController();
+    const timeoutId = setTimeout(() => aborter.abort(), 25_000);
 
-    // Extract the tool-use block (forced via tool_choice).
-    const toolUse = response.content.find((b) => b.type === 'tool_use');
-    if (!toolUse || toolUse.type !== 'tool_use') {
-      throw new Error('Model did not return a tool_use block');
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model,
+        max_tokens: 2048,
+        system: SYSTEM_PROMPT,
+        tools: [SUBMIT_FIT_CHECK_TOOL],
+        tool_choice: { type: 'tool', name: 'submit_fit_check' },
+        messages: [
+          {
+            role: 'user',
+            content: `Job description:\n\n${jobDescription}\n\nCall submit_fit_check with the structured assessment.`,
+          },
+        ],
+      }),
+      signal: aborter.signal,
+    });
+    clearTimeout(timeoutId);
+
+    console.log('[analyze] anthropic status', response.status);
+
+    if (!response.ok) {
+      const errBody = await response.text();
+      console.error('[analyze] anthropic error', response.status, errBody);
+      return new Response(
+        JSON.stringify({
+          error: `Anthropic ${response.status}: ${errBody.slice(0, 500)}`,
+        }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } },
+      );
     }
 
-    const result = toolUse.input as FitResult;
+    const data = (await response.json()) as AnthropicResponse;
+    const toolUse = data.content?.find((b) => b.type === 'tool_use');
+    if (!toolUse || !toolUse.input) {
+      console.error('[analyze] no tool_use block', data);
+      return new Response(
+        JSON.stringify({ error: 'No tool_use block in response' }),
+        { status: 500, headers: { 'Content-Type': 'application/json' } },
+      );
+    }
 
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify(toolUse.input), {
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'no-store',
@@ -197,7 +197,7 @@ export default async function handler(req: Request): Promise<Response> {
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'unknown error';
-    console.error('[analyze] Anthropic call failed', err);
+    console.error('[analyze] fetch failed', err);
     return new Response(JSON.stringify({ error: msg.slice(0, 500) }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

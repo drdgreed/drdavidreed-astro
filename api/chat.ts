@@ -1,36 +1,23 @@
 /**
- * /api/chat — Vercel Edge function streaming Claude responses.
+ * /api/chat — Vercel Node serverless function. Streams Claude responses.
+ *
+ * We use raw fetch() to Anthropic's REST API instead of @anthropic-ai/sdk
+ * because the SDK was hanging at module-init in Vercel's Node 22 runtime
+ * (handler never executed, 300s timeout, no outgoing requests visible).
  *
  * Request:
- *   POST /api/chat
- *   { messages: [{role: "user"|"assistant", content: string}] }
+ *   POST /api/chat/
+ *   { messages: [{role, content}] }
  *
  * Response: text/event-stream
- *   data: {"text":"Sure, "}
- *   data: {"text":"here's the answer..."}
+ *   data: {"text":"..."}
  *   data: [DONE]
  *
- * The wire format is bespoke (NOT OpenAI-compatible) — we control both
- * sides and a {text} envelope is the simplest streaming shape.
- *
- * Env vars (Vercel project settings → Environment Variables):
- *   ANTHROPIC_API_KEY  required
- *   CLAUDE_MODEL       optional, defaults to claude-sonnet-4-5
- *
- * Edge runtime: V8 isolate, fast cold starts, geographic deployment.
- * Anthropic SDK 0.27+ supports fetch-based transport which works in Edge.
+ * Env vars:
+ *   ANTHROPIC_API_KEY (required)
+ *   CLAUDE_MODEL (optional, default 'claude-sonnet-4-5')
  */
-import Anthropic from '@anthropic-ai/sdk';
-// `.js` extension required by Node ESM strict mode at runtime, even though
-// the actual source file is `.ts`. TypeScript's resolver maps this back to
-// `./_lib/profile-context.ts` at compile time.
 import { DAVID_CONTEXT } from './_lib/profile-context.js';
-
-// No `runtime` config — let Vercel use its default Node.js serverless
-// for this `.ts` file in `api/`. We tried edge earlier but the Anthropic
-// SDK imports node:fs and node:path which V8 isolates don't provide.
-// Node serverless costs ~200-500ms cold start but gains full SDK
-// compatibility — fine trade-off for a personal site.
 
 const SYSTEM_PROMPT = `You are an AI assistant representing David Reed, PhD,
 helping a visitor on his portfolio site. You speak in first person as David
@@ -59,8 +46,8 @@ interface ChatMessage {
 }
 
 const enc = new TextEncoder();
-
-const sse = (payload: unknown) => enc.encode(`data: ${JSON.stringify(payload)}\n\n`);
+const sse = (payload: unknown) =>
+  enc.encode(`data: ${JSON.stringify(payload)}\n\n`);
 const sseDone = () => enc.encode('data: [DONE]\n\n');
 
 export default async function handler(req: Request): Promise<Response> {
@@ -70,22 +57,21 @@ export default async function handler(req: Request): Promise<Response> {
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'ANTHROPIC_API_KEY not configured' }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } },
+    );
   }
 
   let messages: ChatMessage[];
   try {
     const body = (await req.json()) as { messages?: ChatMessage[] };
     if (!Array.isArray(body.messages) || body.messages.length === 0) {
-      return new Response(JSON.stringify({ error: 'messages array required' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return new Response(
+        JSON.stringify({ error: 'messages array required' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } },
+      );
     }
-    // Defensive: enforce role + string content; cap to 30 messages and 4kb each
     messages = body.messages.slice(-30).map((m) => ({
       role: m.role === 'assistant' ? 'assistant' : 'user',
       content: String(m.content ?? '').slice(0, 4000),
@@ -97,42 +83,99 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  // Fail fast — same reason as analyze.ts. Default SDK retries can hang.
-  const client = new Anthropic({
-    apiKey,
-    maxRetries: 0,
-    timeout: 20_000,
-  });
   const model = process.env.CLAUDE_MODEL ?? 'claude-sonnet-4-5';
-  console.log('[chat] calling Anthropic stream', { model, msgCount: messages.length });
+  console.log('[chat] entering', { model, msgCount: messages.length });
 
-  // Stream Claude's response and re-emit as SSE.
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        const response = await client.messages.stream({
-          model,
-          max_tokens: 1024,
-          system: SYSTEM_PROMPT,
-          messages,
-        });
+        // 25s budget — under the Vercel function timeout, generous enough
+        // for Claude to start streaming.
+        const aborter = new AbortController();
+        const timeoutId = setTimeout(() => aborter.abort(), 25_000);
 
-        for await (const event of response) {
-          if (
-            event.type === 'content_block_delta' &&
-            event.delta.type === 'text_delta'
-          ) {
-            controller.enqueue(sse({ text: event.delta.text }));
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey,
+            'anthropic-version': '2023-06-01',
+          },
+          body: JSON.stringify({
+            model,
+            max_tokens: 1024,
+            stream: true,
+            system: SYSTEM_PROMPT,
+            messages,
+          }),
+          signal: aborter.signal,
+        });
+        clearTimeout(timeoutId);
+
+        console.log('[chat] anthropic status', response.status);
+
+        if (!response.ok) {
+          const errBody = await response.text();
+          console.error('[chat] anthropic error', response.status, errBody);
+          controller.enqueue(
+            sse({ error: `Anthropic ${response.status}: ${errBody.slice(0, 300)}` }),
+          );
+          controller.enqueue(sseDone());
+          controller.close();
+          return;
+        }
+        if (!response.body) {
+          controller.enqueue(sse({ error: 'No response body from Anthropic' }));
+          controller.enqueue(sseDone());
+          controller.close();
+          return;
+        }
+
+        // Anthropic's SSE: event blocks separated by `\n\n`, each has
+        // `event: name\ndata: {...}`. We only care about `data:` payloads
+        // where type === 'content_block_delta' and delta.type === 'text_delta'.
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          let sep: number;
+          while ((sep = buffer.indexOf('\n\n')) !== -1) {
+            const block = buffer.slice(0, sep);
+            buffer = buffer.slice(sep + 2);
+            const dataLine = block.split('\n').find((l) => l.startsWith('data: '));
+            if (!dataLine) continue;
+            const json = dataLine.slice(6).trim();
+            if (json === '[DONE]') continue;
+            try {
+              const parsed = JSON.parse(json) as {
+                type?: string;
+                delta?: { type?: string; text?: string };
+              };
+              if (
+                parsed.type === 'content_block_delta' &&
+                parsed.delta?.type === 'text_delta' &&
+                parsed.delta.text
+              ) {
+                controller.enqueue(sse({ text: parsed.delta.text }));
+              }
+            } catch {
+              // skip malformed chunk
+            }
           }
         }
+
         controller.enqueue(sseDone());
         controller.close();
+        console.log('[chat] stream complete');
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'unknown error';
-        console.error('[chat] Anthropic call failed', err);
-        controller.enqueue(
-          sse({ error: msg.slice(0, 500) }),
-        );
+        console.error('[chat] fetch failed', err);
+        controller.enqueue(sse({ error: msg.slice(0, 300) }));
         controller.enqueue(sseDone());
         controller.close();
       }
@@ -144,7 +187,7 @@ export default async function handler(req: Request): Promise<Response> {
       'Content-Type': 'text/event-stream; charset=utf-8',
       'Cache-Control': 'no-cache, no-transform',
       Connection: 'keep-alive',
-      'X-Accel-Buffering': 'no', // disable nginx buffering on some edges
+      'X-Accel-Buffering': 'no',
     },
   });
 }
