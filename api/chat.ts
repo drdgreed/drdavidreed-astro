@@ -26,7 +26,11 @@ import Anthropic from '@anthropic-ai/sdk';
 // `./_lib/profile-context.ts` at compile time.
 import { DAVID_CONTEXT } from './_lib/profile-context.js';
 
-export const config = { runtime: 'edge' };
+// No `runtime` config — let Vercel use its default Node.js serverless
+// for this `.ts` file in `api/`. We tried edge earlier but the Anthropic
+// SDK imports node:fs and node:path which V8 isolates don't provide.
+// Node serverless costs ~200-500ms cold start but gains full SDK
+// compatibility — fine trade-off for a personal site.
 
 const SYSTEM_PROMPT = `You are an AI assistant representing David Reed, PhD,
 helping a visitor on his portfolio site. You speak in first person as David

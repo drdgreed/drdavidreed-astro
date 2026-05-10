@@ -31,7 +31,8 @@ import Anthropic from '@anthropic-ai/sdk';
 // `./_lib/profile-context.ts` at compile time.
 import { DAVID_CONTEXT } from './_lib/profile-context.js';
 
-export const config = { runtime: 'edge' };
+// No `runtime` config — Vercel default Node.js serverless.
+// See api/chat.ts for the full reason — Anthropic SDK needs Node modules.
 
 const SYSTEM_PROMPT = `You are evaluating job descriptions for fit against
 David Reed, PhD. Return an HONEST assessment — including when David is NOT
@@ -107,7 +108,10 @@ const SUBMIT_FIT_CHECK_TOOL = {
     },
     required: ['verdict', 'headline', 'opening', 'gaps', 'transfers', 'recommendation'],
   },
-} as const;
+};
+// Note: no outer `as const` here. Anthropic's SDK Tool type expects
+// `required: string[]` (mutable). The outer const was over-aggressive
+// and made the array readonly, breaking the type check.
 
 interface FitResult {
   verdict: 'strong_fit' | 'worth_conversation' | 'probably_not';
@@ -159,10 +163,12 @@ export default async function handler(req: Request): Promise<Response> {
       max_tokens: 2048,
       system: SYSTEM_PROMPT,
       tools: [SUBMIT_FIT_CHECK_TOOL],
-      tool_choice: { type: 'tool', name: 'submit_fit_check' },
+      // `as const` on the .type literal so TS resolves it to `'tool'` not `string`.
+      tool_choice: { type: 'tool' as const, name: 'submit_fit_check' },
       messages: [
         {
-          role: 'user',
+          // Same reason — SDK expects literal `'user'` not `string`.
+          role: 'user' as const,
           content: `Job description:\n\n${jobDescription}\n\nCall submit_fit_check with the structured assessment.`,
         },
       ],
