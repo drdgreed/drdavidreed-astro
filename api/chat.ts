@@ -97,8 +97,14 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  const client = new Anthropic({ apiKey });
+  // Fail fast — same reason as analyze.ts. Default SDK retries can hang.
+  const client = new Anthropic({
+    apiKey,
+    maxRetries: 0,
+    timeout: 20_000,
+  });
   const model = process.env.CLAUDE_MODEL ?? 'claude-sonnet-4-5';
+  console.log('[chat] calling Anthropic stream', { model, msgCount: messages.length });
 
   // Stream Claude's response and re-emit as SSE.
   const stream = new ReadableStream<Uint8Array>({
@@ -123,8 +129,9 @@ export default async function handler(req: Request): Promise<Response> {
         controller.close();
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'unknown error';
+        console.error('[chat] Anthropic call failed', err);
         controller.enqueue(
-          sse({ error: msg.slice(0, 200) }),
+          sse({ error: msg.slice(0, 500) }),
         );
         controller.enqueue(sseDone());
         controller.close();

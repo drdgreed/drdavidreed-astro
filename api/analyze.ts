@@ -154,8 +154,15 @@ export default async function handler(req: Request): Promise<Response> {
     });
   }
 
-  const client = new Anthropic({ apiKey });
+  // Fail fast — default SDK retries (2x) with 60s timeout means hung calls
+  // can take 3 minutes to surface. We'd rather see the real error in <15s.
+  const client = new Anthropic({
+    apiKey,
+    maxRetries: 0,
+    timeout: 20_000,
+  });
   const model = process.env.CLAUDE_MODEL ?? 'claude-sonnet-4-5';
+  console.log('[analyze] calling Anthropic', { model, jdLength: jobDescription.length });
 
   try {
     const response = await client.messages.create({
@@ -190,7 +197,8 @@ export default async function handler(req: Request): Promise<Response> {
     });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'unknown error';
-    return new Response(JSON.stringify({ error: msg.slice(0, 200) }), {
+    console.error('[analyze] Anthropic call failed', err);
+    return new Response(JSON.stringify({ error: msg.slice(0, 500) }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
