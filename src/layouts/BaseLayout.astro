@@ -6,17 +6,20 @@
  *   - HTML scaffolding (lang, charset, viewport)
  *   - Global stylesheet
  *   - <SEO /> with prop pass-through
- *   - Sticky top nav with logo, links, Ask-AI button
+ *   - Sticky top nav with logo, links, "Book a call" CTA
  *   - Footer with social links (LinkedIn, Calendly, Email, RSS)
- *   - Mount point for the AskAI React island (controlled by nav button)
  *
  * Pages render their content via <slot />.
+ *
+ * Note: AI features (Ask AI drawer, Fit Check analyzer) and their nav
+ * entries were removed in favor of a clean static deploy. Source files
+ * for AskAIDrawer.tsx / FitCheck.tsx are preserved for re-introduction
+ * once a proper Astro+Vercel SSR setup is in place. See DEPLOY.md.
  */
 import '../styles/global.css';
 import SEO from '../components/SEO.astro';
 import { SITE } from '../lib/site-meta';
 import type { SeoProps } from '../lib/seo-types';
-import AskAIDrawer from '../components/AskAIDrawer.tsx';
 
 type Props = SeoProps;
 
@@ -74,20 +77,23 @@ const { title, description, path, ogImage, articleData, pageType } = Astro.props
             <li><a href="/experience/" class={`hover:text-foreground transition-colors ${path?.startsWith('/experience') ? 'text-primary font-medium' : ''}`}>Experience</a></li>
             <li><a href="/portfolio/" class={`hover:text-foreground transition-colors ${path?.startsWith('/portfolio') ? 'text-primary font-medium' : ''}`}>Portfolio</a></li>
             <li><a href="/blog/" class={`hover:text-foreground transition-colors ${path?.startsWith('/blog') ? 'text-primary font-medium' : ''}`}>Writing</a></li>
-            <li><a href="/fit-check/" class={`hover:text-foreground transition-colors ${path?.startsWith('/fit-check') ? 'text-primary font-medium' : ''}`}>Fit Check</a></li>
           </ul>
 
-          {/* Ask AI button — opens the React drawer island. */}
-          <button
-            type="button"
-            data-ask-ai-trigger
+          {/* Primary CTA — Book a call (real link, works immediately) */}
+          <a
+            href={SITE.calendlyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
             class="btn-glow inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+              <line x1="16" x2="16" y1="2" y2="6" />
+              <line x1="8" x2="8" y1="2" y2="6" />
+              <line x1="3" x2="21" y1="10" y2="10" />
             </svg>
-            <span>Ask AI</span>
-          </button>
+            <span>Book a call</span>
+          </a>
         </div>
       </nav>
     </header>
@@ -117,9 +123,5 @@ const { title, description, path, ogImage, articleData, pageType } = Astro.props
         </p>
       </div>
     </footer>
-
-    {/* ── Ask-AI drawer island ─────────────────────────────────────── */}
-    {/* Hydrated on page load; listens for clicks on [data-ask-ai-trigger]. */}
-    <AskAIDrawer client:load />
   </body>
 </html>

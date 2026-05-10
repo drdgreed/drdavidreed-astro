@@ -2,9 +2,8 @@
 /**
  * / — Home page.
  *
- * Hero-focused (per the migration brief: each topic gets its own URL, not
- * one giant scroll page). Quick links and Ask-AI CTA route the visitor to
- * the rest of the site.
+ * Hero-focused. Quick links + Book-a-call CTA route the visitor to
+ * the rest of the site or directly to Calendly.
  */
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { profile } from '../data/profile';
@@ -63,13 +62,14 @@ import { SITE } from '../lib/site-meta';
 
       {/* CTAs */}
       <div class="flex flex-wrap justify-center gap-3 mb-12 animate-fade-in" style="animation-delay: 320ms">
-        <button
-          type="button"
-          data-ask-ai-trigger
+        <a
+          href={SITE.calendlyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           class="btn-glow inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg text-base font-medium hover:bg-primary-hover transition-colors shadow-lg shadow-primary/20 animate-pulse-glow"
         >
-          Ask AI About Me
-        </button>
+          Book a 30-min call
+        </a>
         <a
           href="/experience/"
           class="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg text-base font-medium hover:border-primary hover:text-primary transition-colors"
@@ -77,12 +77,12 @@ import { SITE } from '../lib/site-meta';
           See experience →
         </a>
         <a
-          href={SITE.calendlyUrl}
+          href={SITE.linkedinUrl}
           target="_blank"
           rel="noopener noreferrer"
           class="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-lg text-base font-medium hover:border-primary hover:text-primary transition-colors"
         >
-          Book a call
+          Connect on LinkedIn
         </a>
       </div>
 
@@ -92,7 +92,7 @@ import { SITE } from '../lib/site-meta';
         <span class="mx-3">·</span>
         <a href="/blog/" class="hover:text-primary transition-colors">Writing</a>
         <span class="mx-3">·</span>
-        <a href="/fit-check/" class="hover:text-primary transition-colors">Fit Check</a>
+        <a href={`mailto:${SITE.email}`} class="hover:text-primary transition-colors">Email</a>
       </p>
     </div>
   </section>
