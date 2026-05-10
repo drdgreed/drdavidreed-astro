@@ -6,6 +6,12 @@ dist/
 # dependencies
 node_modules/
 
+# package-lock.json — temporarily skipped while we debug the Vercel
+# "Invalid Version:" build failure. Vercel resolves fresh from package.json
+# via "npm install --no-package-lock" in vercel.json. Re-add when the
+# upstream lockfile issue is identified and fixed.
+package-lock.json
+
 # logs
 npm-debug.log*
 yarn-debug.log*
