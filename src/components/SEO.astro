@@ -83,11 +83,15 @@ const personLdBlock = pageType !== 'profile'
 // dateCreated and dateModified are recommended for SERP freshness signals.
 // dateCreated is the site launch date (static); dateModified refreshes at
 // each build, signaling an actively maintained profile.
+//
+// Both values must be full ISO-8601 datetimes (date + time + timezone) —
+// Schema.org types these as DateTime, not Date. A bare YYYY-MM-DD fails
+// validation as "Invalid datetime value".
 const profilePageLd = pageType === 'profile'
   ? {
       '@context': 'https://schema.org',
       '@type': 'ProfilePage',
-      dateCreated: '2026-05-10',
+      dateCreated: '2026-05-10T00:00:00Z',
       dateModified: new Date().toISOString(),
       mainEntity: personLd,
     }
