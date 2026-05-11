@@ -15,7 +15,9 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import ArticleCard from '../../components/ArticleCard.astro';
 import AuthorCard from '../../components/AuthorCard.astro';
 import InlineCTA from '../../components/InlineCTA.astro';
-import NewsletterCapture from '../../components/NewsletterCapture.astro';
+// NewsletterCapture is intentionally not imported. The component is a stub
+// (no provider wired); rendering it would show visitors a non-functional
+// form. Restore the import + usage below when a provider is configured.
 import { CATEGORY_META } from '../../lib/categories';
 
 export async function getStaticPaths() {
@@ -35,8 +37,16 @@ interface Props {
 const { post } = Astro.props;
 // v6: render() is a top-level import; post.render() was removed.
 const { Content } = await render(post);
-const { title, description, category, publishDate, updatedDate, coverImage, readTime } =
-  post.data;
+const {
+  title,
+  description,
+  category,
+  publishDate,
+  updatedDate,
+  coverImage,
+  coverImageAlt,
+  readTime,
+} = post.data;
 const cat = CATEGORY_META[category];
 
 const formattedDate = publishDate.toLocaleDateString('en-US', {
@@ -102,11 +112,14 @@ const related = all
       </div>
     </div>
 
-    {/* Cover image */}
+    {/* Cover image. alt falls back to empty string for posts that pre-date
+        the coverImageAlt frontmatter field. New posts should always provide
+        coverImageAlt — empty alt is only correct for purely decorative
+        images, which substantive cover graphics typically aren't. */}
     {coverImage && (
       <img
         src={coverImage}
-        alt=""
+        alt={coverImageAlt ?? ''}
         class="w-full rounded-2xl border border-border-subtle mb-12"
       />
     )}
@@ -124,8 +137,10 @@ const related = all
     {/* Author bio */}
     <AuthorCard variant="bio" />
 
-    {/* Newsletter */}
-    <NewsletterCapture />
+    {/* Newsletter capture intentionally omitted until a provider (Buttondown,
+        ConvertKit, or Substack) is wired. The stub form submits nowhere and
+        would confuse subscribers. Restore <NewsletterCapture /> here when
+        ready, and add the import at the top of this file. */}
   </article>
 
   {/* Related */}

@@ -1,0 +1,136 @@
+---
+title: "PACCA v2.3: Adopting Agentic Harness Engineering for Healthcare AI"
+description: "A six-phase methodology, adapted from Lin et al.'s AHE paper, brings file-level discipline to a production clinical decision support system. Iter-0 of a public iteration cycle."
+category: "case-study"
+publishDate: 2026-05-11
+readTime: 8
+coverImage: "/blog/pacca-iter-0-cover.png"
+coverImageAlt: "PACCA v2.3 harness engineering cycle: six phases (H0 Baseline Crystallization through H5 Evaluation Harness Expansion) over 10–12 weeks, with H2 Institutional Memory Layer marked as the highest-leverage phase per the AHE paper's component ablation study."
+featured: true
+draft: false
+---
+
+import PullQuote from '../../components/PullQuote.astro';
+
+Most agent codebases on GitHub iterate the same way: someone tweaks a prompt, hopes it helps, and ships. The git history records what changed — but rarely why, and almost never whether it actually worked.
+
+PACCA v2.3 commits to something different.
+
+Starting today, every behavioral change to PACCA's healthcare prior authorization agents ships with a falsifiable contract: which cases the change should fix, which it might break, and which file owns the behavior. The next evaluation round verifies the predictions. Rejected changes revert at file granularity.
+
+This post explains the methodology, where it comes from, and what auditing it looks like from outside the repo.
+
+## What PACCA is, and why this matters
+
+PACCA is an agentic AI system for healthcare prior authorization — the back-and-forth between providers, payers, and clinical reviewers that determines whether a treatment is covered before it's delivered. It's exactly the kind of domain where "the model decided" is not a sufficient explanation. Decisions are appealable; appeals require audit trails; audit trails require knowing which version of which behavior made each call.
+
+The system is open-source, runs on synthetic data only, and lives at [github.com/Chaos-6/pacca](https://github.com/Chaos-6/pacca). There is no PHI involved at any point in this work — every case in the eval suite is generated, and the methodology is published precisely so other teams in regulated domains can adopt, fork, or critique it.
+
+What changes with v2.3 isn't the agents themselves. It's the discipline around how their behavior evolves.
+
+## The methodology — and where it comes from
+
+The framework is adapted from Lin et al., *Agentic Harness Engineering* ([arXiv:2604.25850](https://arxiv.org/abs/2604.25850), 2026) — the current published reference for closed-loop iteration on coding-agent harnesses. Their empirical finding, established across an 89-case benchmark with full component ablations, is striking enough to repeat in detail:
+
+In a coding-agent domain, behavioral gains from iteration concentrate in three places: tools, middleware, and long-term memory. Edits to system prompts in isolation tend to *regress*, not improve, eval performance.
+
+The intuition behind this finding is that system prompts are coupled to every agent decision, so any edit propagates in ways that are hard to predict or attribute. Tools, middleware, and memory are more decoupled — easier to change one thing at a time, easier to roll back when something breaks, easier to attribute behavioral changes to the specific surface that produced them.
+
+PACCA v2.3 is the first attempt I know of to test whether that finding transfers from coding-task benchmarks to clinical decision support.
+
+## Why coding-to-healthcare transfer is non-obvious
+
+Two reasons the transfer is worth questioning rather than assuming.
+
+**Feedback loops are slower.** A coding agent gets near-immediate signal from compile errors, test failures, and runtime exceptions. A clinical decision support agent's "correctness" is graded against gold-standard reviewer decisions — which arrive asynchronously, are themselves contested in roughly ten percent of cases, and reflect institutional policy as much as clinical fact. Iteration cycles that produce stable signal at coding-agent latency may produce noise at clinical-decision-support latency.
+
+**Error costs are asymmetric.** A buggy code suggestion gets caught in code review or unit tests. A buggy prior-auth approval gets caught by a patient receiving a denial weeks later, or by an appeal reaching a state insurance commissioner months later. Methodologies that tolerate noisy gains in coding may not be acceptable in domains where false positives have direct human consequences.
+
+The PACCA v2.3 cycle is designed to test the transfer empirically, in both directions: where AHE's findings hold up, and where they fail or require domain-specific adaptation.
+
+## Six phases, eleven harness surfaces
+
+The cycle spans ten to twelve weeks across six tagged iterations:
+
+| Phase | Iteration | Focus |
+|---|---|---|
+| H0 | iter-0 | Baseline crystallization — freeze the starting state |
+| H1 | iter-1 | Component decoupling — refactor without behavior change |
+| H2 | iter-2 | Institutional memory layer — the AHE paper's highest-leverage component |
+| H3 | iter-3 | Tool surface expansion |
+| H4 | iter-4 | Middleware and routing |
+| H5 | iter-5 | Evaluation harness expansion |
+
+Each phase edits a specific subset of eleven *harness surfaces* — components decoupled from agent logic so they can be modified, evaluated, and rolled back as single-file diffs.
+
+Seven of these surfaces come from the AHE paper's standard set: system prompts, tool descriptions, tool implementations, middleware, planning logic, long-term memory, and evaluation criteria. The other four are PACCA-specific extensions: an escalation tree (provider → clinical reviewer → medical director), dual RAG collections (policy documents separated from clinical evidence), a prompt registry, and an audit schema.
+
+The PACCA-specific surfaces are where the methodology adapts. Prior authorization has structural elements — escalation paths, policy-vs-evidence corpus separation, audit requirements — that don't appear in coding domains. Treating them as harness surfaces means they get the same file-level discipline as everything else: one file, one owner, single-diff rollback.
+
+## Four documents that make the cycle auditable from outside the repo
+
+Anyone — recruiter, peer, skeptic, future collaborator — can audit the methodology without touching the codebase. The four open documents are:
+
+**HARNESS.md** — Inventory of all eleven editable surfaces, with file paths, current owner, and the contract each surface guarantees. New iterations edit one or more of these; the file says which.
+
+**DECISIONS.md** — Append-only log. Every behavioral change gets a `chg-N:` prefix on its commits and an entry here with hypothesis, predicted impact, files touched, and (after the next eval round) verified outcome. The verified outcome can be "as predicted," "unforeseen regression," or "no measurable effect." All three are valid landing states.
+
+**ITERATIONS.md** — Narrative log per iteration tag. Format borrowed from the AHE paper's Appendix C: what was attempted, what shipped, what the eval showed, what was kept versus reverted. The reader who wants the engineering story without the diff-level detail starts here.
+
+**change_manifest.schema.json** — A JSON Schema 2020-12 specification for the per-commit change manifest. Two PACCA-specific fields extend the AHE-standard schema:
+
+```json
+{
+  "chg": "chg-12",
+  "surface": "long_term_memory",
+  "hypothesis": "Adding the oncology high-cost step-therapy cross-cutting rule reduces missed escalations on Group C cases.",
+  "predicted_impact": {
+    "fix": ["case_C04", "case_C07"],
+    "risk": ["case_A02"]
+  },
+  "phi_impact": "none",
+  "audit_relevant": true
+}
+```
+
+The `phi_impact` field ties every change to a HIPAA-relevant disclosure category — `none`, `read`, `write`, or `cross-collection`. For an open-source system running on synthetic data, the value is always `none`. But the field exists so the same schema and discipline transfer cleanly to any production fork where data isn't synthetic. `audit_relevant: true` flags changes that touch decision-rendering logic, which auditors need to surface during dispute resolution.
+
+<PullQuote attribution="The principle this whole cycle is built around">
+  If you cannot reliably attribute a behavioral gain to a specific change,
+  you cannot reliably iterate on the system that produced it.
+</PullQuote>
+
+## The honest reporting commitment
+
+One non-obvious feature of this methodology is what happens when an iteration fails to improve, or actively regresses.
+
+The AHE paper, when reporting empirical results, includes non-monotone progress. Iteration 4 in their main curve underperforms iteration 3. Iteration 7 underperforms iteration 6. The paper's credibility comes precisely from publishing those regressions alongside the wins — most ablation reports cherry-pick winning runs and ship those. The paper does not.
+
+PACCA v2.3 follows the same standard. Every iteration ships a public report — here and on LinkedIn — whether the eval delta is positive, zero, or negative. Iter-1 in particular is structurally a zero-delta phase: it's a pure refactor whose success criterion is "no behavior change." Iter-2 through iter-5 will report whatever the evals say, including regressions.
+
+For systems destined for regulated domains, this isn't optional. A methodology that quietly omits regressions doesn't survive a single audit conversation. The infrastructure for honest reporting needs to be in place before the regressions occur, not assembled retroactively after they do.
+
+## What iter-0 success looks like
+
+The success criterion for iter-0 is unusual: nothing has been built yet beyond the documents themselves.
+
+Iter-0 — Baseline Crystallization — succeeds when four conditions hold simultaneously:
+
+1. The `pre-ahe-baseline` and `harness-iter-0` tags are pushed to origin and visible in the repo's tags list.
+2. All four open documents (HARNESS, DECISIONS, ITERATIONS, schema) are reachable from the README at the paths the README declares.
+3. The full evaluation suite reproduces from the `harness-iter-0` tag with no environmental drift — same prompts, same eval cases, same scoring.
+4. The methodology is described publicly in enough detail that someone outside the repo can identify when subsequent iterations violate it.
+
+This post completes condition four. The first three are infrastructure that lives in the repo itself.
+
+What iter-0 *doesn't* do is claim any behavioral gain. There isn't one to claim. The eval delta versus the prior version (pre-AHE methodology adoption) is irrelevant by design — the methodology itself doesn't produce gains, only the iterations that follow do. Iter-0 succeeds when the conditions for honest iteration are in place, not when the iterations themselves have shipped.
+
+## What's next, and an invitation
+
+Iter-1 begins this week. Phase H1 is the component-decoupling refactor — extracting system prompts, tool descriptions, and tool implementations from the agent Python files into one-file-per-component layouts at fixed mount points. Success means full-suite reproduction of the iter-0 baseline. The post for iter-1 lands when the phase ships, target end of week four.
+
+Iter-2 is where the methodology's central transferability claim gets tested. The AHE paper found +5.6 percentage points on pass@1 from the long-term memory component alone — the largest single-component gain in their ablation. Whether that transfers to clinical decision support is the question with the most uncertain answer in this entire cycle.
+
+If you're working on agentic AI in regulated domains — healthcare, finance, legal — I would genuinely value a critical read. The repo is at [github.com/Chaos-6/pacca](https://github.com/Chaos-6/pacca); the four open documents are reachable from the README. Skeptical engagement is the most useful kind.
+
+This is the first in a series of six posts mirroring the six-phase cycle. Each iteration's findings ship as a separate post, with the LinkedIn version pointing here for the full write-up.

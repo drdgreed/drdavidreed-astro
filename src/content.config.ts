@@ -31,6 +31,12 @@ const blog = defineCollection({
     publishDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     coverImage: z.string().optional(),
+    // Substantive alt text for the cover image, used by the blog template's
+    // <img alt>. Required (in spirit) whenever coverImage is set — empty alt
+    // is only correct for purely decorative images, which cover graphics
+    // typically aren't. Kept optional in the schema so older posts don't
+    // break the build; new posts should always provide it.
+    coverImageAlt: z.string().optional(),
     // Read time in minutes. We compute it offline and store it in frontmatter
     // so the listing page doesn't need to parse the body to estimate.
     readTime: z.number().int().positive(),
