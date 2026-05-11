@@ -48,7 +48,10 @@ const datePublishedIso = toIso(articleData?.datePublished);
 const dateModifiedIso = toIso(articleData?.dateModified) ?? datePublishedIso;
 
 // JSON-LD: Person is always present so search engines can stitch identity
-// across every page. Article is added only on blog posts.
+// across every page. Article is added only on blog posts. On the profile
+// page (pageType === 'profile' — the homepage), Person is wrapped in
+// ProfilePage to trigger Google's profile-page rich result. Elsewhere it
+// stays as a standalone block.
 const personLd = PERSON;
 
 const articleLd = articleData
@@ -66,11 +69,29 @@ const articleLd = articleData
     }
   : null;
 
-// Wrap Person in @context only when emitted as a standalone block.
-const personLdBlock = {
-  '@context': 'https://schema.org',
-  ...personLd,
-};
+// Standalone Person block — emitted on every page EXCEPT the profile page,
+// where ProfilePage subsumes it (nesting Person in mainEntity).
+const personLdBlock = pageType !== 'profile'
+  ? {
+      '@context': 'https://schema.org',
+      ...personLd,
+    }
+  : null;
+
+// ProfilePage block — emitted only on the profile page (homepage).
+// Per Google's spec (https://developers.google.com/search/docs/appearance/structured-data/profile-page),
+// dateCreated and dateModified are recommended for SERP freshness signals.
+// dateCreated is the site launch date (static); dateModified refreshes at
+// each build, signaling an actively maintained profile.
+const profilePageLd = pageType === 'profile'
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'ProfilePage',
+      dateCreated: '2026-05-10',
+      dateModified: new Date().toISOString(),
+      mainEntity: personLd,
+    }
+  : null;
 ---
 
 {/* Primary meta */}
@@ -107,12 +128,24 @@ const personLdBlock = {
   </>
 )}
 
-{/* Person JSON-LD — sitewide */}
-<script
-  is:inline
-  type="application/ld+json"
-  set:html={JSON.stringify(personLdBlock)}
-/>
+{/* Person JSON-LD — emitted on every page EXCEPT the profile page */}
+{personLdBlock && (
+  <script
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(personLdBlock)}
+  />
+)}
+
+{/* ProfilePage JSON-LD — only on the homepage (pageType === 'profile').
+    Triggers Google's profile-page rich result; Person is nested inside. */}
+{profilePageLd && (
+  <script
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(profilePageLd)}
+  />
+)}
 
 {/* Article JSON-LD — only on blog posts */}
 {articleLd && (
