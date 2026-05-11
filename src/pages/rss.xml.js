@@ -17,6 +17,10 @@ export async function GET(context) {
     title: `${SITE.name} — Writing`,
     description: SITE.description,
     site: context.site ?? SITE.url,
+    // Browser-only stylesheet — feed readers ignore this directive.
+    // Turns the raw XML into a styled HTML page for humans visiting /rss.xml
+    // directly in a browser, while preserving valid RSS for readers.
+    stylesheet: '/rss.xsl',
     items: posts.map((post) => ({
       title: post.data.title,
       description: post.data.description,
