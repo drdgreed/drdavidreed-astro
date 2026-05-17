@@ -1,0 +1,234 @@
+---
+/**
+ * /for-recruiters — Recruiter-facing one-pager.
+ *
+ * Tells recruiters exactly what David is looking for, what he's not,
+ * what he's worth, and how to start a conversation. Optimized for
+ * 30-second skim followed by a Calendly booking or email reply.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// =====================================================================
+//  EDIT THESE THREE VALUES BEFORE PUBLISHING
+// =====================================================================
+const compRange = '$350K–$550K total comp, with significant flex for equity-heavy startup offers';
+const earliestStart = '14 days from offer';
+const lastUpdated = 'May 2026';
+// =====================================================================
+---
+
+<BaseLayout
+  title="For Recruiters | David Reed, PhD"
+  description="What I'm looking for, what I'm not, and how to start a conversation. Principal / Distinguished Agentic AI Architect roles."
+  path="/for-recruiters/"
+  pageType="profile"
+>
+  <article class="section-container py-20 max-w-3xl mx-auto">
+    <h1 class="text-4xl md:text-5xl font-bold mb-6">For Recruiters</h1>
+
+    <p class="text-lg leading-relaxed mb-12">
+      If you're hiring a senior IC-track engineer who designs, codes, and
+      ships production agentic AI systems, this page exists to make the next
+      30 seconds easy.
+    </p>
+
+    <h2 class="text-2xl font-semibold mt-12 mb-4">What I'm looking for</h2>
+
+    <p class="mb-4">
+      <strong>Role:</strong> Principal Agentic AI Architect · Distinguished
+      Engineer, AI · Principal AI Engineer · Senior Staff AI Architect
+    </p>
+
+    <p class="mb-4">
+      <strong>Track:</strong> Individual contributor. Hands-on. I architect
+      and I write code. I'm happy to mentor, partner with EMs, and own
+      multi-quarter technical roadmaps, but I'm not seeking a people-management
+      role.
+    </p>
+
+    <p class="mb-4">
+      <strong>Domains I'm strongest in:</strong> multi-agent orchestration,
+      LLM evaluation and quality gates, RAG architectures, Model Context
+      Protocol (MCP), production agentic systems, ML at scale, healthcare AI,
+      edtech AI.
+    </p>
+
+    <p class="mb-12">
+      <strong>Company stage:</strong> Series B through public. I work
+      especially well in environments that are past prototype and need someone
+      to architect the path from "demos that work" to "systems that run
+      reliably with measurable cost, latency, and quality SLAs."
+    </p>
+
+    <h2 class="text-2xl font-semibold mt-12 mb-4">
+      Compensation and logistics
+    </h2>
+
+    <ul class="space-y-2 mb-12 list-disc list-outside ml-6">
+      <li><strong>Target total comp:</strong> {compRange}</li>
+      <li>
+        <strong>Location:</strong> Portland, Oregon metro (McMinnville).
+        Remote-first or hybrid with reasonable travel. I will not relocate.
+      </li>
+      <li>
+        <strong>Work authorization:</strong> US citizen. No sponsorship
+        needed.
+      </li>
+      <li><strong>Earliest start:</strong> {earliestStart}</li>
+      <li><strong>Travel:</strong> Up to ~25% for the right role.</li>
+    </ul>
+
+    <h2 class="text-2xl font-semibold mt-12 mb-4">
+      What I'm not looking for
+    </h2>
+
+    <p class="mb-4">Saves us both time:</p>
+
+    <ul class="space-y-2 mb-12 list-disc list-outside ml-6">
+      <li>
+        Pure people-management roles (VP Engineering, Engineering Director
+        with no IC scope)
+      </li>
+      <li>
+        Pre-seed / seed-stage where the role is "first AI hire, figure it out
+        alone" — I prefer to join teams that already have engineering and ops
+        to integrate with
+      </li>
+      <li>Roles that are 100% strategy with no codebase access</li>
+      <li>Crypto / web3 / gambling</li>
+      <li>Roles requiring relocation away from the Pacific Northwest</li>
+    </ul>
+
+    <h2 class="text-2xl font-semibold mt-12 mb-4">Why hire me</h2>
+
+    <p class="mb-4">A few numbers from the last decade of shipped work:</p>
+
+    <ul class="space-y-2 mb-12 list-disc list-outside ml-6">
+      <li>
+        <strong>22% instructor performance lift, 4.71/5.0 NPS</strong> across
+        400+ MAANG-level instructors — driven by ALCA, the production agentic
+        AI evaluation system I designed and built at Interview Kickstart
+      </li>
+      <li>
+        <strong>$250M acquisition</strong> at Medalogix, supported by my
+        technical due diligence on the production ML and data governance
+        stack
+      </li>
+      <li>
+        <strong>$320M in incremental sales</strong> from the Wal-Mart retail
+        BI architecture I owned as HP Master Technologist
+      </li>
+      <li>
+        <strong>US Patent 6,850,988</strong> — sole inventor of the
+        clickstream personalization algorithm foundational to e-commerce
+        recommendation engines
+      </li>
+      <li>
+        <strong>61.4% FAANG placement rate</strong> across 10,000+ graduates
+        of programs I lead at Interview Kickstart, vs ~5% industry baseline
+      </li>
+    </ul>
+
+    <h2 class="text-2xl font-semibold mt-12 mb-4">Selected current work</h2>
+
+    <ul class="space-y-2 mb-12 list-disc list-outside ml-6">
+      <li>
+        <a
+          href="https://github.com/Chaos-6/pacca"
+          class="underline hover:no-underline"><strong>PACCA</strong></a
+        > — public multi-agent healthcare prior-authorization platform. Four
+        agentic design traditions, FastAPI / ChromaDB / PostgreSQL / React,
+        full PRD, system design document, HIPAA compliance documentation,
+        140-test evaluation suite.
+      </li>
+      <li>
+        <a href="/portfolio/" class="underline hover:no-underline"
+          ><strong>Portfolio</strong></a
+        > — open-source projects, white papers, and patents.
+      </li>
+      <li>
+        <a href="/blog/" class="underline hover:no-underline"
+          ><strong>Writing</strong></a
+        > — production agentic systems and ML engineering at scale, written
+        for senior technical leaders.
+      </li>
+    </ul>
+
+    <h2 class="text-2xl font-semibold mt-12 mb-4">
+      How to start a conversation
+    </h2>
+
+    <p class="mb-4">The fastest path:</p>
+
+    <ol class="space-y-2 mb-4 list-decimal list-outside ml-6">
+      <li>
+        <a
+          href="https://calendly.com/drdgreed/30min"
+          class="underline hover:no-underline"
+          ><strong>Book a 30-minute call</strong></a
+        > — pick any open slot.
+      </li>
+      <li>
+        <strong>Email:</strong>{' '}
+        <a
+          href="mailto:drdgreed@gmail.com"
+          class="underline hover:no-underline">drdgreed@gmail.com</a
+        > — include role title, company stage, and comp ballpark so I can respond
+        efficiently.
+      </li>
+      <li>
+        <a
+          href="https://www.linkedin.com/in/drdgreed/"
+          class="underline hover:no-underline"><strong>LinkedIn</strong></a
+        > — connect with a short note.
+      </li>
+    </ol>
+
+    <p class="mb-12">
+      I respond to every legitimate inbound within 48 hours.
+    </p>
+
+    <h2 class="text-2xl font-semibold mt-12 mb-4">
+      FAQ recruiters tend to ask
+    </h2>
+
+    <p class="font-semibold mb-2">What's your patent actually about?</p>
+    <p class="mb-6">
+      US Patent 6,850,988 covers a system for interpreting customer
+      click-stream navigation patterns to optimize e-commerce strategy in real
+      time. It's the architectural ancestor of behavior-signal-driven
+      recommendation engines — the same pattern family that today's ad
+      ranking and agentic personalization systems descend from.
+    </p>
+
+    <p class="font-semibold mb-2">What's a "Master Technologist" at HP?</p>
+    <p class="mb-6">
+      HP's IC track topped at Master Technologist. It is the HP-internal
+      equivalent of Distinguished Engineer at Microsoft, Google, or Amazon,
+      and Senior Fellow / Technical Fellow at companies that use those
+      titles. I held it for six years owning logical design and
+      interoperability of HP's global application stack.
+    </p>
+
+    <p class="font-semibold mb-2">Do you really still write code?</p>
+    <p class="mb-6">
+      Yes. PACCA, ALCA, Open Brain (MCP server on Supabase), and DeepEval
+      test suites are all systems I designed and built myself. My GitHub
+      commit history is the proof.
+    </p>
+
+    <p class="font-semibold mb-2">
+      Will you take a senior management role for the right offer?
+    </p>
+    <p class="mb-12">
+      I'm not opposed to people-leadership for an exceptional opportunity,
+      but my best work is on the IC track. If you're considering me for an
+      EM/Director role, please be ready to talk about how 60–80% of the role
+      can stay technical.
+    </p>
+
+    <hr class="my-12 border-gray-300" />
+
+    <p class="text-sm text-gray-500 italic">Last updated: {lastUpdated}</p>
+  </article>
+</BaseLayout>
