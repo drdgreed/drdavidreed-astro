@@ -29,7 +29,11 @@ const {
 const canonical = new URL(path, SITE.url).toString();
 const resolvedOgImage = new URL(ogImage ?? SITE.defaultOgImage, SITE.url).toString();
 
-const fullTitle = title === SITE.name ? title : `${title} | ${SITE.name}`;
+// Append the brand suffix UNLESS the title already names the person —
+// avoids redundant "… | David Reed, PhD" on the homepage, whose title
+// leads with the name itself. More general (and less brittle) than an
+// exact `title === SITE.name` check.
+const fullTitle = title.includes(PERSON.name) ? title : `${title} | ${SITE.name}`;
 
 /**
  * Normalize a Date|string|undefined into an ISO-8601 string (or undefined).
