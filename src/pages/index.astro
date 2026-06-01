@@ -10,9 +10,12 @@ import { profile } from '../data/profile';
 import { SITE } from '../lib/site-meta';
 ---
 
+{/* Title leads with the name for "David Reed" recognition, then specialty
+    keywords for ranking. Meta description is a dedicated ≤160-char SERP
+    snippet (the hero below still renders the full profile.elevatorPitch). */}
 <BaseLayout
-  title={profile.name}
-  description={profile.elevatorPitch}
+  title="David Reed — AI/ML Engineer | Agentic AI Systems"
+  description="David Reed, PhD — AI/ML engineer specializing in agentic AI systems: production multi-agent architectures, LLM evaluation, RAG, and MCP. Two US patents."
   path="/"
   pageType="profile"
 >

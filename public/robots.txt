@@ -1,0 +1,7 @@
+# robots.txt for https://drdavidreed.com
+# Allow all crawlers full access; point them at the sitemap index.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://drdavidreed.com/sitemap-index.xml

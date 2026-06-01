@@ -33,6 +33,8 @@ export const PERSON = {
   honorificSuffix: 'PhD, MBA, PMP',
   url: SITE.url,
   jobTitle: 'Head of AI/ML & Agentic Delivery',
+  description:
+    'AI/ML engineer specializing in production agentic AI systems — multi-agent architectures, LLM evaluation, RAG, and Model Context Protocol (MCP). Former Master Technologist at HP and Principal TPM-AI at Microsoft. Sole inventor of US Patent 6,850,988.',
   worksFor: {
     '@type': 'Organization',
     name: 'Interview Kickstart',
@@ -89,6 +91,19 @@ export const PERSON = {
       name: 'Fellow, Strategic E-Commerce — Wharton',
     },
   ],
+  knowsAbout: [
+    'Agentic AI systems',
+    'Multi-agent architectures',
+    'Large language model (LLM) evaluation',
+    'Retrieval-Augmented Generation (RAG)',
+    'Model Context Protocol (MCP)',
+    'Machine learning engineering',
+  ],
   email: 'drdgreed@gmail.com',
-  sameAs: ['https://www.linkedin.com/in/drdgreed/'],
+  // sameAs is the disambiguation anchor — verified profiles Google uses to
+  // reconcile "which David Reed." Both handles corroborate the same person.
+  sameAs: [
+    'https://www.linkedin.com/in/drdgreed/',
+    'https://github.com/drdgreed',
+  ],
 } as const;
