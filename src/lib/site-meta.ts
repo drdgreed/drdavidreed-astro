@@ -34,7 +34,7 @@ export const PERSON = {
   url: SITE.url,
   jobTitle: 'Head of AI/ML & Agentic Delivery',
   description:
-    'AI/ML engineer specializing in production agentic AI systems — multi-agent architectures, LLM evaluation, RAG, and Model Context Protocol (MCP). Former Master Technologist at HP and Principal TPM-AI at Microsoft. Sole inventor of US Patent 6,850,988.',
+    'AI/ML engineer specializing in production agentic AI systems — multi-agent architectures, LLM evaluation, RAG, and Model Context Protocol (MCP). Former Master Technologist at HP and Principal TPM-AI at Microsoft. Sole inventor of US Patents 6,850,988 and 6,839,229.',
   worksFor: {
     '@type': 'Organization',
     name: 'Interview Kickstart',
@@ -61,20 +61,6 @@ export const PERSON = {
   ],
   hasCredential: [
     {
-      '@type': 'CreativeWork',
-      name: 'US Patent 6,850,988',
-      description:
-        'Sole inventor — clickstream personalization algorithm; foundational to Amazon\'s recommendation engine.',
-      url: 'https://patents.google.com/patent/US6850988B1/',
-    },
-    {
-      '@type': 'CreativeWork',
-      name: 'US Patent 6,839,229',
-      description:
-        'Co-inventor — large-grained database concurrency with dynamically re-definable business logic.',
-      url: 'https://patents.google.com/patent/US6839229B1/',
-    },
-    {
       '@type': 'EducationalOccupationalCredential',
       name: 'PhD, Computer Science',
     },
@@ -89,6 +75,24 @@ export const PERSON = {
     {
       '@type': 'EducationalOccupationalCredential',
       name: 'Fellow, Strategic E-Commerce — Wharton',
+    },
+  ],
+  // Patents are intellectual property the person owns, not credentials.
+  // schema.org's `owns` accepts a Product/Thing target; CreativeWork is valid here.
+  owns: [
+    {
+      '@type': 'CreativeWork',
+      name: 'US Patent 6,850,988',
+      description:
+        'Sole inventor — clickstream personalization algorithm; foundational to Amazon\'s recommendation engine.',
+      url: 'https://patents.google.com/patent/US6850988B1/',
+    },
+    {
+      '@type': 'CreativeWork',
+      name: 'US Patent 6,839,229',
+      description:
+        'Sole inventor — large-grained database concurrency with dynamically re-definable business logic.',
+      url: 'https://patents.google.com/patent/US6839229B1/',
     },
   ],
   knowsAbout: [
