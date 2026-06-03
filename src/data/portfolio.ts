@@ -45,7 +45,7 @@ export const portfolioItems: PortfolioItem[] = [
       'The Adult Learning Coaching Agent (ALCA) is a production-ready AI system that analyzes video recordings of distance learning sessions to generate comprehensive, evidence-based coaching reports. Built with Claude 3.5 Sonnet agentic architecture, it delivers 85-90% time savings per evaluation cycle (from 10-14 hours down to 90-120 minutes). Features include AI-powered transcript generation via AssemblyAI with speaker diarization, multi-agent analysis pipeline evaluating pacing (WPM), engagement techniques, content structure, and adult learning principle application. Supports video files up to 6 hours/10GB with chunked upload and resume capability. Enterprise-ready with multi-tenant architecture, role-based access, and longitudinal tracking across 10+ sessions. Quantitative metrics include transparent WPM calculations, pause frequency analysis, and tangent detection. Pricing model targets corporate L&D departments, EdTech platforms, and professional development providers with projected break-even at 18 customers (month 9).',
     category: 'github',
     tags: ['Python', 'Claude API', 'AssemblyAI', 'Agentic AI', 'EdTech', 'FastAPI'],
-    link: 'https://github.com/Chaos-6/adult-learning-coach',
+    link: 'https://github.com/drdgreed/adult-learning-coach-showcase',
     metrics: '85-90% Time Savings',
     featured: true,
   },
