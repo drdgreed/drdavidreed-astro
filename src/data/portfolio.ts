@@ -8,6 +8,7 @@ export type PortfolioCategory =
   | 'whitepaper'
   | 'research'
   | 'guidance'
+  | 'casestudy'
   | 'patent';
 
 export interface PortfolioItem {
@@ -23,6 +24,32 @@ export interface PortfolioItem {
 }
 
 export const portfolioItems: PortfolioItem[] = [
+  {
+    id: 'casestudy-1',
+    title: '© Operating an Agentic OS: Unattended AI You Can Trust',
+    description:
+      'A case study in agentic operations — the production operating system of rules, ledgers, verifiers, and kill switches that lets a fleet of Claude agents work unattended and be trusted to. Read the full one-page case study →',
+    fullDescription:
+      "A staff-level case study in operating (not just building) agentic AI. It documents the permanent operating system behind a fleet of Claude agents that work unattended every night: a ~200-line constitution of checkable hard limits; four bounded loops each with a contract and a named kill switch; a maker-is-never-the-grader discipline where verifier seats run as separate zero-tool processes that cannot be socially engineered; a reader/actor quarantine that treats all issue/log/web text as data, not instructions, to blunt prompt injection; a trust ledger that grants autonomy per category of work from logged evidence and demotes automatically and loudly — topping out below auto-merge, permanently, because the merge decision stays human; standing goals that convert finished work into invariants re-verified in CI daily, forever; and minimum-effective-intelligence model routing proven by a controlled benchmark in which a frontier-tier adversarial review caught a real concurrency defect a cheaper review had certified as safe. Demonstrates systems thinking, security judgment, evaluation rigor, cost governance, and operational honesty (receipts over trust). Full one-page case study linked below.",
+    category: 'casestudy',
+    tags: ['Agentic AI', 'AI Operations', 'Claude', 'AI Safety', 'Prompt Injection', 'Cost Governance', 'CI/CD'],
+    link: '/agentic-os/',
+    metrics: 'Production Agentic Operations',
+    featured: true,
+  },
+  {
+    id: 'guidance-agentic-ops',
+    title: '© Agentic Ops: Running AI Agents You Can Trust (Mini Course)',
+    description:
+      'A five-lesson operations course — the companion to Agentic AI Mastery — teaching how to run agents unattended: checkable rules, bounded loops, separated verifiers, earned autonomy, and cost-aware model routing.',
+    fullDescription:
+      "Agentic Ops is a five-module mini course authored for CareerForge, positioned as the operations companion to the Agentic AI Mastery curriculum: Mastery teaches you to build agents, Agentic Ops teaches you to operate the ones you can't watch. The modules are OPS.1 Rules That Check Themselves (checkable floors vs. judgment shapers, the placement ladder, hard limits, lessons written in scar tissue), OPS.2 The Loop Is a Policy (the six mandatory parts of an unattended loop, the four exits in priority order, blast-radius isolation and named kill switches), OPS.3 The Maker Is Never the Grader (fresh-context verification, physical zero-tool graders, the reader/actor quarantine against prompt injection), OPS.4 Trust Is Earned, Done Is a State (per-category autonomy ledgers and standing goals re-verified in CI), and OPS.5 Minimum Effective Intelligence (model-tier routing, the effort dial, the barbell pattern, and the routing table as the real price tag). Each lesson ships with a lesson brief, a quiz bank, and a presenter-ready slide deck with hand-built diagrams. Written to Anthropic's agent-engineering standards and grounded throughout in a real production system.",
+    category: 'guidance',
+    tags: ['Agentic AI', 'AI Operations', 'Course', 'Claude', 'AI Safety', 'Loop Engineering'],
+    link: 'https://career-forge.org',
+    metrics: '5 Modules · Operations Curriculum',
+    featured: true,
+  },
   {
     id: 'github-1',
     title: '© PACCA: Healthcare Prior Authorization AI Platform',
