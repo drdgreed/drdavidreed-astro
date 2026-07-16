@@ -11,6 +11,7 @@ import { portfolioItems, type PortfolioCategory } from '../data/portfolio';
 
 const categories: Array<{ id: 'all' | PortfolioCategory; label: string }> = [
   { id: 'all', label: 'All' },
+  { id: 'casestudy', label: 'Case Studies' },
   { id: 'patent', label: 'Patents' },
   { id: 'github', label: 'GitHub' },
   { id: 'whitepaper', label: 'White Papers' },
@@ -20,6 +21,7 @@ const categories: Array<{ id: 'all' | PortfolioCategory; label: string }> = [
 
 const categoryColor = (cat: PortfolioCategory) => {
   switch (cat) {
+    case 'casestudy': return 'bg-teal-500/20 text-teal-300 border-teal-500/30';
     case 'patent': return 'bg-rose-500/20 text-rose-300 border-rose-500/30';
     case 'github': return 'bg-purple-500/20 text-purple-300 border-purple-500/30';
     case 'whitepaper': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';

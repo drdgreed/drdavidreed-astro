@@ -1,0 +1,332 @@
+---
+/**
+ * /agentic-os — "Operating an Agentic OS" case study.
+ *
+ * A proper Astro page (nav + footer + SEO via BaseLayout) built from David's
+ * authored case study, merged with a per-component best-practice mapping to
+ * Anthropic's published engineering guidance and a closing validation section.
+ * Replaces the former static public/agentic-os/index.html. Colors already match
+ * the site tokens; typography is aligned to the site (Playfair Display + Inter).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Operating an Agentic OS — David Reed, PhD"
+  description="How David Reed operates a production fleet of Claude agents — the rules, ledgers, verifiers, and kill switches that make unattended AI work safe, with live receipts. Mapped to Anthropic's published guidance."
+  path="/agentic-os/"
+  pageType="article"
+>
+  <article class="page">
+    <p class="eyebrow">Case Study · Agentic Operations</p>
+    <h1>I don't just build agents.<br>I operate them.</h1>
+    <p class="dek">A fleet of Claude agents works on my systems every night while I sleep. This is the operating system of rules, ledgers, verifiers, and kill switches that makes that safe — and the receipts that prove it runs.</p>
+    <p class="byline">David Reed, PhD · AI/ML engineering leader · <a href="https://drdavidreed.com">drdavidreed.com</a> · <a href="https://github.com/drdgreed">github.com/drdgreed</a></p>
+
+    <div class="receipts" role="group" aria-label="Production receipts">
+      <div class="receipt"><div class="num"><em>4</em></div><div class="lbl">unattended loops in production — each with a contract and a named kill switch</div></div>
+      <div class="receipt"><div class="num"><em>21</em></div><div class="lbl">process lessons logged, every one priced by the failure that taught it</div></div>
+      <div class="receipt"><div class="num"><em>4</em></div><div class="lbl">standing-goal invariants re-verified in CI, daily, forever</div></div>
+      <div class="receipt"><div class="num"><em>0</em></div><div class="lbl">auto-merges — the autonomy ladder tops out below merge, by design</div></div>
+    </div>
+    <p class="receipts-note">Live figures as of July 2026, from the system's own ledgers.</p>
+
+    <h2>The problem nobody demos</h2>
+    <p>Every AI portfolio in 2026 has an agent demo. Almost none answers the question that decides whether agents create value or incidents: <strong>what happens when nobody is watching?</strong></p>
+    <p class="muted">An agent with shell access, working unattended at 3 a.m., will eventually face a choice the demo never showed: commit a 1,400-line "cleanup," delete the failing test that looks outdated, invent the env-var name it can't find. Intelligence doesn't prevent any of these. Operations does.</p>
+    <p>So I built — and run, daily — an <strong>Agentic OS</strong>: the permanent layer of files, checks, ledgers, and loops that lets frontier models work alone on my production systems <em>and be trusted to</em>. The models supply the intelligence. The OS supplies the honesty.</p>
+
+    <h2>The architecture</h2>
+    <p class="kicker">Four load-timing tiers — the top-level view of an eight-layer operating model. One placement rule: every piece of policy lives at the cheapest layer that still gets it applied.</p>
+    <div class="layers">
+      <div class="layer hot">
+        <div class="tier">ALWAYS-ON</div>
+        <div class="what"><b>The constitution</b>~200 audited lines every session inherits: identity, judgment principles, and six hard limits — each carrying a number, a "never," or a check command. Agents may propose changes as diffs; only I apply them.
+          <div class="bp"><b>Best practice</b> — Effective context engineering: keep the always-on layer lean and at the right altitude.</div></div>
+      </div>
+      <div class="layer">
+        <div class="tier">ON-TRIGGER</div>
+        <div class="what"><b>Skills</b>Workflows load only when invoked: loop design doctrine, model-tier triage, the 2-minute morning review, adversarial blindspot sweeps, merge quizzes for high-stakes diffs.
+          <div class="bp"><b>Best practice</b> — Agent Skills: progressive disclosure; specialist workflows load only on a trigger match.</div></div>
+      </div>
+      <div class="layer">
+        <div class="tier">ON-DEMAND</div>
+        <div class="what"><b>Reference &amp; lessons</b>The governing playbook plus a failure catalog (L-001…L-021) read at every session start — rules written in scar tissue, each with symptom, cause, and the check that prevents recurrence.
+          <div class="bp"><b>Best practice</b> — Context engineering: just-in-time retrieval; state lives on disk, not in the context window.</div></div>
+      </div>
+      <div class="layer">
+        <div class="tier">UNATTENDED</div>
+        <div class="what"><b>The fleet</b>A nightly hygiene loop that fixes and opens PRs (never merges), a report-only overnight test suite, standing-goal sentinels in CI, and scheduled cloud routines — every loop isolated in its own git worktree, bounded by a contract, killable by name.
+          <div class="bp"><b>Best practice</b> — Effective harnesses for long-running agents: one bounded unit per cycle, session-start verification, worktree isolation, never edit tests.</div></div>
+      </div>
+    </div>
+    <p class="muted">Everything unattended reports upward into a single 2-minute morning read: what ran, what passed, what's blocked on exactly one question.</p>
+
+    <h2>Three design moves that do the real work</h2>
+    <div class="move">
+      <h3>1 · The maker is never the grader</h3>
+      <p>Agents verify each other's work — but never their own, and never on trust. Verifier seats run as <b>separate zero-tool processes</b>: they see the diff and the test output, never the builder's narration, and hold no tools, so they cannot be talked into actions. Where a verifier could once be socially engineered, it is now physically incapable.</p>
+      <p class="bp"><b>Best practice</b> — fresh-context verification (Anthropic research): the grader sees artifacts — diffs, test output, logs — never the maker's narration. Measured to catch far more real issues than same-context self-critique.</p>
+    </div>
+    <div class="move">
+      <h3>2 · Autonomy is earned per category, from a ledger</h3>
+      <p>No agent "earns trust" globally. Each <b>category of work</b> climbs a ladder on logged evidence — and demotion is automatic and loud.</p>
+      <div class="ladder" aria-label="Autonomy ladder, bottom rung first">
+        <div class="rung">
+          <div class="name">report-only</div>
+          <div class="cond">Findings written to state; no pushes. Every new category starts here.</div>
+        </div>
+        <div class="rung">
+          <div class="name">draft-PR</div>
+          <div class="cond">May push a branch and open a draft PR. Requires 20 verified runs at ≥95% pass. <span class="demote">Below 95% → automatic demotion + morning alert.</span></div>
+        </div>
+        <div class="rung">
+          <div class="name">pr</div>
+          <div class="cond">May open ready PRs. Grandfathered only on merged, never-rejected history.</div>
+        </div>
+        <div class="rung top">
+          <div class="name">auto-merge</div>
+          <div class="cond">Does not exist. Evidence accrues; the merge decision is always human.</div>
+        </div>
+      </div>
+      <p class="bp"><b>Best practice</b> — the Auto Mode safety model: graduated trust with human approval on consequential actions; no unattended path to production.</p>
+    </div>
+    <div class="move">
+      <h3>3 · Done is a state, not an event</h3>
+      <p>Finished work never closes — it converts into a <b>standing goal</b>: a falsifiable predicate (exit codes, never grep) re-verified in CI every day, forever. Each predicate is proven able to fail — its covering test was introduced by the fix itself, so pre-fix code fails it by construction. The sentinel only detects; fixes go through normal review. The first silent regression it catches pays for the whole layer.</p>
+      <p class="bp"><b>Best practice</b> — verification over vibes: "done" is a checkable predicate, re-verified continuously — not a self-certified event.</p>
+    </div>
+
+    <h2>The receipt that proves the routing works</h2>
+    <p class="kicker">Minimum effective intelligence: route each task to the cheapest model that can verifiably do it — and escalate where it counts.</p>
+    <p>Four Claude tiers are in service, each with a job: frontier judgment on exception, a default top tier for planning and review, a mid tier for well-specified implementation, a fast tier for anything describable in advance. The policy question was whether the exception tier ever earns its cost. So I ran a controlled benchmark — <strong>identical adversarial review task, identical read-only checkout, a correctness-critical concurrent subsystem</strong> — frontier tier versus the default top tier:</p>
+    <div class="artifact">
+      <div class="artifact-bar"><span>model-routing benchmark · deep adversarial review</span><span class="tag">code-verified</span></div>
+      <pre>
+<b>Default top tier:</b> Reviewed the concurrency path and
+<b>certified it correct</b> — an explicit "no race here" verdict.
+
+<b>Frontier tier:</b>   Found a genuine ordering race on the same
+path — <span class="g">a real defect the cheaper review had signed off as safe.</span>
+Confirmed afterward by direct code read, not taken on the
+model's word.
+
+<b>Outcome:</b>  the finding was fixed, and the frontier tier is now
+reserved by written policy for exactly this class of work:
+deep adversarial review of correctness-critical code, where a
+missed defect is expensive and a second, sharper pass pays
+for itself.</pre>
+    </div>
+    <p class="muted">That is the whole cost-governance philosophy in one decision: the expensive model is a scalpel, the routing table is the price tag, and every escalation has to earn its keep in findings the cheaper tier provably missed — proven here by a benchmark, not assumed.</p>
+    <p class="bp"><b>Best practice</b> — Building Effective Agents: match the model to the task; add complexity, and cost, only when it pays.</p>
+
+    <h2>An engineering culture you can read</h2>
+    <p>The system's most underrated artifact is its <strong>failure catalog</strong> — 21 process lessons, each logged the day it was earned, each priced, each ending in a rule whose compliance is visible in a receipt:</p>
+    <div class="artifact">
+      <div class="artifact-bar"><span>lessons.md · excerpt</span><span class="tag">L-013</span></div>
+      <pre>
+<b>L-013 · Inspect untracked files before ANY delete/--force</b>
+Cost: permanently deleted a file the agent didn't create.
+
+SYMPTOM  Cleanup ran `git worktree remove --force`, asserting
+         "only the gitignored symlink is untracked." That was
+         an assumption. The status output showed a second file.
+CAUSE    Asserting instead of reading; --force suppressed git's
+         own refusal — the safety net for exactly this case.
+RULE     <span class="g">Before any destructive command: read the untracked
+         list, narrate it in the receipt. Not yours → stop.</span></pre>
+    </div>
+    <p class="muted">Rules graduate to standing policy only after repeated recurrence with objective evidence — and even then as proposed diffs a human applies. Once a month, one rule gets deleted on purpose: if nothing breaks, it was overhead.</p>
+
+    <h2>What this demonstrates</h2>
+    <div class="tablewrap">
+    <table>
+      <tr><th>Competency</th><th>Evidence in this system</th></tr>
+      <tr><td>Systems thinking</td><td>An 8-layer operating model where every mechanism names the failure it prevents — and the check that would catch that failure silently returning.</td></tr>
+      <tr><td>Security judgment</td><td>Prompt-injection treated as a standing threat: readers of untrusted content are quarantined from actors with write power; rule files are structurally un-editable by the agents they govern.</td></tr>
+      <tr><td>Evaluation rigor</td><td>Model-tier decisions made by benchmark, not brand loyalty — n=1 caveats stated, variance floors respected, verdicts confirmed by direct code read before acting.</td></tr>
+      <tr><td>Cost governance</td><td>Tiered routing with an escalation budget: the top model appears exactly twice per loop — deciding what to build, and deciding whether it was built.</td></tr>
+      <tr><td>Operational honesty</td><td>Receipts over trust: "done" requires verification output; failures escalate with exactly one question attached; nothing is self-certified — including by me.</td></tr>
+    </table>
+    </div>
+
+    <h2>Grounded in the published best practice</h2>
+    <p class="kicker">Not just principled — aligned, mechanism by mechanism, with Anthropic's own engineering guidance.</p>
+    <p>Every layer and move above maps to current Anthropic publications: <em>Building Effective Agents</em> (match the model to the task; add complexity only when it pays), <em>Effective Harnesses for Long-Running Agents</em> (bounded work per cycle, session-start verification, never edit tests to pass), <em>Effective Context Engineering</em> (a lean always-on layer, just-in-time retrieval, state on disk), and the <em>Auto Mode</em> safety architecture (a reasoning-blind classifier as an automated approver, graduated trust). Mapped component by component to that guidance, the system aligns in the top decile.</p>
+    <p class="muted">Two mechanisms go <strong>beyond</strong> what is publicly documented: the maker-is-never-the-grader verifier seats — zero-tool processes that cannot be socially engineered — and a memory anti-poisoning gate that treats every remembered fact as untrusted until it earns provenance. The gaps the review surfaced were surface-area hygiene, not architecture — the mark of a system that is sound, not merely elaborate.</p>
+
+    <div class="cta">
+      <h2>The longer version</h2>
+      <p>This system is also the source of <strong>Agentic Ops</strong>, the operations mini-course I author inside CareerForge, and the operating discipline behind PACCA (healthcare prior-authorization agents), CareerForge, and CurricMesh — all live in production. Two patents, 35+ years, HP and Microsoft before this. I'm happy to walk any part of it — with the ledgers open.</p>
+      <div class="links">
+        <a href="https://drdavidreed.com">drdavidreed.com</a>
+        <a href="https://drdavidreed.com/portfolio">Portfolio catalog</a>
+        <a href="https://github.com/drdgreed">GitHub / drdgreed</a>
+        <a href="https://www.linkedin.com/in/drdgreed">LinkedIn</a>
+        <a href="mailto:drdgreed@gmail.com">drdgreed@gmail.com</a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  /* Case-study design tokens — scoped to the page container so they don't leak.
+     Colors already match the site (global.css); typography is aligned to the
+     site's Playfair Display + Inter. */
+  .page {
+    --card: #0a0a0a;
+    --card-2: #101010;
+    --border: #1f1f1f;
+    --border-strong: #2e2e2e;
+    --accent: #34d399;
+    --accent-deep: #064e3b;
+    --ink: #fafafa;
+    --ink-2: #a1a1aa;
+    --ink-3: #71717a;
+    --warn: #d97706;
+    --serif: 'Playfair Display', 'Charter', Georgia, 'Times New Roman', serif;
+    --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --mono: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 40px 28px 40px;
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.65;
+    color: var(--ink);
+  }
+
+  .page .eyebrow {
+    font-family: var(--sans); font-size: 12px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent);
+  }
+  .page h1 {
+    font-family: var(--serif); font-weight: 700; font-size: 44px; line-height: 1.12;
+    margin: 14px 0 18px; text-wrap: balance;
+  }
+  .page .dek { font-size: 20px; line-height: 1.55; color: var(--ink-2); margin: 0 0 12px; text-wrap: pretty; }
+  .page .byline { font-size: 14px; color: var(--ink-3); margin-bottom: 44px; }
+  .page .byline a { color: var(--ink-2); }
+
+  .page h2 {
+    font-family: var(--serif); font-size: 27px; font-weight: 700; line-height: 1.25;
+    margin: 64px 0 4px; text-wrap: balance;
+  }
+  .page h2 + .kicker { color: var(--ink-3); font-size: 15px; margin: 0 0 20px; }
+  .page p { margin: 16px 0; color: var(--ink); max-width: 72ch; }
+  .page p.muted, .page li.muted { color: var(--ink-2); }
+  .page a { color: var(--accent); text-decoration: none; }
+  .page a:hover, .page a:focus-visible { text-decoration: underline; }
+  .page a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+  .page strong { font-weight: 650; }
+
+  /* Best-practice source tag (added in the merge) */
+  .page .bp {
+    font-family: var(--mono); font-size: 12px; line-height: 1.5;
+    color: var(--ink-3); margin: 10px 0 0;
+  }
+  .page p.bp { margin: 10px 0 0; }
+  .page .bp b { color: var(--accent); font-weight: 600; letter-spacing: .02em; }
+
+  /* Receipts stat row */
+  .page .receipts {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--border); border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden; margin: 40px 0 8px;
+  }
+  .page .receipt { background: var(--card); padding: 18px 16px 16px; }
+  .page .receipt .num {
+    font-family: var(--serif); font-size: 34px; font-weight: 700; line-height: 1;
+    color: var(--ink); font-variant-numeric: tabular-nums;
+  }
+  .page .receipt .num em { font-style: normal; color: var(--accent); }
+  .page .receipt .lbl { font-size: 12.5px; color: var(--ink-2); margin-top: 8px; line-height: 1.45; }
+  .page .receipts-note { font-size: 12.5px; color: var(--ink-3); margin: 10px 0 0; }
+
+  /* Terminal-style artifact block */
+  .page .artifact {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    margin: 24px 0; overflow: hidden;
+  }
+  .page .artifact-bar {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+    padding: 9px 16px; border-bottom: 1px solid var(--border);
+    font-family: var(--mono); font-size: 11.5px; color: var(--ink-3);
+    letter-spacing: 0.04em;
+  }
+  .page .artifact-bar .tag { color: var(--accent); }
+  .page .artifact pre {
+    margin: 0; padding: 18px 20px; overflow-x: auto;
+    font-family: var(--mono); font-size: 13px; line-height: 1.62; color: var(--ink-2);
+  }
+  .page .artifact pre b { color: var(--ink); font-weight: 600; }
+  .page .artifact pre .g { color: var(--accent); }
+  .page .artifact pre .w { color: var(--warn); }
+
+  /* Layer architecture */
+  .page .layers { display: flex; flex-direction: column; gap: 10px; margin: 26px 0; }
+  .page .layer {
+    display: grid; grid-template-columns: 118px 1fr; gap: 16px;
+    background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent-deep);
+    border-radius: 8px; padding: 14px 18px;
+  }
+  .page .layer.hot { border-left-color: var(--accent); }
+  .page .layer .tier { font-family: var(--mono); font-size: 12px; color: var(--accent); padding-top: 3px; }
+  .page .layer .what { font-size: 15px; color: var(--ink-2); }
+  .page .layer .what b { color: var(--ink); display: block; margin-bottom: 2px; font-size: 15.5px; }
+
+  /* Trust ladder */
+  .page .ladder { display: flex; flex-direction: column-reverse; gap: 8px; margin: 26px 0; }
+  .page .rung {
+    display: grid; grid-template-columns: 148px 1fr; gap: 16px; align-items: baseline;
+    border: 1px solid var(--border); border-radius: 8px; background: var(--card);
+    padding: 13px 18px;
+  }
+  .page .rung .name { font-family: var(--mono); font-size: 13px; color: var(--ink); font-weight: 600; }
+  .page .rung .cond { font-size: 14.5px; color: var(--ink-2); }
+  .page .rung.top {
+    border-style: dashed; border-color: var(--border-strong); background: transparent;
+  }
+  .page .rung.top .name { color: var(--ink-3); text-decoration: line-through; text-decoration-thickness: 1px; }
+  .page .rung.top .cond { color: var(--ink-3); }
+  .page .rung .cond .demote { color: var(--warn); }
+
+  /* Moves */
+  .page .move { margin: 30px 0; padding-left: 20px; border-left: 2px solid var(--border); }
+  .page .move h3 { font-family: var(--serif); font-size: 20px; margin: 0 0 8px; }
+  .page .move p { margin: 8px 0; color: var(--ink-2); font-size: 16px; }
+  .page .move p b { color: var(--ink); }
+  .page .move p.bp { color: var(--ink-3); font-size: 12px; }
+  .page .move p.bp b { color: var(--accent); }
+
+  /* Competency map */
+  .page table { border-collapse: collapse; width: 100%; margin: 24px 0; font-size: 15px; }
+  .page th { text-align: left; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+       color: var(--ink-3); font-weight: 600; padding: 0 14px 10px 0; border-bottom: 1px solid var(--border-strong); }
+  .page td { padding: 12px 14px 12px 0; border-bottom: 1px solid var(--border); vertical-align: top; color: var(--ink-2); }
+  .page td:first-child { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .page .tablewrap { overflow-x: auto; }
+
+  /* Footer CTA */
+  .page .cta {
+    margin-top: 72px; padding: 28px; border: 1px solid var(--border-strong); border-radius: 12px;
+    background: linear-gradient(180deg, var(--card-2), var(--card));
+  }
+  .page .cta h2 { margin: 0 0 6px; font-size: 24px; }
+  .page .cta p { color: var(--ink-2); font-size: 15.5px; margin: 8px 0 14px; }
+  .page .cta .links { display: flex; flex-wrap: wrap; gap: 10px 22px; font-size: 15px; }
+
+  @media (max-width: 640px) {
+    .page h1 { font-size: 34px; }
+    .page .receipts { grid-template-columns: 1fr 1fr; }
+    .page .layer, .page .rung { grid-template-columns: 1fr; gap: 4px; }
+  }
+  /* Print: flip to ink-on-white for a clean PDF export */
+  @media print {
+    .page { --card:#ffffff; --card-2:#ffffff; --border:#d4d4d8; --border-strong:#a1a1aa;
+            --accent:#047857; --accent-deep:#047857; --ink:#111113; --ink-2:#3f3f46; --ink-3:#52525b; --warn:#b45309;
+            font-size: 12.5pt; padding: 0.4in 0; max-width: 100%; }
+    .page .artifact pre { white-space: pre-wrap; }
+    .page .cta { break-inside: avoid; }
+  }
+</style>
