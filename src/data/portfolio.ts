@@ -46,7 +46,7 @@ export const portfolioItems: PortfolioItem[] = [
       "Agentic Ops is a five-module mini course authored for CareerForge, positioned as the operations companion to the Agentic AI Mastery curriculum: Mastery teaches you to build agents, Agentic Ops teaches you to operate the ones you can't watch. The modules are OPS.1 Rules That Check Themselves (checkable floors vs. judgment shapers, the placement ladder, hard limits, lessons written in scar tissue), OPS.2 The Loop Is a Policy (the six mandatory parts of an unattended loop, the four exits in priority order, blast-radius isolation and named kill switches), OPS.3 The Maker Is Never the Grader (fresh-context verification, physical zero-tool graders, the reader/actor quarantine against prompt injection), OPS.4 Trust Is Earned, Done Is a State (per-category autonomy ledgers and standing goals re-verified in CI), and OPS.5 Minimum Effective Intelligence (model-tier routing, the effort dial, the barbell pattern, and the routing table as the real price tag). Each lesson ships with a lesson brief, a quiz bank, and a presenter-ready slide deck with hand-built diagrams. Written to Anthropic's agent-engineering standards and grounded throughout in a real production system.",
     category: 'guidance',
     tags: ['Agentic AI', 'AI Operations', 'Course', 'Claude', 'AI Safety', 'Loop Engineering'],
-    link: 'https://career-forge.org',
+    link: '/agentic-ops/',
     metrics: '5 Modules · Operations Curriculum',
     featured: true,
   },
