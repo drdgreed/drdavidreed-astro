@@ -34,20 +34,7 @@ export const portfolioItems: PortfolioItem[] = [
     category: 'casestudy',
     tags: ['Agentic AI', 'AI Operations', 'Claude', 'AI Safety', 'Prompt Injection', 'Cost Governance', 'CI/CD'],
     link: '/agentic-os/',
-    metrics: 'Production Agentic Operations',
-    featured: true,
-  },
-  {
-    id: 'guidance-agentic-ops',
-    title: '© Agentic Ops: Running AI Agents You Can Trust (Mini Course)',
-    description:
-      'A five-lesson operations course — the companion to Agentic AI Mastery — teaching how to run agents unattended: checkable rules, bounded loops, separated verifiers, earned autonomy, and cost-aware model routing.',
-    fullDescription:
-      "Agentic Ops is a five-module mini course authored for CareerForge, positioned as the operations companion to the Agentic AI Mastery curriculum: Mastery teaches you to build agents, Agentic Ops teaches you to operate the ones you can't watch. The modules are OPS.1 Rules That Check Themselves (checkable floors vs. judgment shapers, the placement ladder, hard limits, lessons written in scar tissue), OPS.2 The Loop Is a Policy (the six mandatory parts of an unattended loop, the four exits in priority order, blast-radius isolation and named kill switches), OPS.3 The Maker Is Never the Grader (fresh-context verification, physical zero-tool graders, the reader/actor quarantine against prompt injection), OPS.4 Trust Is Earned, Done Is a State (per-category autonomy ledgers and standing goals re-verified in CI), and OPS.5 Minimum Effective Intelligence (model-tier routing, the effort dial, the barbell pattern, and the routing table as the real price tag). Each lesson ships with a lesson brief, a quiz bank, and a presenter-ready slide deck with hand-built diagrams. Written to Anthropic's agent-engineering standards and grounded throughout in a real production system.",
-    category: 'guidance',
-    tags: ['Agentic AI', 'AI Operations', 'Course', 'Claude', 'AI Safety', 'Loop Engineering'],
-    link: '/agentic-ops/',
-    metrics: '5 Modules · Operations Curriculum',
+    metrics: 'Production Agentic Ops',
     featured: true,
   },
   {
@@ -77,19 +64,6 @@ export const portfolioItems: PortfolioItem[] = [
     featured: true,
   },
   {
-    id: 'github-3',
-    title: '© K-12 Lesson Planning Assistant (LPA)',
-    description:
-      'AI-powered pedagogical planning agent that assists K-12 teachers with lesson planning using a 4-Pass refinement workflow.',
-    fullDescription:
-      "The Lesson Planning Assistant (LPA) is a prototype AI system demonstrating how AI can assist K-12 teachers with lesson planning while maintaining teacher-centered pedagogical decision-making. Built with FastAPI, SQLite, and Claude 3.5 Sonnet, it generates standards-aligned lesson plans in 30-60 seconds that teachers refine via a structured 4-Pass Framework. Nine MVP features include pedagogical context input, standards alignment (14 samples), lesson plan generation, student worksheet creation, teacher guide generation, differentiation scaffolds, DOCX export, 4-Pass refinement workflow, and a 5-template library. Delivers 20-25% time savings (1.5-2 hrs/week per teacher), with 75% of plans rated as a 'usable foundation.' Targets 35-45% teacher adoption in Year 1 with a phased rollout: $45K Phase 0 validation, $88.4K Phase 1 pilot, and 18-24 month break-even.",
-    category: 'github',
-    tags: ['Python', 'FastAPI', 'Claude API', 'K-12 Education', 'SQLite', 'EdTech'],
-    link: 'https://github.com/Chaos-6/lesson-planning-assistant',
-    metrics: '20-25% Time Savings',
-    featured: true,
-  },
-  {
     id: 'whitepaper-1',
     title: '© SOTA Agentic PRD: PACCA Healthcare AI',
     description:
@@ -99,7 +73,20 @@ export const portfolioItems: PortfolioItem[] = [
     category: 'whitepaper',
     tags: ['Claude API', 'Multi-Agent', 'RAG', 'Agentic AI', 'Healthcare', 'HIPAA', 'FDA SaMD', 'Clinical Validation'],
     link: 'https://docs.google.com/document/d/1OifHO-2_0yLzUxKFaKo3kdRDx4Ot0ERyGOsLPSRK4D8/edit?tab=t.0',
-    metrics: '100% Eval-Gate Pass (100-case golden set) · SaMD Validation Roadmap',
+    metrics: '100% Eval-Gate Pass',
+    featured: true,
+  },
+  {
+    id: 'whitepaper-4',
+    title: '© CRISP-AG: Enterprise Agentic AI Governance Framework',
+    description:
+      'Artifact-centered implementation framework for governed enterprise agentic AI deployment, extending CRISP-DM with agentic-specific phases and four core governance artifacts.',
+    fullDescription:
+      "CRISP-AG (v2.3, May 2026) is a practitioner white paper proposing an artifact-centered implementation framework for enterprise agentic AI governance. It addresses the gap between management-system standards (ISO/IEC 42001) and risk frameworks (NIST AI RMF) and the operational artifacts teams must actually produce to deploy multi-step, tool-calling, and multi-agent LLM systems safely. CRISP-AG extends CRISP-DM's lifecycle with three agentic-specific phases — Operational Context Assembly, Trust/Governance/Risk Architecture, and Iterative Refinement and Scale — yielding a nine-phase governed lifecycle with explicit decision gates. It formalizes four core artifacts under-specified in current AI governance and MLOps practice: (1) Delegation Authority Scoping (DAS), a five-class autonomy taxonomy with named cross-functional approval and Legal review calibrated per delegation class; (2) Contractor Access Governance (CAG), an explicit Contractor Access Profile that closes the agent-mediated data-access gap in mixed FTE/contractor/vendor workforces; (3) Orchestration Contracts, formal per-sub-agent specifications binding implementation, testing, and audit; and (4) Capability Frontier Classification, a threshold-framed taxonomy for high-risk capabilities. The framework adds first-class output gating as a security defense, coverage-based adversarial test minimums, per-class compressed lifecycle tracks, formula-based ROI guidance with explicit non-summing rationale, and an Appendix B Standards Mapping Matrix aligning every phase and artifact to ISO/IEC 42001, NIST AI RMF, EU AI Act, and OWASP LLM Top-10 controls. Strongest fit: Class 2–3 ReAct and orchestrated multi-agent enterprise systems with tool access; Class 4 code-executing agents require additional sandboxing and red-team validation. Positioned as design propositions and implementation guidance — not yet empirically validated — with an explicit validation agenda for multi-site case studies.",
+    category: 'whitepaper',
+    tags: ['AI Governance', 'Agentic AI', 'ISO 42001', 'NIST AI RMF', 'Multi-Agent', 'Enterprise'],
+    link: 'https://docs.google.com/document/d/1EHvDCwNNVGyLs0m4kevjWabkfby0A8HogpBAbzNp5fI/edit?usp=sharing',
+    metrics: '9-Phase Lifecycle',
     featured: true,
   },
   {
@@ -116,16 +103,29 @@ export const portfolioItems: PortfolioItem[] = [
     featured: true,
   },
   {
-    id: 'whitepaper-4',
-    title: '© CRISP-AG: Enterprise Agentic AI Governance Framework',
+    id: 'guidance-agentic-ops',
+    title: '© Agentic Ops: Running AI Agents You Can Trust (Mini Course)',
     description:
-      'Artifact-centered implementation framework for governed enterprise agentic AI deployment, extending CRISP-DM with agentic-specific phases and four core governance artifacts.',
+      'A five-lesson operations course — the companion to Agentic AI Mastery — teaching how to run agents unattended: checkable rules, bounded loops, separated verifiers, earned autonomy, and cost-aware model routing.',
     fullDescription:
-      "CRISP-AG (v2.3, May 2026) is a practitioner white paper proposing an artifact-centered implementation framework for enterprise agentic AI governance. It addresses the gap between management-system standards (ISO/IEC 42001) and risk frameworks (NIST AI RMF) and the operational artifacts teams must actually produce to deploy multi-step, tool-calling, and multi-agent LLM systems safely. CRISP-AG extends CRISP-DM's lifecycle with three agentic-specific phases — Operational Context Assembly, Trust/Governance/Risk Architecture, and Iterative Refinement and Scale — yielding a nine-phase governed lifecycle with explicit decision gates. It formalizes four core artifacts under-specified in current AI governance and MLOps practice: (1) Delegation Authority Scoping (DAS), a five-class autonomy taxonomy with named cross-functional approval and Legal review calibrated per delegation class; (2) Contractor Access Governance (CAG), an explicit Contractor Access Profile that closes the agent-mediated data-access gap in mixed FTE/contractor/vendor workforces; (3) Orchestration Contracts, formal per-sub-agent specifications binding implementation, testing, and audit; and (4) Capability Frontier Classification, a threshold-framed taxonomy for high-risk capabilities. The framework adds first-class output gating as a security defense, coverage-based adversarial test minimums, per-class compressed lifecycle tracks, formula-based ROI guidance with explicit non-summing rationale, and an Appendix B Standards Mapping Matrix aligning every phase and artifact to ISO/IEC 42001, NIST AI RMF, EU AI Act, and OWASP LLM Top-10 controls. Strongest fit: Class 2–3 ReAct and orchestrated multi-agent enterprise systems with tool access; Class 4 code-executing agents require additional sandboxing and red-team validation. Positioned as design propositions and implementation guidance — not yet empirically validated — with an explicit validation agenda for multi-site case studies.",
-    category: 'whitepaper',
-    tags: ['AI Governance', 'Agentic AI', 'ISO 42001', 'NIST AI RMF', 'Multi-Agent', 'Enterprise'],
-    link: 'https://docs.google.com/document/d/1EHvDCwNNVGyLs0m4kevjWabkfby0A8HogpBAbzNp5fI/edit?usp=sharing',
-    metrics: '9-Phase Lifecycle',
+      "Agentic Ops is a five-module mini course authored for CareerForge, positioned as the operations companion to the Agentic AI Mastery curriculum: Mastery teaches you to build agents, Agentic Ops teaches you to operate the ones you can't watch. The modules are OPS.1 Rules That Check Themselves (checkable floors vs. judgment shapers, the placement ladder, hard limits, lessons written in scar tissue), OPS.2 The Loop Is a Policy (the six mandatory parts of an unattended loop, the four exits in priority order, blast-radius isolation and named kill switches), OPS.3 The Maker Is Never the Grader (fresh-context verification, physical zero-tool graders, the reader/actor quarantine against prompt injection), OPS.4 Trust Is Earned, Done Is a State (per-category autonomy ledgers and standing goals re-verified in CI), and OPS.5 Minimum Effective Intelligence (model-tier routing, the effort dial, the barbell pattern, and the routing table as the real price tag). Each lesson ships with a lesson brief, a quiz bank, and a presenter-ready slide deck with hand-built diagrams. Written to Anthropic's agent-engineering standards and grounded throughout in a real production system.",
+    category: 'guidance',
+    tags: ['Agentic AI', 'AI Operations', 'Course', 'Claude', 'AI Safety', 'Loop Engineering'],
+    link: '/agentic-ops/',
+    metrics: '5 Modules · Ops Course',
+    featured: true,
+  },
+  {
+    id: 'github-3',
+    title: '© K-12 Lesson Planning Assistant (LPA)',
+    description:
+      'AI-powered pedagogical planning agent that assists K-12 teachers with lesson planning using a 4-Pass refinement workflow.',
+    fullDescription:
+      "The Lesson Planning Assistant (LPA) is a prototype AI system demonstrating how AI can assist K-12 teachers with lesson planning while maintaining teacher-centered pedagogical decision-making. Built with FastAPI, SQLite, and Claude 3.5 Sonnet, it generates standards-aligned lesson plans in 30-60 seconds that teachers refine via a structured 4-Pass Framework. Nine MVP features include pedagogical context input, standards alignment (14 samples), lesson plan generation, student worksheet creation, teacher guide generation, differentiation scaffolds, DOCX export, 4-Pass refinement workflow, and a 5-template library. Delivers 20-25% time savings (1.5-2 hrs/week per teacher), with 75% of plans rated as a 'usable foundation.' Targets 35-45% teacher adoption in Year 1 with a phased rollout: $45K Phase 0 validation, $88.4K Phase 1 pilot, and 18-24 month break-even.",
+    category: 'github',
+    tags: ['Python', 'FastAPI', 'Claude API', 'K-12 Education', 'SQLite', 'EdTech'],
+    link: 'https://github.com/Chaos-6/lesson-planning-assistant',
+    metrics: '20-25% Time Savings',
     featured: true,
   },
   {

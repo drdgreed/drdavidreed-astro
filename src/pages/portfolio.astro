@@ -75,11 +75,13 @@ const categoryColor = (cat: PortfolioCategory) => {
         >
           <button type="button" data-portfolio-trigger class="text-left w-full p-6 flex flex-col h-full">
             <div class="flex items-start justify-between gap-3 mb-3">
-              <span class={`px-2 py-1 rounded-lg text-xs font-medium border ${categoryColor(item.category)}`}>
+              <span class={`shrink-0 px-2 py-1 rounded-lg text-xs font-medium border ${categoryColor(item.category)}`}>
                 {item.category}
               </span>
               {item.metrics && (
-                <span class="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                /* Pill stays one line — a wrapped rounded-full misaligns the titles
+                   across a row. Full text is still shown in the modal. */
+                <span class="min-w-0 truncate text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full" title={item.metrics}>
                   {item.metrics}
                 </span>
               )}
