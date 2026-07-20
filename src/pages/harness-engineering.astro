@@ -107,6 +107,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </figure>
     </section>
 
+    <section class="pillar">
+      <h2>4 · Deterministic Enforcement</h2>
+      <p class="vp">Advisory rules become guarantees.</p>
+      <p>The principle is one sentence: <strong>anything "always do X" is a hook, not a sentence.</strong> Sentences are probabilistic — a prose instruction competes with everything else in context, and the probability it fires decays as context length grows. A hook doesn't compete with anything; it runs. If Claude already does something correctly without being told, that's a signal to delete the instruction or convert it to a hook, not to leave it as one more sentence hoping to be read.</p>
+      <p>The harness's most transferable piece is a single registered <code>SessionStart</code> hook, <code>session-preflight.sh</code>, that runs five checks and is exception-based: silent when everything is clean, so a healthy session pays roughly zero tokens for the guarantee. It scans memory for poisoning (report-only), checks whether local main is behind origin or the current branch tracks a deleted remote, runs an opt-in per-repo project-health smoke test bounded to 15 seconds, injects lesson titles so "read lessons at session start" is deterministic instead of hoped-for, and flags an empty memory store on an active project. None of it depends on the model remembering to check — the check runs, every time, or it doesn't run at all.</p>
+      <p>Permissions are the second deterministic layer, enforced by the harness itself rather than by the model choosing to comply: an <strong>allow</strong> list for routine work, an <strong>ask</strong> list for destructive verbs, and a <strong>deny</strong> floor for secrets. That floor — denying reads on <code>.env</code>, <code>secrets/**</code>, <code>~/.ssh/**</code>, <code>~/.aws/**</code> — belongs at <em>user</em> scope specifically because permission rules merge across scopes and evaluate deny-first: a user-level deny blocks a project-level allow, so the floor costs nothing and no repo can override it by being configured more permissively. The complement matters too: a Read/Edit deny binds the agent layer, not arbitrary subprocesses it might spawn — the OS-level sandbox is what closes that gap, not another sentence telling the agent not to.</p>
+
+      <div class="war"><b>War story · the silent PATH failure.</b> A nightly loop's receipt said "opened draft PR" — but the <code>gh</code> call had failed (<code>command not found</code>, launchd's bare PATH) and the receipt asserted success without checking the exit code. Rules earned: gate every success message on the actual exit code; never <code>2&gt;/dev/null</code> a step whose failure you'd want to know about. (HANDBOOK 3.1.)</div>
+
+      <figure class="graphic" role="img" aria-label="A prose instruction's probability of firing decays as context length grows, while a hook stays flat at 100 percent because it is deterministic.">
+        <svg viewBox="0 0 600 200" width="100%" height="auto">
+          <line x1="50" y1="170" x2="580" y2="170" stroke="var(--paper-rule)"/>
+          <line x1="50" y1="20" x2="50" y2="170" stroke="var(--paper-rule)"/>
+          <path d="M50,40 C200,45 380,120 580,160" fill="none" stroke="#f59e0b" stroke-width="3"/>
+          <line x1="50" y1="35" x2="580" y2="35" stroke="var(--paper-accent)" stroke-width="3"/>
+          <text x="560" y="30" fill="var(--paper-accent)" font-size="13" text-anchor="end">hook (deterministic)</text>
+          <text x="300" y="110" fill="#f59e0b" font-size="13">prose instruction (decays)</text>
+          <text x="315" y="192" fill="var(--paper-muted)" font-size="12" text-anchor="middle">context length →</text>
+        </svg>
+        <figcaption>Sentences are probabilistic; the probability decays with context length. Hooks don't.</figcaption>
+      </figure>
+    </section>
+
     <!-- Subsequent tasks append their sections here, before </article>. -->
   </article>
 </BaseLayout>
