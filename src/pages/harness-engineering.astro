@@ -159,6 +159,46 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </figure>
     </section>
 
+    <section class="pillar">
+      <h2>6 · Unattended Autonomy</h2>
+      <p class="vp">Run it overnight. Wake to a receipt you can trust.</p>
+      <p>The loop that runs while I sleep maps to a fixed six-part doctrine, not an open-ended prompt: trigger, rules-load, executor, verifier, memory write, stop check. Every nightly run is one bounded unit through that shape — never an unscoped "keep going." The step that carries the most weight is the fourth: a separate, fresh-context, zero-tool model grades the diff the executor produced. The maker is never the grader — the same agent that wrote the change cannot be the one that certifies it.</p>
+      <p>A run only ends two ways: green-and-verified opens a draft PR, or anything else emits a BLOCKED receipt — never a claimed DONE that didn't earn it. Four exits, checked in priority order, keep a stuck or confidently-wrong loop from running past its evidence: the success condition itself, a retry ceiling, a verifier-disagreement ceiling, and a budget ceiling per cycle. Autonomy is earned per category on a trust ledger — runs and passes tracked, demotion on a pass-rate drop pages the human — but the ledger tops out below merge rights: promotion to auto-merge never happens, by design. The merge decision stays human, every time.</p>
+
+      <p class="muted">I run this every night. The full operations story — live receipts, named kill switches, the trust ledger in action — is its own case study: <a href="/agentic-os/">Operating an Agentic OS →</a>. Here I focus on the engineering doctrine that makes it safe.</p>
+
+      <figure class="graphic" role="img" aria-label="The six-part unattended loop: 1 trigger, 2 rules-load (quarantine-scan lessons first), 3 executor (one bounded goal, scoped tools, isolated worktree), 4 verifier (separate fresh-context zero-tool model grades the diff), 5 memory write (append-only ledgers committed to git), 6 stop check (green and verified opens a draft PR, anything else emits a BLOCKED receipt).">
+        <div class="loop6">
+          <div class="node"><em>1</em>Trigger<span>launchd / cron / cloud routine</span></div>
+          <div class="node"><em>2</em>Rules-load<span>quarantine-scan lessons first</span></div>
+          <div class="node"><em>3</em>Executor<span>one bounded goal · scoped tools · isolated worktree</span></div>
+          <div class="node verifier"><em>4</em>Verifier<span>separate fresh-context zero-tool model grades the diff</span></div>
+          <div class="node"><em>5</em>Memory write<span>append-only ledgers, committed</span></div>
+          <div class="node"><em>6</em>Stop check<span>green+verified → draft PR · else → BLOCKED</span></div>
+        </div>
+        <figcaption>One bounded unit per cycle. The maker is never the grader.</figcaption>
+      </figure>
+
+      <figure class="graphic" role="img" aria-label="The safe-autonomy ramp: manual run, then skill, then STATE and receipts, then a hard binary gate, then schedule — never skip a step, each step's value is provable before the next step's complexity is added. Four exits, checked in priority order: success condition, retry ceiling (same step failing three times stops and escalates), verifier-disagreement ceiling (three consecutive maker/verifier splits pauses the loop), and budget ceiling per cycle.">
+        <div class="ramp-wrap">
+          <ol class="ramp-bar">
+            <li class="ramp-step"><span class="ramp-n">1</span><span class="ramp-label">Manual run</span></li>
+            <li class="ramp-step"><span class="ramp-n">2</span><span class="ramp-label">Skill</span></li>
+            <li class="ramp-step"><span class="ramp-n">3</span><span class="ramp-label">STATE / receipts</span></li>
+            <li class="ramp-step ramp-gate"><span class="ramp-n">4</span><span class="ramp-label">Hard binary gate</span></li>
+            <li class="ramp-step"><span class="ramp-n">5</span><span class="ramp-label">Schedule</span></li>
+          </ol>
+          <ul class="ramp-exits">
+            <li><b>1</b> Success condition</li>
+            <li><b>2</b> Retry ceiling<span>same step failing 3× stops and escalates</span></li>
+            <li><b>3</b> Verifier-disagreement ceiling<span>3 consecutive maker/verifier splits pauses — catches confidently wrong, not just stuck</span></li>
+            <li><b>4</b> Budget ceiling<span>per cycle</span></li>
+          </ul>
+        </div>
+        <figcaption>Each step's value is provable before the next step's complexity. Never skip a step. Right: the four exits, in priority order.</figcaption>
+      </figure>
+    </section>
+
     <!-- Subsequent tasks append their sections here, before </article>. -->
   </article>
 </BaseLayout>
@@ -263,5 +303,41 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   @media (max-width: 640px) {
     .lesson-cycle { flex-direction: column; }
     .lesson-arrow { transform: rotate(90deg); }
+  }
+  /* Graphic 8 — six-part unattended loop (centerpiece) */
+  .loop6 { display: flex; flex-wrap: nowrap; align-items: stretch; gap: 1.6rem; }
+  .loop6 .node { flex: 1 1 0; min-width: 0; position: relative; box-sizing: border-box; border: 1px solid var(--paper-rule); border-radius: 10px; padding: .75rem .5rem; display: flex; flex-direction: column; gap: .35rem; text-align: center; background: rgba(45,212,191,0.03); }
+  .loop6 .node em { font-style: normal; font-family: "Playfair Display", Georgia, serif; font-weight: 700; color: var(--paper-accent); font-size: 1rem; }
+  .loop6 .node span { font-size: .72rem; color: var(--paper-muted); line-height: 1.35; }
+  .loop6 .node:not(:last-child)::after { content: "→"; position: absolute; top: 50%; right: -1.5rem; transform: translateY(-50%); color: var(--paper-muted); font-size: 1.1rem; }
+  .loop6 .node.verifier { border: 2px solid var(--paper-accent); background: rgba(45,212,191,0.09); }
+  .loop6 .node.verifier em { color: var(--paper-accent); }
+  @media (max-width: 760px) {
+    .loop6 { flex-direction: column; gap: 1.7rem; }
+    .loop6 .node:not(:last-child)::after { content: "↓"; top: auto; bottom: -1.6rem; right: 50%; transform: translateX(50%); }
+  }
+  /* Graphic 9 — safe-autonomy ramp + four exits */
+  .ramp-wrap { display: flex; gap: 1.75rem; align-items: flex-end; flex-wrap: wrap; }
+  .ramp-bar { flex: 1 1 320px; display: flex; align-items: flex-end; gap: .5rem; list-style: none; margin: 0; padding: 0; }
+  .ramp-step { flex: 1 1 0; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: .3rem; border: 1px solid var(--paper-rule); border-bottom: 3px solid var(--paper-accent); border-radius: 8px 8px 0 0; padding: .6rem .3rem; text-align: center; background: rgba(45,212,191,0.04); }
+  .ramp-step:nth-child(1) { height: 3.4rem; }
+  .ramp-step:nth-child(2) { height: 4.6rem; }
+  .ramp-step:nth-child(3) { height: 5.8rem; }
+  .ramp-step:nth-child(4) { height: 7rem; }
+  .ramp-step:nth-child(5) { height: 8.2rem; }
+  .ramp-n { font-family: "Playfair Display", Georgia, serif; font-weight: 700; color: var(--paper-accent); font-size: 1.05rem; }
+  .ramp-label { font-size: .78rem; color: var(--paper-fg); }
+  .ramp-gate { border-bottom-color: #f59e0b; background: rgba(245,158,11,0.07); }
+  .ramp-gate .ramp-n { color: #f59e0b; }
+  .ramp-exits { flex: 1 1 220px; list-style: none; margin: 0; padding: 0; font-size: .85rem; color: var(--paper-muted); }
+  .ramp-exits li { border-bottom: 1px dashed var(--paper-rule); padding: .4rem 0; }
+  .ramp-exits li:last-child { border-bottom: none; }
+  .ramp-exits b { color: var(--paper-accent); margin-right: .4rem; font-family: "Playfair Display", Georgia, serif; }
+  .ramp-exits span { display: block; color: var(--paper-muted); font-size: .78rem; margin-top: .15rem; }
+  @media (max-width: 640px) {
+    .ramp-wrap { flex-direction: column; align-items: stretch; }
+    .ramp-bar { flex-direction: column; align-items: stretch; }
+    .ramp-step { height: auto !important; flex-direction: row; justify-content: flex-start; text-align: left; border-radius: 8px; border-bottom: 1px solid var(--paper-rule); border-left: 3px solid var(--paper-accent); gap: .6rem; }
+    .ramp-gate { border-left-color: #f59e0b; }
   }
 </style>
