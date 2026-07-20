@@ -1,0 +1,74 @@
+---
+/**
+ * /harness-engineering — "The Production Harness" white paper.
+ * Standalone page (nav+footer+SEO via BaseLayout) built from
+ * ~/claude-harness/tasks/HARNESS_HANDBOOK.md, reorganized into seven
+ * capability pillars. All graphics are inline SVG / styled HTML — no Mermaid.
+ * PDF via print stylesheet + window.print() (see the <script> at the bottom).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="The Production Harness — Engineering AI Agents You Can Walk Away From"
+  description="David Reed's production Claude Code harness: the seven-pillar engineering discipline — context, verification, deterministic enforcement, memory, unattended autonomy, multi-agent safety, and governance — that makes autonomous AI agents trustworthy. Grounded in Anthropic's own guidance."
+  path="/harness-engineering/"
+  pageType="article"
+>
+  <article class="paper">
+    <p class="eyebrow">White Paper · Harness Engineering</p>
+    <h1>The Production Harness</h1>
+    <p class="dek">Anyone can prompt an agent. The engineering is everything <em>around</em> the model call — the layer that lets a frontier model work on your production systems unattended <strong>and be trusted to</strong>. This is that layer: seven capability pillars, each earned through a documented failure, each grounded in Anthropic's own guidance.</p>
+    <p class="byline">David Reed, PhD · AI/ML engineering leader · <a href="https://drdavidreed.com">drdavidreed.com</a> · <a href="https://github.com/drdgreed">github.com/drdgreed</a></p>
+
+    <!-- Dual-track badge -->
+    <p class="dualtrack"><span>Frontier agentic-AI fluency</span><span>×</span><span>Classical staff-engineer judgment</span></p>
+
+    <div class="receipts" role="group" aria-label="Harness at a glance">
+      <div class="receipt"><div class="num"><em>4</em></div><div class="lbl">context layers, each priced by what it costs every call</div></div>
+      <div class="receipt"><div class="num"><em>7</em></div><div class="lbl">capability pillars, each with a value proposition and a war story</div></div>
+      <div class="receipt"><div class="num"><em>100%</em></div><div class="lbl">of practices traced to primary sources (Anthropic engineering docs)</div></div>
+      <div class="receipt"><div class="num"><em>0</em></div><div class="lbl">auto-merges — autonomy tops out below merge, by design</div></div>
+    </div>
+    <p class="receipts-note">Figures reflect the live harness as of July 2026. <a href="#pdf" data-print-link>Save this paper as PDF ↓</a></p>
+
+    <!-- Subsequent tasks append their sections here, before </article>. -->
+  </article>
+</BaseLayout>
+
+<style>
+  .paper {
+    --paper-bg: #0b0f14;          /* on-screen: native to the dark site */
+    --paper-fg: #e7edf3;
+    --paper-muted: #9fb0c0;
+    --paper-accent: #2dd4bf;      /* teal token */
+    --paper-rule: rgba(159,176,192,0.18);
+    max-width: 860px; margin: 0 auto; padding: 4rem 1.25rem 6rem;
+    color: var(--paper-fg);
+    font-family: Inter, system-ui, sans-serif; line-height: 1.7;
+  }
+  .paper h1, .paper h2, .paper h3 { font-family: "Playfair Display", Georgia, serif; line-height: 1.15; }
+  .paper h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); margin: .25rem 0 1rem; }
+  .paper h2 { font-size: clamp(1.6rem, 4vw, 2.1rem); margin: 3.5rem 0 1rem; }
+  .paper h3 { font-size: 1.2rem; margin: 2rem 0 .5rem; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--paper-accent); font-weight: 600; }
+  .dek { font-size: 1.25rem; color: var(--paper-fg); margin: 0 0 1.25rem; }
+  .byline { color: var(--paper-muted); font-size: .95rem; }
+  .byline a, .paper a { color: var(--paper-accent); }
+  .dualtrack { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin: 1.5rem 0; }
+  .dualtrack span { border: 1px solid var(--paper-rule); border-radius: 999px; padding: .35rem .8rem; font-size: .85rem; color: var(--paper-muted); }
+  .dualtrack span:nth-child(2) { border: 0; color: var(--paper-accent); font-weight: 700; }
+  .receipts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 1rem; margin: 2rem 0 .5rem; }
+  .receipt { border: 1px solid var(--paper-rule); border-radius: 12px; padding: 1rem; }
+  .receipt .num em { font-style: normal; font-size: 2rem; font-weight: 800; color: var(--paper-accent); }
+  .receipt .lbl { color: var(--paper-muted); font-size: .85rem; margin-top: .35rem; }
+  .receipts-note { color: var(--paper-muted); font-size: .85rem; }
+  .paper .muted { color: var(--paper-muted); }
+  /* Pillar + value-prop + war-story primitives (used by Tasks 3–9) */
+  .pillar { border-top: 1px solid var(--paper-rule); padding-top: .5rem; }
+  .vp { font-size: 1.15rem; color: var(--paper-fg); font-weight: 600; border-left: 3px solid var(--paper-accent); padding-left: 1rem; margin: .5rem 0 1.25rem; }
+  .war { border: 1px solid var(--paper-rule); border-left: 3px solid #f59e0b; border-radius: 8px; padding: 1rem 1.1rem; margin: 1.25rem 0; background: rgba(245,158,11,0.05); }
+  .war b { color: #f59e0b; }
+  figure.graphic { margin: 1.75rem 0; border: 1px solid var(--paper-rule); border-radius: 12px; padding: 1.25rem; }
+  figure.graphic figcaption { color: var(--paper-muted); font-size: .82rem; margin-top: .75rem; text-align: center; }
+</style>
