@@ -191,9 +191,10 @@ Two viable mechanisms — **this is an open decision for the review gate (§9):*
   can drift from the page if not run; per CLAUDE.md, a new dep is proposed, not silently
   installed.
 
-**Recommendation:** ship **Option A** with the print stylesheet built to paper quality, and
-treat **Option B** as a fast follow *iff* David wants a hosted PDF URL. Either way the print
-stylesheet is required work, so A is a strict prerequisite of B — no wasted effort.
+**DECISION (2026-07-20): Option A.** Ship the print stylesheet + `window.print()` "Save as
+PDF" button. Zero new dependencies, single-source, always in sync. Option B (hosted static
+PDF via headless render) is **not** in scope; if a pasteable PDF URL is wanted later it can
+be added as a fast-follow since the print stylesheet — the hard part — is already built here.
 
 ---
 
@@ -230,20 +231,17 @@ stylesheet is required work, so A is a strict prerequisite of B — no wasted ef
 
 ---
 
-## 9. Open decisions for the review gate
+## 9. Decisions (resolved 2026-07-20)
 
-1. **PDF mechanism (§6):** Option A (print-to-PDF, zero deps, recommended) vs Option B
-   (hosted static PDF, +Playwright/Puppeteer dep). Default: A now, B as fast-follow if wanted.
-2. **agentic-os overlap resolution (§2):** confirm the "white paper = canonical reference,
-   agentic-os = narrative, they cross-link" split — vs a stronger stance (e.g., re-point the
-   agentic-os card, or fold operations content differently).
-3. **NDA check (fully-concrete case studies):** confirm none of the named projects (Career
-   Foundry, Timecone, FOS, PACCA) are under a client NDA that forbids public reference. If
-   any are, genericize *only* those war stories.
-4. **Author bio copy (§4.11):** pull from `reference_drdgreed_identity` memory and draft, or
-   David supplies final copy.
-5. **Branch:** the astro repo is currently on `portfolio/agentic-os-cards`. Confirm whether
-   this work lands on a fresh branch off `main` or continues here.
+1. **PDF mechanism (§6): Option A** — print stylesheet + `window.print()`, zero deps. ✅
+2. **agentic-os overlap (§2): confirmed** — white paper = canonical/cited reference;
+   agentic-os = narrative; they cross-link. Pillars 6–7 summarize + link, don't re-tell. ✅
+3. **Named projects: omit Timecone entirely.** Career Foundry, FOS, PACCA may be named
+   concretely. Timecone is **not** referenced anywhere in the paper. ✅
+4. **Author bio copy (§4.11):** draft from `reference_drdgreed_identity` memory; David
+   confirms/edits final copy at draft review. (Open — non-blocking.)
+5. **Branch:** work lands on `feat/harness-engineering-whitepaper`, fresh off `origin/main`
+   (the old `portfolio/agentic-os-cards` branch was already merged and stale). ✅
 
 ---
 
