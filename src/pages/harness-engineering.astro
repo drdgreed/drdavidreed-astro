@@ -199,6 +199,52 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </figure>
     </section>
 
+    <section class="pillar">
+      <h2>7 · Multi-Agent &amp; Safety Discipline</h2>
+      <p class="vp">Parallelism and untrusted input — without the foot-guns.</p>
+      <p>A second agent that grades a diff earns its keep only if it never sees the builder's reasoning: fresh-context verification hands a reviewer the artifacts alone — the diff, the test output, the logs — nothing else. Graders run at low effort on purpose; judging evidence is cheaper than producing it. The prompt shape matters as much as the setup: ask for <strong>all</strong> findings plus severity, and filter downstream yourself. Told to "only report high-severity," a model obeys that literally and quietly suppresses real findings underneath the bar. None of this is free — multi-agent review measurably underperforms on tightly interdependent code, and costs roughly <strong>15x</strong> the tokens of a single-agent pass. Reach for a second agent when an independent check is worth that multiplier, not as a default.</p>
+      <p>The same discipline that keeps a builder from grading its own work keeps an agent that reads the open internet from also holding the keys. An agent that ingests untrusted external content — scraped pages, emails, vendored bundles — runs <strong>read-only</strong>, full stop. The agent holding write or deploy power never parses that raw content directly; only sanitized data is allowed to cross the line between them.</p>
+      <p>Parallelism has its own physics once agents share a filesystem. Branch pointers, HEAD, and the stash list are shared mutable state across every worktree touching a repo: <code>git stash</code> is banned outright — a patch-file round-trip replaces it — and <code>commit --amend</code> never runs in a shared checkout. Parallel implementer agents get their <strong>own worktrees</strong> or run serially; there's no middle ground, and every parallel dispatch ends with a check that HEAD is still yours. Once a PR merges, its branch is <strong>frozen</strong> — a follow-up starts fresh off <code>origin/main</code>, because a squash-merge silently orphans anything still stacked on the old branch.</p>
+      <p>The same verify-before-you-act instinct applies to tools, not just agents: probe with a CLI or API before reaching for a dashboard. The ladder below runs CLI/API first, a headless script second, and a browser last — the browser is a fallback, capped at 2–3 attempts, because a model describing another product's UI from memory is guessing, not verifying.</p>
+
+      <div class="war"><b>Documented caveat · the high-severity filter.</b> A reviewer prompt that says "only report high-severity" is obeyed literally — real findings below that bar get suppressed, not surfaced and downgraded. The fix: ask for all findings plus severity, and do the filtering yourself, downstream of the model. (HANDBOOK 3.4.)</div>
+
+      <p class="muted">The reader/actor boundary below is the same one that guards untrusted input in the nightly loop — see <a href="/agentic-os/">Operating an Agentic OS →</a> for it running in production.</p>
+
+      <figure class="graphic quar-graphic" role="img" aria-label="Reader/actor trust boundary. Left: reader agent, read-only, ingests untrusted content — scraped pages, emails, vendored bundles. A dashed trust boundary separates the two sides. Right: actor agent, write and deploy power, never parses raw untrusted input directly. An arrow labeled sanitized data only crosses the boundary from left to right.">
+        <div class="quar-cols">
+          <div class="quar-panel quar-reader">
+            <h4>Reader agent</h4>
+            <p class="quar-role">read-only</p>
+            <ul class="quar-list">
+              <li>scraped pages</li>
+              <li>emails</li>
+              <li>vendored bundles</li>
+            </ul>
+          </div>
+          <div class="quar-boundary" aria-hidden="true">
+            <span class="quar-boundary-label">trust boundary</span>
+            <span class="quar-cross">sanitized data only →</span>
+          </div>
+          <div class="quar-panel quar-actor">
+            <h4>Actor agent</h4>
+            <p class="quar-role">write / deploy</p>
+            <p class="quar-note">never parses raw untrusted input</p>
+          </div>
+        </div>
+        <figcaption>Only sanitized data crosses the boundary. The agent with write/deploy power never touches raw untrusted content.</figcaption>
+      </figure>
+
+      <figure class="graphic ladder-graphic" role="img" aria-label="Tool ladder, ordered top to bottom by preference. Rung 1, top, most preferred: CLI or API. Rung 2: headless script. Rung 3, bottom, fallback: browser, capped at 2 to 3 attempts.">
+        <ol class="ladder-rungs">
+          <li class="ladder-rung ladder-top"><span class="ladder-n">1</span><span class="ladder-body"><b>CLI / API</b><span class="ladder-note">preferred — probe here first</span></span></li>
+          <li class="ladder-rung ladder-mid"><span class="ladder-n">2</span><span class="ladder-body"><b>Headless script</b><span class="ladder-note">scripted, repeatable</span></span></li>
+          <li class="ladder-rung ladder-fallback"><span class="ladder-n">3</span><span class="ladder-body"><b>Browser</b><span class="ladder-note">fallback — capped at 2–3 attempts</span></span></li>
+        </ol>
+        <figcaption>Probe with CLIs before dashboards; never describe another product's UI from memory.</figcaption>
+      </figure>
+    </section>
+
     <!-- Subsequent tasks append their sections here, before </article>. -->
   </article>
 </BaseLayout>
@@ -339,5 +385,41 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     .ramp-bar { flex-direction: column; align-items: stretch; }
     .ramp-step { height: auto !important; flex-direction: row; justify-content: flex-start; text-align: left; border-radius: 8px; border-bottom: 1px solid var(--paper-rule); border-left: 3px solid var(--paper-accent); gap: .6rem; }
     .ramp-gate { border-left-color: #f59e0b; }
+  }
+  /* Graphic 10 — reader/actor trust boundary */
+  .quar-cols { display: grid; grid-template-columns: 1fr minmax(150px, .9fr) 1fr; gap: 1.25rem; align-items: stretch; }
+  .quar-panel { border: 1px solid var(--paper-rule); border-radius: 10px; padding: 1rem 1.1rem; box-sizing: border-box; }
+  .quar-panel h4 { font-family: "Playfair Display", Georgia, serif; font-size: 1rem; margin: 0 0 .4rem; color: var(--paper-fg); }
+  .quar-reader { border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.06); }
+  .quar-actor { border-left: 4px solid #2dd4bf; background: rgba(45,212,191,0.05); }
+  .quar-role { font-size: .78rem; color: var(--paper-muted); text-transform: uppercase; letter-spacing: .05em; margin: 0 0 .6rem; }
+  .quar-list { list-style: none; margin: 0; padding: 0; font-size: .88rem; color: var(--paper-muted); }
+  .quar-list li { padding: .2rem 0; border-bottom: 1px dashed var(--paper-rule); }
+  .quar-list li:last-child { border-bottom: none; }
+  .quar-note { font-size: .88rem; color: var(--paper-muted); font-style: italic; margin: 0; }
+  .quar-boundary { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; padding: 0 .25rem; text-align: center; position: relative; }
+  .quar-boundary::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; border-left: 2px dashed var(--paper-rule); }
+  .quar-boundary-label { font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; color: var(--paper-muted); background: var(--paper-bg); padding: .2rem .4rem; z-index: 1; }
+  .quar-cross { font-size: .72rem; color: var(--paper-accent); font-weight: 600; background: var(--paper-bg); padding: .1rem .3rem; z-index: 1; }
+  @media (max-width: 640px) {
+    .quar-cols { grid-template-columns: 1fr; }
+    .quar-boundary { flex-direction: row; justify-content: center; padding: .5rem 0; }
+    .quar-boundary::before { top: 50%; bottom: auto; left: 0; right: 0; border-left: none; border-top: 2px dashed var(--paper-rule); }
+  }
+  /* Graphic 11 — tool ladder, CLI/API preferred → headless → browser fallback */
+  .ladder-rungs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+  .ladder-rung { display: flex; align-items: center; gap: 1rem; border: 1px solid var(--paper-rule); border-left-width: 4px; border-radius: 8px; padding: .75rem 1.1rem; box-sizing: border-box; }
+  .ladder-n { font-family: "Playfair Display", Georgia, serif; font-weight: 700; font-size: 1.1rem; flex-shrink: 0; min-width: 1.5rem; text-align: center; }
+  .ladder-body { display: flex; flex-direction: column; gap: .15rem; }
+  .ladder-body b { color: var(--paper-fg); font-size: .98rem; }
+  .ladder-note { font-size: .8rem; color: var(--paper-muted); }
+  .ladder-top { width: 100%; border-left-color: #2dd4bf; background: rgba(45,212,191,0.06); }
+  .ladder-top .ladder-n { color: #2dd4bf; }
+  .ladder-mid { width: 88%; border-left-color: #64748b; background: rgba(100,116,139,0.04); }
+  .ladder-mid .ladder-n { color: #94a3b8; }
+  .ladder-fallback { width: 76%; border-left-color: #f59e0b; background: rgba(245,158,11,0.07); }
+  .ladder-fallback .ladder-n { color: #f59e0b; }
+  @media (max-width: 480px) {
+    .ladder-top, .ladder-mid, .ladder-fallback { width: 100%; }
   }
 </style>
