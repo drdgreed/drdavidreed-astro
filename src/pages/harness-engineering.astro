@@ -243,6 +243,60 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </figure>
     </section>
 
+    <section class="pillar">
+      <h2>8 · Governance &amp; Honest Trade-offs</h2>
+      <p class="vp">Staff-level judgment: knowing exactly what to change at scale.</p>
+      <p>This pillar governs the harness itself, not the work it does. The rule is <strong>propose-only self-governance</strong>: the model drafts diffs to governing files — CLAUDE.md, permissions, hook configs — and a human approves before they take effect. That closes the one failure mode the other seven pillars can't: a model that could edit its own constraints without approval could edit away the limits meant to catch its own mistakes. One human stands in as the entire review board, and the board never rubber-stamps itself.</p>
+      <p>That only works because it's honest about its own scope. There is no universally right harness — only the harness matched to who's holding the leash. Solo, every default below buys velocity because the blast radius is one person's judgment and one person's repos: a broad allow list, one human as the whole review board, <code>curl</code> left open for CLI-first diagnostics. A team inherits the identical defaults and inherits the identical blast radius, except now it compounds across every engineer before anyone reviews it. None of these six calls are wrong for a solo harness; none of them survive contact with a second engineer unexamined (HANDBOOK 2.1; Part 5).</p>
+
+      <figure class="graphic tradeoff-graphic">
+        <div class="tradeoff-scroll">
+          <table class="tradeoff-table">
+            <thead>
+              <tr>
+                <th scope="col">Choice here</th>
+                <th scope="col">Why (solo)</th>
+                <th scope="col">Team alternative</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Broad <code>allow</code> list</td>
+                <td>zero prompt fatigue</td>
+                <td>narrow allow, more <code>ask</code>, sandbox on</td>
+              </tr>
+              <tr>
+                <td>Propose-only self-governance</td>
+                <td>one human is the review board</td>
+                <td>PRs + CODEOWNERS on harness files</td>
+              </tr>
+              <tr>
+                <td>Prose + hook hybrid enforcement</td>
+                <td>hooks only for the highest-value invariants</td>
+                <td>more hooks; CI checks on instruction files</td>
+              </tr>
+              <tr>
+                <td>Per-project memory stores</td>
+                <td>matches Claude Code's layout</td>
+                <td>central store risks; keep per-project, add shared index</td>
+              </tr>
+              <tr>
+                <td><code>curl</code> allowed</td>
+                <td>CLI-first diagnostics</td>
+                <td>deny curl in unattended profiles (docs' default)</td>
+              </tr>
+              <tr>
+                <td>No agent teams</td>
+                <td>experimental, disabled by default; subagents cover the need</td>
+                <td>same — revisit when teams exit experimental</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figcaption>Six solo defaults and their team-scale alternative, reproduced verbatim from HANDBOOK Part 5. Context determines correctness — not one of these is a universal "best practice."</figcaption>
+      </figure>
+    </section>
+
     <!-- Subsequent tasks append their sections here, before </article>. -->
   </article>
 </BaseLayout>
@@ -419,5 +473,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .ladder-fallback .ladder-n { color: #f59e0b; }
   @media (max-width: 480px) {
     .ladder-top, .ladder-mid, .ladder-fallback { width: 100%; }
+  }
+  /* Graphic 12 — solo→team trade-off matrix */
+  .tradeoff-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tradeoff-table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: .9rem; }
+  .tradeoff-table th, .tradeoff-table td { border: 1px solid var(--paper-rule); padding: .6rem .85rem; text-align: left; vertical-align: top; }
+  .tradeoff-table th { font-family: "Playfair Display", Georgia, serif; font-weight: 700; color: var(--paper-accent); background: rgba(45,212,191,0.05); white-space: nowrap; }
+  .tradeoff-table td:first-child { color: var(--paper-fg); font-weight: 600; }
+  .tradeoff-table td { color: var(--paper-muted); }
+  .tradeoff-table code { background: rgba(159,176,192,0.12); padding: .1rem .35rem; border-radius: 4px; font-size: .85rem; color: var(--paper-fg); }
+  @media print {
+    .tradeoff-scroll { overflow-x: visible; }
+    .tradeoff-table { min-width: 0; font-size: .78rem; }
   }
 </style>
