@@ -27,7 +27,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     <div class="receipts" role="group" aria-label="Harness at a glance">
       <div class="receipt"><div class="num"><em>4</em></div><div class="lbl">context layers, each priced by what it costs every call</div></div>
       <div class="receipt"><div class="num"><em>7</em></div><div class="lbl">capability pillars, each with a value proposition and a war story</div></div>
-      <div class="receipt"><div class="num"><em>100%</em></div><div class="lbl">of practices traced to primary sources (Anthropic engineering docs)</div></div>
+      <div class="receipt"><div class="num"><em>8</em></div><div class="lbl">primary Anthropic sources cited across the paper</div></div>
       <div class="receipt"><div class="num"><em>0</em></div><div class="lbl">auto-merges — autonomy tops out below merge, by design</div></div>
     </div>
     <p class="receipts-note">Figures reflect the live harness as of July 2026. <a href="#pdf" data-print-link>Save this paper as PDF ↓</a></p>
@@ -251,7 +251,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p>That only works because it's honest about its own scope. There is no universally right harness — only the harness matched to who's holding the leash. Solo, every default below buys velocity because the blast radius is one person's judgment and one person's repos: a broad allow list, one human as the whole review board, <code>curl</code> left open for CLI-first diagnostics. A team inherits the identical defaults and inherits the identical blast radius, except now it compounds across every engineer before anyone reviews it. None of these six calls are wrong for a solo harness; none of them survive contact with a second engineer unexamined (HANDBOOK 2.1; Part 5).</p>
 
       <figure class="graphic tradeoff-graphic">
-        <div class="tradeoff-scroll">
+        <div class="tradeoff-scroll" tabindex="0" role="group" aria-label="Solo-vs-team trade-off table, scrollable">
           <table class="tradeoff-table">
             <thead>
               <tr>
@@ -341,7 +341,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <h2>10 · Grounded in Primary Sources</h2>
       <p class="vp">Rigor, not invention.</p>
       <p>The operating reference keeps a §7 rejected-practices section for exactly one reason: best-practice advice churns constantly, and re-litigating settled questions every time a new article appears is its own kind of drift. Every new candidate practice gets triaged against the doc instead — <strong>DUPLICATE</strong> (already covered), <strong>REJECTED</strong> (considered and declined, with the reason recorded), <strong>CONFLICT</strong> (contradicts a standing rule — flagged for a decision, not silently adopted), or <strong>NEW</strong> (actually adds something). That triage is what keeps the harness from re-arguing itself on a schedule set by other people's blog posts.</p>
-      <p>The same discipline applies to this paper: every practice above is traced to a primary source rather than asserted from memory or convention. The map below is that trace, row by row.</p>
+      <p>The same discipline applies to this paper: every externally-grounded practice above is traced to a primary source rather than asserted from memory or convention. Two are not, and are labeled as such rather than dressed up as cited — <strong>propose-only governance</strong> and the <strong>blind-oracle check</strong> are local safety invariants this harness adopted because the failure mode warranted it, with no Anthropic doc behind them. The map below is that trace, row by row.</p>
 
       <figure class="graphic cite-graphic">
         <h4 id="cite-map-heading">Practice → source citation map</h4>
@@ -378,8 +378,16 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <span class="cite-practice">Model routing (&lt;200-line aim, Opus-default cost trap)</span>
             <span class="cite-sources"><a href="https://code.claude.com/docs/en/costs" target="_blank" rel="noopener noreferrer">costs</a></span>
           </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Propose-only self-governance</span>
+            <span class="cite-sources">local invariant — no external citation</span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Blind-oracle check (requirements-only reviewer)</span>
+            <span class="cite-sources">local invariant — no external citation</span>
+          </div>
         </div>
-        <p class="cite-note">Every row above resolves to an Anthropic engineering doc, not an inference from it — the same §7 discipline applied to this paper's own claims.</p>
+        <p class="cite-note">Eight rows above resolve to an Anthropic engineering doc, not an inference from it; two are local invariants flagged as such rather than dressed up as cited — the same §7 discipline applied to this paper's own claims.</p>
       </figure>
     </section>
 
@@ -396,7 +404,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p>The full inventory behind Pillar 2's four-layer model, reproduced from HANDBOOK Part 2 — one row per file, faithful to the source's own description of what each does and why it sits where it sits.</p>
 
       <figure class="graphic appendix-graphic">
-        <div class="appendix-scroll">
+        <div class="appendix-scroll" tabindex="0" role="group" aria-label="File-by-file inventory table, scrollable">
           <table class="appendix-table">
             <thead>
               <tr>
@@ -464,7 +472,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <p>Every practice in this paper resolves to one of the primary sources below, verified live against the docs on 2026-07-16. The known-gaps list that follows is deliberately unresolved — an honest harness names what it hasn't finished, not just what it has.</p>
 
       <figure class="graphic appendix-graphic">
-        <div class="appendix-scroll">
+        <div class="appendix-scroll" tabindex="0" role="group" aria-label="Source index table, scrollable">
           <table class="appendix-table">
             <thead>
               <tr>
@@ -559,17 +567,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .receipts-note { color: var(--paper-muted); font-size: .85rem; }
   .paper .muted { color: var(--paper-muted); }
   .printbtn { background: var(--paper-accent); color:#04201c; border:0; border-radius:8px; padding:.6rem 1rem; font-weight:700; cursor:pointer; margin:1rem 0; }
-  /* PDF deliverable (Option A): flip the paper to light for print, hide interactive chrome, keep graphics unbroken */
-  @media print {
-    .paper { --paper-bg:#fff; --paper-fg:#111; --paper-muted:#444; --paper-accent:#0f766e; --paper-rule:#ccc; max-width:100%; padding:0; }
-    .printbtn, .dualtrack { display:none; }
-    .paper a { color:#0f766e; text-decoration:underline; }
-    figure.graphic, .war, .receipt, table { break-inside: avoid; page-break-inside: avoid; }
-    h2 { break-after: avoid; }
-    body { background:#fff; }
-    /* BaseLayout nav/footer are outside .paper; hide site chrome for the paper PDF */
-    header, footer, nav { display:none !important; }
-  }
+  /* PDF deliverable (Option A): flip the paper to light for print, hide interactive chrome, keep graphics unbroken.
+     Consolidated print stylesheet lives in a single block at the end of this <style> tag
+     (placed there so it wins the cascade over the later .tradeoff-table / .appendix-table base rules). */
   /* Pillar + value-prop + war-story primitives (used by Tasks 3–9) */
   .pillar { border-top: 1px solid var(--paper-rule); padding-top: .5rem; }
   .vp { font-size: 1.15rem; color: var(--paper-fg); font-weight: 600; border-left: 3px solid var(--paper-accent); padding-left: 1rem; margin: .5rem 0 1.25rem; }
@@ -723,10 +723,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .tradeoff-table td:first-child { color: var(--paper-fg); font-weight: 600; }
   .tradeoff-table td { color: var(--paper-muted); }
   .tradeoff-table code { background: rgba(159,176,192,0.12); padding: .1rem .35rem; border-radius: 4px; font-size: .85rem; color: var(--paper-fg); }
-  @media print {
-    .tradeoff-scroll { overflow-x: visible; }
-    .tradeoff-table { min-width: 0; font-size: .78rem; }
-  }
   /* Graphic 13 — Day 1 / Week 1 / Month 1 adoption timeline */
   .timeline-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: start; }
   .timeline-col { border: 1px solid var(--paper-rule); border-top: 3px solid var(--paper-accent); border-radius: 8px; padding: 1rem 1.1rem; box-sizing: border-box; background: rgba(45,212,191,0.03); }
@@ -762,7 +758,19 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .appendix-gaps { margin: 0; padding-left: 1.1rem; color: var(--paper-muted); font-size: .92rem; line-height: 1.6; }
   .appendix-gaps li { margin-bottom: .5rem; }
   .appendix-gaps li:last-child { margin-bottom: 0; }
+  /* Consolidated print stylesheet — flip the paper to light for print, hide interactive chrome
+     and site nav/footer, keep graphics unbroken, and let the scrollable tables print in full. */
   @media print {
+    .paper { --paper-bg:#fff; --paper-fg:#111; --paper-muted:#444; --paper-accent:#0f766e; --paper-rule:#ccc; max-width:100%; padding:0; }
+    .printbtn, .dualtrack { display:none; }
+    .paper a { color:#0f766e; text-decoration:underline; }
+    figure.graphic, .war, .receipt, table { break-inside: avoid; page-break-inside: avoid; }
+    h2 { break-after: avoid; }
+    body { background:#fff; }
+    /* BaseLayout nav/footer are outside .paper; :global() escapes Astro's scoping so this matches the bare tags */
+    :global(header), :global(footer), :global(nav) { display: none !important; }
+    .tradeoff-scroll { overflow-x: visible; }
+    .tradeoff-table { min-width: 0; font-size: .78rem; }
     .appendix-scroll { overflow-x: visible; }
     .appendix-table { min-width: 0; font-size: .78rem; }
   }
