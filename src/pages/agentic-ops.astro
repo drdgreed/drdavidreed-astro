@@ -1,0 +1,128 @@
+---
+/**
+ * /agentic-ops — landing/showcase for the "Agentic Ops" mini course.
+ *
+ * A recruiter-viewable overview of the 5-module operations course authored for
+ * CareerForge (companion to Agentic AI Mastery). The free OPS.1 module is openable
+ * as a hosted slide deck (public/agentic-ops/ops-1-deck/); the full course ships on
+ * CareerForge once wired. Data mirrors backend/content/agentic-ops/curriculum.json.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const DECK = '/agentic-ops/ops-1-deck/slides/';
+
+const modules = [
+  { n: 'OPS.1', title: 'Rules That Check Themselves', time: '4h', tier: 'free',
+    tagline: 'Checkable floors vs judgment shapers, the placement ladder, hard limits for unattended work, and lessons written in scar tissue.',
+    href: DECK },
+  { n: 'OPS.2', title: 'The Loop Is a Policy', time: '5h', tier: 'paid',
+    tagline: 'The six mandatory parts of an unattended loop, the four exits in priority order, and why every loop needs a named kill switch.' },
+  { n: 'OPS.3', title: 'The Maker Is Never the Grader', time: '5h', tier: 'paid',
+    tagline: 'Fresh-context verification, physical zero-tool graders, and quarantining readers of untrusted content from actors with write power.' },
+  { n: 'OPS.4', title: 'Trust Is Earned, Done Is a State', time: '5h', tier: 'paid',
+    tagline: 'Per-category autonomy ladders fed by a dispatch ledger, and standing goals that re-verify finished work forever.' },
+  { n: 'OPS.5', title: 'Minimum Effective Intelligence', time: '4h', tier: 'paid',
+    tagline: 'Model-tier routing, the effort dial, the barbell pattern, and why the routing table is your real price tag.' },
+];
+---
+
+<BaseLayout
+  title="Agentic Ops: Running AI Agents You Can Trust — David Reed, PhD"
+  description="A five-module operations mini course authored for CareerForge — the companion to Agentic AI Mastery. Teaches how to run agents unattended: checkable rules, bounded loops, separated verifiers, earned autonomy, cost-aware routing. Open the free OPS.1 deck."
+  path="/agentic-ops/"
+  pageType="website"
+>
+  <article class="page">
+    <p class="eyebrow">Mini Course · Agentic Operations</p>
+    <h1>Agentic Ops</h1>
+    <p class="dek">Running AI agents you can trust. <strong>Agentic AI Mastery teaches you to build agents; Agentic Ops teaches you to operate the ones you can't watch</strong> — unattended loops, verification walls, earned autonomy, and cost-aware model routing, drawn from a system that runs in production every night.</p>
+
+    <div class="cta-row">
+      <a class="btn primary" href={DECK}>Open the free OPS.1 lesson deck →</a>
+      <a class="btn ghost" href="https://career-forge.org">Full course on CareerForge →</a>
+    </div>
+    <p class="meta">5 modules · ~23 hours · authored to Anthropic's agent-engineering standards · OPS.1 free, the rest included with CareerForge.</p>
+
+    <h2>The five modules</h2>
+    <div class="modules">
+      {modules.map((m) => (
+        <div class:list={["mod", m.tier === 'free' && 'free']}>
+          <div class="head">
+            <span class="num">{m.n}</span>
+            <span class:list={["pill", m.tier]}>{m.tier === 'free' ? 'Free' : 'Included with CareerForge'}</span>
+            <span class="time">{m.time}</span>
+          </div>
+          <h3>{m.href ? <a href={m.href}>{m.title}</a> : m.title}</h3>
+          <p>{m.tagline}</p>
+          {m.href && <a class="open" href={m.href}>Open the deck →</a>}
+        </div>
+      ))}
+    </div>
+
+    <h2>Who it's for</h2>
+    <p>Engineers and technical leaders moving into agentic-AI roles who can already <em>build</em> an agent and now need to <em>operate</em> one safely — the exact interview follow-up most candidates can't answer: <em>"and what stops it from doing something destructive when nobody's watching?"</em> Each lesson ships with a lesson brief, a quiz bank, and a presenter-ready slide deck with hand-built diagrams.</p>
+
+    <div class="note">
+      <p><strong>The companion case study.</strong> Agentic Ops is the taught version of the production system profiled in <a href="/agentic-os">Operating an Agentic OS</a> — the course teaches the discipline; the case study shows it running.</p>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .page {
+    --card: #0a0a0a; --border: #1f1f1f; --border-strong: #2e2e2e;
+    --accent: #34d399; --accent-deep: #064e3b; --ink: #fafafa; --ink-2: #a1a1aa; --ink-3: #71717a;
+    --serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+    --sans: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --mono: 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+    max-width: 780px; margin: 0 auto; padding: 40px 28px 40px;
+    font-family: var(--sans); font-size: 17px; line-height: 1.65; color: var(--ink);
+  }
+  .page .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); }
+  .page h1 { font-family: var(--serif); font-weight: 700; font-size: 46px; line-height: 1.1; margin: 14px 0 18px; }
+  .page .dek { font-size: 20px; line-height: 1.5; color: var(--ink-2); margin: 0 0 26px; max-width: 62ch; }
+  .page .dek strong { color: var(--ink); font-weight: 600; }
+
+  .page .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 0 0 12px; }
+  .page .btn { display: inline-block; padding: 12px 20px; border-radius: 8px; font-size: 15px; font-weight: 600; text-decoration: none; }
+  .page .btn.primary { background: var(--accent); color: #05231b; }
+  .page .btn.primary:hover { background: #2bbe88; }
+  .page .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--border-strong); }
+  .page .btn.ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .page .meta { font-size: 13.5px; color: var(--ink-3); margin: 0 0 8px; }
+
+  .page h2 { font-family: var(--serif); font-size: 27px; font-weight: 700; margin: 56px 0 18px; }
+  .page p { margin: 16px 0; color: var(--ink); max-width: 72ch; }
+  .page a { color: var(--accent); text-decoration: none; }
+  .page a:hover { text-decoration: underline; }
+  .page strong { font-weight: 640; }
+
+  .page .modules { display: flex; flex-direction: column; gap: 12px; }
+  .page .mod {
+    border: 1px solid var(--border); border-left: 3px solid var(--border-strong);
+    border-radius: 10px; background: var(--card); padding: 18px 20px;
+  }
+  .page .mod.free { border-left-color: var(--accent); }
+  .page .mod .head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .page .mod .num { font-family: var(--mono); font-size: 13px; color: var(--accent); font-weight: 600; }
+  .page .mod .pill { font-family: var(--mono); font-size: 10.5px; letter-spacing: .05em; text-transform: uppercase;
+    padding: 3px 8px; border-radius: 999px; border: 1px solid var(--border-strong); color: var(--ink-3); }
+  .page .mod .pill.free { color: var(--accent); border-color: var(--accent-deep); }
+  .page .mod .time { margin-left: auto; font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+  .page .mod h3 { font-family: var(--serif); font-size: 20px; font-weight: 700; margin: 2px 0 6px; }
+  .page .mod h3 a { color: var(--ink); }
+  .page .mod h3 a:hover { color: var(--accent); }
+  .page .mod p { font-size: 15px; color: var(--ink-2); margin: 0; max-width: none; }
+  .page .mod .open { display: inline-block; margin-top: 10px; font-family: var(--mono); font-size: 12.5px; color: var(--accent); }
+
+  .page .note { margin: 40px 0 0; padding: 18px 22px; border: 1px solid var(--border); border-left: 3px solid var(--accent-deep);
+    border-radius: 0 10px 10px 0; background: var(--card); }
+  .page .note p { margin: 0; font-size: 15px; color: var(--ink-2); }
+  .page .note strong { color: var(--ink); }
+
+  @media (max-width: 620px) {
+    .page h1 { font-size: 36px; }
+    .page .mod .head { flex-wrap: wrap; }
+    .page .mod .time { margin-left: 0; }
+  }
+</style>
