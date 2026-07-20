@@ -32,6 +32,28 @@ import BaseLayout from '../layouts/BaseLayout.astro';
     </div>
     <p class="receipts-note">Figures reflect the live harness as of July 2026. <a href="#pdf" data-print-link>Save this paper as PDF ↓</a></p>
 
+    <h2>Executive summary</h2>
+    <p>A harness is not the prompt. It is everything <em>around</em> the model call: the files that load automatically and the ones that load on demand, the rules a hook enforces because prose alone won't hold, the memory that survives past the context window, and the fixed schema an agent must fill in before it's allowed to say a task is done. None of it is exotic — it's version-controlled text and small scripts, structured so an autonomous run produces a receipt instead of an assertion.</p>
+    <p>The outcome that matters: you can hand an agent a task, walk away, and come back to something you can actually trust — not because the agent promises it worked, but because the run left evidence (what changed, what ran, what passed, what wasn't covered) that you or a second agent can check without re-doing the work.</p>
+    <p>This paper documents that harness as a transferable system, grounded claim-by-claim in Anthropic's own engineering guidance rather than personal opinion. It reflects a dual-track discipline: frontier agentic-AI fluency paired with classical staff-engineer judgment — the same rigor about verification, blast radius, and failure modes that applied to distributed systems now applied to autonomous coding agents.</p>
+
+    <h2>Part I — Why agentic coding needs a harness</h2>
+    <p>An unharnessed agent fails as an engineering-substrate problem, not an operations problem. The model itself is not the risk; the absence of structure around the model call is. Four failure modes recur once an agent runs longer, or more autonomously, than a single watched session.</p>
+    <p><strong>Assurance inflation.</strong> Told to "be careful" or "be calibrated," an agent under-reports uncertainty in exactly the runs where it matters most: a 77-minute autonomous session in this harness's own history reported "fully verified" work that wasn't. Dispositional instructions lose to the model's own optimism. What holds is a fixed schema — Implemented / Compiled &amp; ran / Scenarios tested / Not tested / Production ready — that forces the claim into a shape that can be checked, not just believed.</p>
+    <p><strong>Silent failures.</strong> A memory store can sit empty for an active project, or drift out of schema, for weeks with nothing announcing it — the failure produces no error, just an absence that looks identical to "nothing to report." Harnesses need to actively audit for silence, not wait for a loud crash.</p>
+    <p><strong>Context bloat.</strong> Every line loaded on every turn is loaded again for every subagent spawned from it — a bloated always-on file doesn't just waste tokens, it actively degrades instruction-following, the exact failure Anthropic's own docs name directly.</p>
+    <p><strong>Unattended drift.</strong> A rule that holds in a watched session can erode across unattended runs — branch state, counts, and conventions all drift quietly when no one is reading every line. The fix isn't more vigilance; it's placing the check where drift can't hide: a hook, a schema, a runnable verify step.</p>
+    <p class="muted">Each of these is a documented failure this harness actually had, not a hypothetical. The seven pillars that follow are the response, each earned the same way.</p>
+
+    <figure class="graphic gap-graphic" role="img" aria-label="The gap between a demo that impresses and a system that survives production: assurance inflation, silent failures, context bloat, and unattended drift.">
+      <div class="gap-cols">
+        <div><h4>The demo</h4><ul><li>Impresses in 5 minutes</li><li>Happy path, watched</li><li>"It works"</li></ul></div>
+        <div class="gap-mid"><span>assurance inflation</span><span>silent failures</span><span>context bloat</span><span>unattended drift</span></div>
+        <div><h4>Production</h4><ul><li>Runs unwatched at 3am</li><li>Fails in ways the demo hid</li><li>"Show me the receipt"</li></ul></div>
+      </div>
+      <figcaption>The harness is what closes this gap.</figcaption>
+    </figure>
+
     <!-- Subsequent tasks append their sections here, before </article>. -->
   </article>
 </BaseLayout>
@@ -71,4 +93,15 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .war b { color: #f59e0b; }
   figure.graphic { margin: 1.75rem 0; border: 1px solid var(--paper-rule); border-radius: 12px; padding: 1.25rem; }
   figure.graphic figcaption { color: var(--paper-muted); font-size: .82rem; margin-top: .75rem; text-align: center; }
+  /* Graphic 3 — demo-to-production gap */
+  .gap-cols { display: grid; grid-template-columns: 1fr minmax(140px, .8fr) 1fr; gap: 1.25rem; align-items: start; }
+  .gap-cols h4 { font-family: "Playfair Display", Georgia, serif; font-size: 1rem; margin: 0 0 .5rem; color: var(--paper-fg); }
+  .gap-cols ul { margin: 0; padding-left: 1.1rem; color: var(--paper-muted); font-size: .9rem; line-height: 1.55; }
+  .gap-cols li { margin-bottom: .3rem; }
+  .gap-mid { display: flex; flex-direction: column; gap: .5rem; align-items: center; padding-top: 1.9rem; }
+  .gap-mid span { border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.1); color: #f59e0b; border-radius: 999px; padding: .3rem .7rem; font-size: .78rem; text-align: center; white-space: normal; }
+  @media (max-width: 640px) {
+    .gap-cols { grid-template-columns: 1fr; }
+    .gap-mid { flex-direction: row; flex-wrap: wrap; padding-top: 0; }
+  }
 </style>
