@@ -74,6 +74,39 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </figure>
     </section>
 
+    <section class="pillar">
+      <h2>3 · Evidence Over Assertion</h2>
+      <p class="vp">The end of false "done."</p>
+      <p>The Evidence Ledger is the fixed schema every completion claim must fill in: <strong>Implemented</strong> / <strong>Compiled &amp; ran</strong> (paste the passing line) / <strong>Scenarios tested</strong> (named, never counts) / <strong>Not tested</strong> / <strong>Domain validity</strong> / <strong>Production ready</strong>. Five words are banned unless the ledger backs them field-by-field: <em>verified, proven, fully, complete, independent</em>. The schema exists because dispositional instructions — "be careful," "be calibrated" — lose to a model's own optimism; a fixed shape that must be completed doesn't.</p>
+      <p>Verification is the harness's top practice for a reason: a runnable pass/fail check is the difference between a session you watch and one you walk away from. Per repo, that check is <code>make verify</code> — regenerate every input, run everything, compare against declared tolerances, write a timestamped report, exit nonzero on any failure. Two build rules keep it honest: delete prior outputs before each run, so a compile failure can't quietly "verify" yesterday's success; and prove the harness fails correctly before trusting its green — seed a known drift, confirm a nonzero exit with a named failure and no false positives, then restore. A verifier that can't fail is decoration.</p>
+      <p>For computational work, evidence has a floor: 3–5 hand-calculated golden fixtures per feature. At scale, a second agent derives the expected outputs from the requirements and inputs alone — never from the implementation — a blind oracle that can't inherit the implementer's own mistake. Agent-vs-agent agreement upgrades confidence in a result; it never establishes it on its own.</p>
+
+      <div class="war"><b>War story · the 77-minute run.</b> The harness had three prose rules against assurance inflation. A 77-minute run still reported "fully verified" work that wasn't. The lesson: dispositional instructions ("be calibrated") lose to fill-the-schema instructions. The Evidence Ledger — a fixed schema you must complete — replaced the prose and was adopted 2026-07-16. (HANDBOOK 2.1.)</div>
+
+      <figure class="graphic ledger-graphic" role="img" aria-label="Before and after the Evidence Ledger. Left panel, Assertion, marked with a cross: the claim is a bare bubble reading fully verified, with no supporting detail. Right panel, Evidence, marked with a check: the same claim as a completed checklist with six required fields — Implemented, Compiled and ran, Scenarios tested, Not tested, Domain validity, Production ready — with Compiled and ran shown filled in as an example: npm run build, exit 0.">
+        <div class="ledger-cols">
+          <div class="ledger-panel ledger-before">
+            <h4><span class="mark bad" aria-hidden="true">✗</span> Assertion</h4>
+            <div class="claim-bubble">"fully verified ✓"</div>
+            <p class="ledger-note">No schema behind it — just a claim. Dispositional instructions lose to the model's own optimism.</p>
+          </div>
+          <div class="ledger-panel ledger-after">
+            <h4><span class="mark good" aria-hidden="true">✓</span> Evidence</h4>
+            <ul class="ledger-fields">
+              <li><span class="box" aria-hidden="true">☐</span> Implemented</li>
+              <li><span class="box" aria-hidden="true">☐</span> Compiled &amp; ran</li>
+              <li><span class="box" aria-hidden="true">☐</span> Scenarios tested <em>(named, never counts)</em></li>
+              <li><span class="box" aria-hidden="true">☐</span> Not tested</li>
+              <li><span class="box" aria-hidden="true">☐</span> Domain validity</li>
+              <li><span class="box" aria-hidden="true">☐</span> Production ready</li>
+            </ul>
+            <div class="ledger-example"><span class="box checked" aria-hidden="true">☑</span> <b>Compiled &amp; ran:</b> <code>npm run build</code> → exit 0</div>
+          </div>
+        </div>
+        <figcaption>A fixed schema you must complete replaced the prose — adopted 2026-07-16.</figcaption>
+      </figure>
+    </section>
+
     <!-- Subsequent tasks append their sections here, before </article>. -->
   </article>
 </BaseLayout>
@@ -141,5 +174,27 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .l3 .tier, .l3 .cost { color: #94a3b8; }
   @media (max-width: 480px) {
     .l0, .l1, .l2, .l3 { width: 100%; }
+  }
+  /* Graphic 5 — Evidence Ledger before/after */
+  .ledger-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: stretch; }
+  .ledger-panel { border: 1px solid var(--paper-rule); border-radius: 10px; padding: 1rem 1.1rem; box-sizing: border-box; }
+  .ledger-panel h4 { font-family: "Playfair Display", Georgia, serif; font-size: 1rem; margin: 0 0 .75rem; display: flex; align-items: center; gap: .5rem; }
+  .ledger-before { border-left: 4px solid #f43f5e; background: rgba(244,63,94,0.06); }
+  .ledger-after { border-left: 4px solid #2dd4bf; background: rgba(45,212,191,0.05); }
+  .mark { font-weight: 800; font-size: 1.1rem; }
+  .mark.bad { color: #f43f5e; }
+  .mark.good { color: #2dd4bf; }
+  .claim-bubble { display: inline-block; border: 1px solid rgba(244,63,94,0.4); background: rgba(244,63,94,0.1); color: #f43f5e; border-radius: 999px; padding: .4rem .9rem; font-size: .95rem; font-weight: 600; margin-bottom: .75rem; }
+  .ledger-note { color: var(--paper-muted); font-size: .85rem; margin: 0; }
+  .ledger-fields { list-style: none; margin: 0 0 .85rem; padding: 0; font-size: .88rem; color: var(--paper-fg); }
+  .ledger-fields li { display: flex; align-items: baseline; gap: .5rem; padding: .25rem 0; border-bottom: 1px dashed var(--paper-rule); }
+  .ledger-fields li:last-child { border-bottom: none; }
+  .ledger-fields em { color: var(--paper-muted); font-style: italic; font-size: .82rem; }
+  .box { font-size: 1rem; color: var(--paper-muted); flex-shrink: 0; }
+  .ledger-example { display: flex; align-items: baseline; gap: .5rem; font-size: .88rem; background: rgba(45,212,191,0.08); border-radius: 6px; padding: .5rem .7rem; flex-wrap: wrap; }
+  .ledger-example .box.checked { color: #2dd4bf; }
+  .ledger-example code { background: rgba(159,176,192,0.12); padding: .1rem .35rem; border-radius: 4px; font-size: .85rem; }
+  @media (max-width: 640px) {
+    .ledger-cols { grid-template-columns: 1fr; }
   }
 </style>
