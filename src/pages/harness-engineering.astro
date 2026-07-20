@@ -297,6 +297,91 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </figure>
     </section>
 
+    <section class="pillar">
+      <h2>9 · Adoption Path</h2>
+      <p class="vp">Transferable and teachable — the mentor's signal.</p>
+      <p>None of the seven pillars above are exotic, and none require inheriting this harness's specific archaeology. What matters is the order: each step's value has to be provable before the next step's complexity gets added, or the later steps get built on a foundation nobody has actually confirmed holds.</p>
+      <p><strong>Day 1 (~2 hours).</strong> Write a ≤200-line <code>~/CLAUDE.md</code> — hard limits, the Evidence Ledger, a pointer to the lessons file. Add the settings deny floor (secrets, SSH, cloud credentials) at user scope and smoke-test it in a fresh session. Create an empty <code>~/tasks/lessons.md</code> with the entry format written at the top, before there's anything to log.</p>
+      <p><strong>Week 1.</strong> Install the SessionStart preflight hook, starting with git pre-flight plus the lessons digest. Per active repo: a lean <code>.claude/CLAUDE.md</code> — paths, commands, gotchas, counts written as pointers, not numbers — and a <code>docs/AGENT_LESSONS.md</code>. Build <code>make verify</code> and prove it fails correctly before trusting its green.</p>
+      <p><strong>Month 1.</strong> Convert your three most-repeated workflows into skills with trigger-phrase descriptions. Stand up one nightly loop through the full ramp — manual run, then skill, then receipts, then a hard binary gate, and only then a schedule. Put the memory audit and a periodic fresh-context harness re-audit on that same schedule.</p>
+
+      <figure class="graphic timeline-graphic" role="img" aria-label="Adoption ramp across three columns. Day 1, about two hours: write a 200-line CLAUDE.md with hard limits and the Evidence Ledger, add the settings deny floor for secrets and smoke-test it, create an empty lessons file with the entry format. Week 1: install the SessionStart preflight hook, add a lean per-repo CLAUDE.md and AGENT_LESSONS.md, build make verify and prove it fails correctly. Month 1: convert the three most-repeated workflows into skills, stand up one nightly loop through the full ramp, schedule the memory audit and a periodic harness re-audit.">
+        <div class="timeline-cols">
+          <div class="timeline-col">
+            <h4>Day 1<span class="timeline-sub">~2 hours</span></h4>
+            <ul>
+              <li>Write a ≤200-line <code>~/CLAUDE.md</code> — hard limits + Evidence Ledger + lessons pointer</li>
+              <li>Add the settings deny floor (secrets/SSH/cloud creds) at user scope, smoke-test it</li>
+              <li>Create an empty <code>~/tasks/lessons.md</code> with the entry format</li>
+            </ul>
+          </div>
+          <div class="timeline-col">
+            <h4>Week 1</h4>
+            <ul>
+              <li>Install the SessionStart preflight hook (git pre-flight + lessons digest)</li>
+              <li>Per active repo: a lean <code>.claude/CLAUDE.md</code> (paths, commands, gotchas as pointers) + <code>docs/AGENT_LESSONS.md</code></li>
+              <li>Build <code>make verify</code> and prove it fails correctly</li>
+            </ul>
+          </div>
+          <div class="timeline-col">
+            <h4>Month 1</h4>
+            <ul>
+              <li>Convert your 3 most-repeated workflows into skills with trigger-phrase descriptions</li>
+              <li>Stand up one nightly loop through the full ramp (manual → skill → receipts → gate → schedule)</li>
+              <li>Schedule the memory audit + a periodic fresh-context harness re-audit</li>
+            </ul>
+          </div>
+        </div>
+        <figcaption>The order matters: each step's value is provable before the next step's complexity.</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>10 · Grounded in Primary Sources</h2>
+      <p class="vp">Rigor, not invention.</p>
+      <p>The operating reference keeps a §7 rejected-practices section for exactly one reason: best-practice advice churns constantly, and re-litigating settled questions every time a new article appears is its own kind of drift. Every new candidate practice gets triaged against the doc instead — <strong>DUPLICATE</strong> (already covered), <strong>REJECTED</strong> (considered and declined, with the reason recorded), <strong>CONFLICT</strong> (contradicts a standing rule — flagged for a decision, not silently adopted), or <strong>NEW</strong> (actually adds something). That triage is what keeps the harness from re-arguing itself on a schedule set by other people's blog posts.</p>
+      <p>The same discipline applies to this paper: every practice above is traced to a primary source rather than asserted from memory or convention. The map below is that trace, row by row.</p>
+
+      <figure class="graphic cite-graphic">
+        <h4 id="cite-map-heading">Practice → source citation map</h4>
+        <div class="cite-rows" role="list" aria-labelledby="cite-map-heading">
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Context layering (Layer 0–3 placement, the removal test)</span>
+            <span class="cite-sources"><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener noreferrer">effective-context-engineering-for-ai-agents</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Evidence Ledger (fixed schema over dispositional prose)</span>
+            <span class="cite-sources"><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener noreferrer">best-practices</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Hooks (deterministic enforcement over advisory sentences)</span>
+            <span class="cite-sources"><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener noreferrer">best-practices</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Memory (file-based architecture, one-fact-per-file, 84%/39% figures)</span>
+            <span class="cite-sources"><a href="https://www.anthropic.com/news/context-management" target="_blank" rel="noopener noreferrer">context-management</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Loop doctrine (six-part unattended loop, one-feature discipline, never-remove-tests)</span>
+            <span class="cite-sources"><a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener noreferrer">effective-harnesses-for-long-running-agents</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Permissions (scope precedence, deny-first merging, deny patterns)</span>
+            <span class="cite-sources"><a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener noreferrer">settings</a> · <a href="https://code.claude.com/docs/en/permissions" target="_blank" rel="noopener noreferrer">permissions</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Tool ladder (CLI/API → headless script → browser fallback)</span>
+            <span class="cite-sources"><a href="https://code.claude.com/docs/en/headless" target="_blank" rel="noopener noreferrer">headless</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Model routing (&lt;200-line aim, Opus-default cost trap)</span>
+            <span class="cite-sources"><a href="https://code.claude.com/docs/en/costs" target="_blank" rel="noopener noreferrer">costs</a></span>
+          </div>
+        </div>
+        <p class="cite-note">Every row above resolves to an Anthropic engineering doc, not an inference from it — the same §7 discipline applied to this paper's own claims.</p>
+      </figure>
+    </section>
+
     <!-- Subsequent tasks append their sections here, before </article>. -->
   </article>
 </BaseLayout>
@@ -485,5 +570,29 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   @media print {
     .tradeoff-scroll { overflow-x: visible; }
     .tradeoff-table { min-width: 0; font-size: .78rem; }
+  }
+  /* Graphic 13 — Day 1 / Week 1 / Month 1 adoption timeline */
+  .timeline-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: start; }
+  .timeline-col { border: 1px solid var(--paper-rule); border-top: 3px solid var(--paper-accent); border-radius: 8px; padding: 1rem 1.1rem; box-sizing: border-box; background: rgba(45,212,191,0.03); }
+  .timeline-col h4 { font-family: "Playfair Display", Georgia, serif; font-size: 1rem; margin: 0 0 .7rem; color: var(--paper-fg); display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
+  .timeline-sub { font-family: Inter, system-ui, sans-serif; font-size: .72rem; font-weight: 400; color: var(--paper-muted); }
+  .timeline-col ul { margin: 0; padding-left: 1.1rem; color: var(--paper-muted); font-size: .85rem; line-height: 1.55; }
+  .timeline-col li { margin-bottom: .5rem; }
+  .timeline-col li:last-child { margin-bottom: 0; }
+  .timeline-col code { background: rgba(159,176,192,0.12); padding: .1rem .35rem; border-radius: 4px; font-size: .82rem; color: var(--paper-fg); }
+  @media (max-width: 640px) {
+    .timeline-cols { grid-template-columns: 1fr; }
+  }
+  /* Graphic 14 — practice→source citation map (contains real links, not role="img") */
+  .cite-graphic h4 { font-family: "Playfair Display", Georgia, serif; font-size: 1rem; margin: 0 0 1rem; color: var(--paper-fg); }
+  .cite-rows { display: flex; flex-direction: column; gap: .1rem; }
+  .cite-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1rem; padding: .65rem 0; border-bottom: 1px dashed var(--paper-rule); align-items: baseline; }
+  .cite-row:last-child { border-bottom: none; }
+  .cite-practice { color: var(--paper-fg); font-size: .9rem; }
+  .cite-sources { font-size: .85rem; }
+  .cite-sources a { color: var(--paper-accent); text-decoration: underline; text-underline-offset: 2px; }
+  .cite-note { color: var(--paper-muted); font-size: .82rem; margin-top: 1rem; }
+  @media (max-width: 640px) {
+    .cite-row { grid-template-columns: 1fr; gap: .35rem; }
   }
 </style>
