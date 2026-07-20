@@ -130,6 +130,35 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </figure>
     </section>
 
+    <section class="pillar">
+      <h2>5 · Institutional Memory &amp; Learning</h2>
+      <p class="vp">A system that compounds — and stops repeating its mistakes.</p>
+      <p>Every lesson is a fixed record, not a vibe: <strong>ID · Date · Cost · Symptom → Cause → Rule → Recovery</strong>, with a RECURRENCE annotation if the rule gets broken again. IDs are append-only and never renumbered — external docs and scripts reference them — and task queues never live here; a lessons file is incident memory, not a to-do list. The Symptom→Cause→Rule shape forces a <em>mechanical</em> rule out of every incident, not a resolution to be more careful next time, and the <strong>Cost field is load-bearing</strong>: it's the line that convinces a future reader — human or agent — that the rule is actually worth obeying, not just worth reading past. This is Anthropic's own structured note-taking / agentic-memory pattern — an agent that regularly writes notes persisted outside the context window — and it isn't a nicety: Anthropic's file-based memory tool reported <strong>84% token savings</strong> and a <strong>39% performance improvement</strong> on long tasks when paired with context editing.</p>
+      <p>Memory that isn't structured the same way rots the same way. Each project keeps a <code>memory/</code> directory: one always-loaded index (one line per fact, pointer only) plus one file per fact carrying its type and a provenance line — which session wrote it, on what evidence. Facts get updated, not duplicated; wrong memories get deleted, not left to accumulate contradictions. A periodic audit checks index-to-body sync, cross-file contradictions, and ground-truth on load-bearing facts, plus a deterministic anti-poisoning scan — regex for hijack-shaped content and credential-shaped strings — that runs report-only, so it flags a problem but never blocks a session.</p>
+
+      <div class="war"><b>War story · the audit that found the gaps.</b> A memory audit found one project's store completely empty and another violating its own schema wholesale — both silently, both for active projects. The discipline isn't optional: memory that isn't audited quietly rots. (HANDBOOK 2.5.)</div>
+
+      <figure class="graphic lesson-graphic" role="img" aria-label="Lesson lifecycle loop: Correction leads to Symptom, then Cause, then a mechanical Rule, priced with a Cost, recalled at session start, which prevents recurrence, and loops back to the next Correction.">
+        <div class="lesson-cycle">
+          <div class="lesson-stage"><span class="lesson-num">1</span><b>Correction</b><span class="lesson-note">something gets fixed mid-session</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage"><span class="lesson-num">2</span><b>Symptom</b><span class="lesson-note">what was observed</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage"><span class="lesson-num">3</span><b>Cause</b><span class="lesson-note">why it happened</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage lesson-rule"><span class="lesson-num">4</span><b>Rule</b><span class="lesson-note">mechanical, not "be careful"</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage lesson-cost"><span class="lesson-num">5</span><b>Cost</b><span class="lesson-note">priced, so it's worth obeying</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage"><span class="lesson-num">6</span><b>Recalled</b><span class="lesson-note">injected at session start</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage lesson-final"><span class="lesson-num">7</span><b>Prevents recurrence</b><span class="lesson-note">the mistake doesn't repeat</span></div>
+        </div>
+        <div class="lesson-loopback" aria-hidden="true">↻ loops back to the next Correction</div>
+        <figcaption>Entry format: ID · Date · Cost · Symptom → Cause → Rule → Recovery. The cost field is what convinces a future reader the rule is worth obeying.</figcaption>
+      </figure>
+    </section>
+
     <!-- Subsequent tasks append their sections here, before </article>. -->
   </article>
 </BaseLayout>
@@ -219,5 +248,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .ledger-example code { background: rgba(159,176,192,0.12); padding: .1rem .35rem; border-radius: 4px; font-size: .85rem; }
   @media (max-width: 640px) {
     .ledger-cols { grid-template-columns: 1fr; }
+  }
+  /* Graphic 7 — lesson lifecycle loop */
+  .lesson-cycle { display: flex; flex-wrap: wrap; align-items: stretch; justify-content: center; gap: .5rem; }
+  .lesson-stage { display: flex; flex-direction: column; gap: .2rem; border: 1px solid var(--paper-rule); border-radius: 10px; padding: .7rem .85rem; min-width: 7.5rem; flex: 1 1 7.5rem; text-align: center; box-sizing: border-box; }
+  .lesson-stage b { font-family: "Playfair Display", Georgia, serif; font-size: .95rem; color: var(--paper-fg); }
+  .lesson-num { font-size: .72rem; color: var(--paper-accent); font-weight: 700; }
+  .lesson-note { font-size: .78rem; color: var(--paper-muted); }
+  .lesson-rule { border-left: 3px solid var(--paper-accent); }
+  .lesson-cost { border-left: 3px solid #f59e0b; background: rgba(245,158,11,0.06); }
+  .lesson-final { border-left: 3px solid #2dd4bf; background: rgba(45,212,191,0.05); }
+  .lesson-arrow { align-self: center; color: var(--paper-muted); font-size: 1.1rem; flex: 0 0 auto; }
+  .lesson-loopback { text-align: center; color: var(--paper-accent); font-size: .85rem; margin-top: .85rem; }
+  @media (max-width: 640px) {
+    .lesson-cycle { flex-direction: column; }
+    .lesson-arrow { transform: rotate(90deg); }
   }
 </style>
