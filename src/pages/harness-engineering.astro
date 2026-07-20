@@ -31,6 +31,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <div class="receipt"><div class="num"><em>0</em></div><div class="lbl">auto-merges — autonomy tops out below merge, by design</div></div>
     </div>
     <p class="receipts-note">Figures reflect the live harness as of July 2026. <a href="#pdf" data-print-link>Save this paper as PDF ↓</a></p>
+    <button type="button" id="pdf" data-print-btn class="printbtn" aria-label="Save this white paper as PDF">⬇ Save as PDF</button>
 
     <h2>Executive summary</h2>
     <p>A harness is not the prompt. It is everything <em>around</em> the model call: the files that load automatically and the ones that load on demand, the rules a hook enforces because prose alone won't hold, the memory that survives past the context window, and the fixed schema an agent must fill in before it's allowed to say a task is done. None of it is exotic — it's version-controlled text and small scripts, structured so an autonomous run produces a receipt instead of an assertion.</p>
@@ -522,6 +523,13 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   </article>
 </BaseLayout>
 
+<script>
+  // PDF via the browser's native print-to-PDF. Zero dependencies (spec §6, Option A).
+  const print = () => window.print();
+  document.querySelector('[data-print-btn]')?.addEventListener('click', print);
+  document.querySelector('[data-print-link]')?.addEventListener('click', (e) => { e.preventDefault(); print(); });
+</script>
+
 <style>
   .paper {
     --paper-bg: #0b0f14;          /* on-screen: native to the dark site */
@@ -550,6 +558,18 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .receipt .lbl { color: var(--paper-muted); font-size: .85rem; margin-top: .35rem; }
   .receipts-note { color: var(--paper-muted); font-size: .85rem; }
   .paper .muted { color: var(--paper-muted); }
+  .printbtn { background: var(--paper-accent); color:#04201c; border:0; border-radius:8px; padding:.6rem 1rem; font-weight:700; cursor:pointer; margin:1rem 0; }
+  /* PDF deliverable (Option A): flip the paper to light for print, hide interactive chrome, keep graphics unbroken */
+  @media print {
+    .paper { --paper-bg:#fff; --paper-fg:#111; --paper-muted:#444; --paper-accent:#0f766e; --paper-rule:#ccc; max-width:100%; padding:0; }
+    .printbtn, .dualtrack { display:none; }
+    .paper a { color:#0f766e; text-decoration:underline; }
+    figure.graphic, .war, .receipt, table { break-inside: avoid; page-break-inside: avoid; }
+    h2 { break-after: avoid; }
+    body { background:#fff; }
+    /* BaseLayout nav/footer are outside .paper; hide site chrome for the paper PDF */
+    header, footer, nav { display:none !important; }
+  }
   /* Pillar + value-prop + war-story primitives (used by Tasks 3–9) */
   .pillar { border-top: 1px solid var(--paper-rule); padding-top: .5rem; }
   .vp { font-size: 1.15rem; color: var(--paper-fg); font-weight: 600; border-left: 3px solid var(--paper-accent); padding-left: 1rem; margin: .5rem 0 1.25rem; }
