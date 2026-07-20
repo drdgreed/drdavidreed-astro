@@ -54,6 +54,26 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       <figcaption>The harness is what closes this gap.</figcaption>
     </figure>
 
+    <section class="pillar">
+      <h2>2 · Context Engineering</h2>
+      <p class="vp">An agent that stays accurate and cheap at scale.</p>
+      <p>Everything in the harness lives at exactly one of four layers, and the placement rule is a single sentence: <strong>content lives at the cheapest layer that still gets it applied.</strong> Layer 0 loads on every turn and is inherited by every subagent spawned from it — a bloated always-on file isn't just wasted tokens, it's tokens multiplied across every parallel worker before any of them has done a lick of work. Layers 1 through 3 exist precisely so everything else can stay out of that always-on path: skills that load only on a trigger-phrase match, reference material opened only when a task actually needs it, and unattended-loop logic that runs on its own schedule.</p>
+      <p>The placement test makes the rule operational: for every line that lives in Layer 0, ask <em>"Would removing this cause Claude to make mistakes?"</em> If the honest answer is no, the line moves down a layer or gets cut outright. That discipline is what keeps a project's CLAUDE.md — the file every session and every subagent pays for — short enough to still be read as instructions instead of skimmed as noise; bloated always-on files are a documented failure mode, not a hypothetical one.</p>
+      <p>Two rules carry most of the weight in practice. First, <strong>counts are pointers, not numbers:</strong> a CLAUDE.md that hard-codes a fact destined to change is a CLAUDE.md that will eventually lie to the agent reading it — write the command that counts, not the count itself. Second, memory lives in <strong>one-fact-per-file stores:</strong> an always-loaded index holds a one-line pointer per fact, while the fact's actual content and provenance sit in their own file, opened only when needed. That split is what lets memory grow without growing the tax every single call pays.</p>
+
+      <div class="war"><b>War story · count drift.</b> A project CLAUDE.md hard-coded "59 endpoints." The real number drifted to 141 while the file still said 59. The fix became a rule: <em>counts are pointers, not numbers</em> — never write the count, write the command that counts them. (HANDBOOK 2.2.)</div>
+
+      <figure class="graphic" role="img" aria-label="Four-layer context placement model. Layer 0 Always-on: loaded every turn and inherited by every subagent, paid on every call. Layer 1 Auto-triggered: on trigger match, paid only when relevant. Layer 2 On-demand: when opened, free until needed. Layer 3 Unattended: on schedule, governed by loop policy. Rule: content lives at the cheapest layer that still gets it applied.">
+        <div class="layers">
+          <div class="layer l0"><div class="tier">0 · ALWAYS-ON</div><div class="what"><b>~/CLAUDE.md, project CLAUDE.md, memory index</b> — every turn, inherited by every subagent. <span class="cost">Paid on EVERY call — keep ruthlessly lean.</span></div></div>
+          <div class="layer l1"><div class="tier">1 · AUTO-TRIGGERED</div><div class="what"><b>Skills</b> — load on trigger-phrase match. <span class="cost">Paid only when relevant.</span></div></div>
+          <div class="layer l2"><div class="tier">2 · ON-DEMAND</div><div class="what"><b>Operating reference, lessons, memory bodies</b> — when explicitly opened. <span class="cost">~Free until needed.</span></div></div>
+          <div class="layer l3"><div class="tier">3 · UNATTENDED</div><div class="what"><b>Nightly loops, cloud routines</b> — on schedule. <span class="cost">Governed by loop policy.</span></div></div>
+        </div>
+        <figcaption>Placement rule: content lives at the cheapest layer that still gets it applied.</figcaption>
+      </figure>
+    </section>
+
     <!-- Subsequent tasks append their sections here, before </article>. -->
   </article>
 </BaseLayout>
@@ -103,5 +123,23 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   @media (max-width: 640px) {
     .gap-cols { grid-template-columns: 1fr; }
     .gap-mid { flex-direction: row; flex-wrap: wrap; padding-top: 0; }
+  }
+  /* Graphic 4 — four-layer context placement pyramid */
+  .layers { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+  .layer { border: 1px solid var(--paper-rule); border-left-width: 4px; border-radius: 8px; padding: .85rem 1.1rem; display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; box-sizing: border-box; }
+  .tier { font-family: "Playfair Display", Georgia, serif; font-weight: 700; font-size: .95rem; white-space: nowrap; min-width: 9.5rem; }
+  .what { color: var(--paper-muted); font-size: .92rem; flex: 1 1 240px; }
+  .what b { color: var(--paper-fg); }
+  .cost { display: block; margin-top: .3rem; font-size: .8rem; font-style: italic; }
+  .l0 { width: 100%; border-left-color: #f43f5e; background: rgba(244,63,94,0.09); }
+  .l0 .tier, .l0 .cost { color: #f43f5e; }
+  .l1 { width: 92%; border-left-color: #f59e0b; background: rgba(245,158,11,0.07); }
+  .l1 .tier, .l1 .cost { color: #f59e0b; }
+  .l2 { width: 84%; border-left-color: #2dd4bf; background: rgba(45,212,191,0.05); }
+  .l2 .tier, .l2 .cost { color: #2dd4bf; }
+  .l3 { width: 76%; border-left-color: #64748b; background: rgba(100,116,139,0.04); }
+  .l3 .tier, .l3 .cost { color: #94a3b8; }
+  @media (max-width: 480px) {
+    .l0, .l1, .l2, .l3 { width: 100%; }
   }
 </style>
