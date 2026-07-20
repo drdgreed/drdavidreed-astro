@@ -382,7 +382,143 @@ import BaseLayout from '../layouts/BaseLayout.astro';
       </figure>
     </section>
 
-    <!-- Subsequent tasks append their sections here, before </article>. -->
+    <section class="pillar">
+      <h2>About the author</h2>
+      <!-- DRAFT BIO — David to confirm/edit -->
+      <p>David Reed, PhD, is an AI/ML engineering leader with 35+ years of experience, currently focused on agentic systems in regulated domains — healthcare, edtech, and fintech-adjacent. He holds two patents from his time in large-scale systems engineering: <a href="https://patents.google.com/patent/US6850988" target="_blank" rel="noopener noreferrer">US 6,850,988</a>, "Dynamic E-Commerce Click Stream Analysis" (foundational to Amazon's recommendation engine), and <a href="https://patents.google.com/patent/US6839229" target="_blank" rel="noopener noreferrer">US 6,839,229</a>, "Large-Grained Database Concurrency Management" for data warehouses. Prior roles include Master Technologist at Hewlett-Packard and Principal TPM-AI at Microsoft. Public work includes <strong>PACCA</strong>, a healthcare prior-authorization multi-agent platform, alongside education-focused agentic tools (ALCA, LPA) — all under <a href="https://github.com/drdgreed" target="_blank" rel="noopener noreferrer">github.com/drdgreed</a>, with more at <a href="https://drdavidreed.com" target="_blank" rel="noopener noreferrer">drdavidreed.com</a>.</p>
+      <p class="muted">This paper is itself the evidence: it documents AI-platform engineering (the four-layer context system, the memory architecture), staff/lead-level judgment (the honest trade-off tables, the propose-only governance model), and agentic QA discipline (the Evidence Ledger, fresh-context verification, the blind-oracle pattern) — applied to the author's own production harness, not a hypothetical one.</p>
+    </section>
+
+    <section class="pillar">
+      <h2>Appendix A — File-by-file inventory</h2>
+      <p class="vp">Every file in the harness, what layer it lives at, and why.</p>
+      <p>The full inventory behind Pillar 2's four-layer model, reproduced from HANDBOOK Part 2 — one row per file, faithful to the source's own description of what each does and why it sits where it sits.</p>
+
+      <figure class="graphic appendix-graphic">
+        <div class="appendix-scroll">
+          <table class="appendix-table">
+            <thead>
+              <tr>
+                <th scope="col">File</th>
+                <th scope="col">Layer</th>
+                <th scope="col">Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>~/CLAUDE.md</code></td>
+                <td>0 · Always-on</td>
+                <td>Global identity and hard limits: engineer persona, unattended-work limits, core principles (verify empirically, KISS/YAGNI), the self-improvement loop pointers, the Polished-Output Checkpoint, the Evidence Ledger.</td>
+              </tr>
+              <tr>
+                <td><code>&lt;repo&gt;/.claude/CLAUDE.md</code></td>
+                <td>0 · Always-on</td>
+                <td>Per-project context: what the project is, key paths, run commands, conventions, active-workstream gotchas. Counts are written as pointers (the command that counts), never hard-coded numbers.</td>
+              </tr>
+              <tr>
+                <td><code>~/tasks/CLAUDE_SETUP.md</code></td>
+                <td>2 · On-demand</td>
+                <td>The operating reference: build lifecycle (Map→Plan→Build→Verify→Learn), model routing ladder, unattended-loop policy, session economics, quality levers, and a rejected-practices §7 so stale advice is auto-filtered on arrival.</td>
+              </tr>
+              <tr>
+                <td><code>~/tasks/lessons.md</code> + <code>&lt;repo&gt;/docs/AGENT_LESSONS.md</code></td>
+                <td>2 · On-demand</td>
+                <td>Append-only incident memory: ID · Date · Cost · Symptom → Cause → Rule → Recovery. Cross-project process lessons go in the global file; repo-specific gotchas go in the repo file.</td>
+              </tr>
+              <tr>
+                <td>Memory stores (<code>MEMORY.md</code> index + per-fact files)</td>
+                <td>0 index / 2 bodies</td>
+                <td>One-fact-per-file memory: an always-loaded index holds a one-line pointer per fact, while the fact's content and provenance (session, evidence) live in their own file, opened only when needed.</td>
+              </tr>
+              <tr>
+                <td><code>~/.claude/skills/*/SKILL.md</code></td>
+                <td>1 · Auto-triggered</td>
+                <td>~10 custom skills (loop engineering, model triage, memory audit, session handoff, QA capture...) that load on a trigger-phrase match rather than being remembered.</td>
+              </tr>
+              <tr>
+                <td><code>~/.claude/hooks/</code> (registered <code>SessionStart</code>)</td>
+                <td>Deterministic</td>
+                <td><code>session-preflight.sh</code>: memory anti-poisoning scan, git pre-flight, opt-in project-health smoke test, always-on lessons-title digest, empty-memory-store flag. Exception-based — silent when clean.</td>
+              </tr>
+              <tr>
+                <td><code>~/.claude/settings.json</code></td>
+                <td>0 · Always-on</td>
+                <td>Permissions: <code>allow</code> (routine work) / <code>ask</code> (destructive verbs) / <code>deny</code> (secrets floor: <code>.env</code>, <code>secrets/**</code>, <code>~/.ssh/**</code>, <code>~/.aws/**</code>) at user scope, where deny-first merging means no repo can override it.</td>
+              </tr>
+              <tr>
+                <td><code>make verify</code></td>
+                <td>Per project</td>
+                <td>One command per repo: regenerate all inputs → run everything → compare against declared tolerances → timestamped machine-readable report → exit nonzero on any failure. Proven to fail correctly, not just to pass.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figcaption>Reproduced from HANDBOOK Part 2 — one row per file, faithful to the source's stated purpose for each.</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>Appendix B — Source index &amp; known gaps</h2>
+      <p class="vp">Where every claim traces to, and what's still open.</p>
+      <p>Every practice in this paper resolves to one of the primary sources below, verified live against the docs on 2026-07-16. The known-gaps list that follows is deliberately unresolved — an honest harness names what it hasn't finished, not just what it has.</p>
+
+      <figure class="graphic appendix-graphic">
+        <div class="appendix-scroll">
+          <table class="appendix-table">
+            <thead>
+              <tr>
+                <th scope="col">Source</th>
+                <th scope="col">Used for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener noreferrer">code.claude.com/docs/en/best-practices</a></td>
+                <td>CLAUDE.md concision test, hooks-over-instructions, verification-first, evidence-over-assertion, reviewer over-reporting</td>
+              </tr>
+              <tr>
+                <td><a href="https://code.claude.com/docs/en/costs" target="_blank" rel="noopener noreferrer">code.claude.com/docs/en/costs</a></td>
+                <td>&lt;200-line aim, model routing, Opus-default cost trap</td>
+              </tr>
+              <tr>
+                <td><a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener noreferrer">code.claude.com/docs/en/settings</a> / <a href="https://code.claude.com/docs/en/permissions" target="_blank" rel="noopener noreferrer">permissions</a></td>
+                <td>Scope precedence, deny-first merging, documented deny patterns, sandbox caveat</td>
+              </tr>
+              <tr>
+                <td><a href="https://code.claude.com/docs/en/headless" target="_blank" rel="noopener noreferrer">code.claude.com/docs/en/headless</a></td>
+                <td><code>claude -p</code>, <code>--allowedTools</code>, <code>--bare</code> + keychain caveat, JSON cost output</td>
+              </tr>
+              <tr>
+                <td><a href="https://code.claude.com/docs/en/agent-teams" target="_blank" rel="noopener noreferrer">code.claude.com/docs/en/agent-teams</a></td>
+                <td>Teams experimental, subagents preferred for dependent work</td>
+              </tr>
+              <tr>
+                <td><a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener noreferrer">anthropic.com/engineering/effective-harnesses-for-long-running-agents</a></td>
+                <td>Loop architecture, JSON state, one-feature discipline, never-remove-tests</td>
+              </tr>
+              <tr>
+                <td><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener noreferrer">anthropic.com/engineering/effective-context-engineering-for-ai-agents</a></td>
+                <td>Smallest-high-signal-tokens, structured note-taking, subagent clean contexts, 15x multi-agent cost</td>
+              </tr>
+              <tr>
+                <td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool" target="_blank" rel="noopener noreferrer">platform.claude.com — memory tool</a> / <a href="https://www.anthropic.com/news/context-management" target="_blank" rel="noopener noreferrer">context-management</a></td>
+                <td>File-based memory architecture, 84%/39% figures</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figcaption>All sources verified live 2026-07-16. Re-verification is due quarterly — Claude Code ships weekly.</figcaption>
+      </figure>
+
+      <h3>Known gaps</h3>
+      <ul class="appendix-gaps">
+        <li>No deterministic Stop-hook verification gate for unattended runs yet — <code>/goal</code> conditions are evaluator-based (probabilistic), while the docs note Stop hooks give the hard guarantee.</li>
+        <li>The blind-oracle layer (golden fixtures + a requirements-only oracle) is policy, but not yet practiced in the newest repo's verify harness.</li>
+        <li><code>~/CLAUDE.md</code> persona/principles section is a placement-test prune candidate — pending owner call, not yet cut.</li>
+        <li>Prompt-caching guidance in the operating reference is the one section not re-verified against current docs this round (research fetches hit server errors) — needs a follow-up pass.</li>
+      </ul>
+      <p class="muted">Closed for the record: deny-rule runtime verification (flagged as a gap through 2026-07-17) was smoke-tested via fresh headless sessions and closed — <code>~/.ssh/known_hosts</code> and repo-local <code>.env</code> reads both denied, a control read of a benign file succeeded. Honesty cuts both ways: gaps get listed until closed, and closed gaps get marked closed, not quietly dropped.</p>
+    </section>
   </article>
 </BaseLayout>
 
@@ -594,5 +730,20 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   .cite-note { color: var(--paper-muted); font-size: .82rem; margin-top: 1rem; }
   @media (max-width: 640px) {
     .cite-row { grid-template-columns: 1fr; gap: .35rem; }
+  }
+  /* Back matter — Appendix A/B tables + known-gaps list */
+  .appendix-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .appendix-table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: .9rem; }
+  .appendix-table th, .appendix-table td { border: 1px solid var(--paper-rule); padding: .6rem .85rem; text-align: left; vertical-align: top; }
+  .appendix-table th { font-family: "Playfair Display", Georgia, serif; font-weight: 700; color: var(--paper-accent); background: rgba(45,212,191,0.05); white-space: nowrap; }
+  .appendix-table td:first-child { color: var(--paper-fg); font-weight: 600; }
+  .appendix-table td { color: var(--paper-muted); }
+  .appendix-table code { background: rgba(159,176,192,0.12); padding: .1rem .35rem; border-radius: 4px; font-size: .85rem; color: var(--paper-fg); }
+  .appendix-gaps { margin: 0; padding-left: 1.1rem; color: var(--paper-muted); font-size: .92rem; line-height: 1.6; }
+  .appendix-gaps li { margin-bottom: .5rem; }
+  .appendix-gaps li:last-child { margin-bottom: 0; }
+  @media print {
+    .appendix-scroll { overflow-x: visible; }
+    .appendix-table { min-width: 0; font-size: .78rem; }
   }
 </style>
