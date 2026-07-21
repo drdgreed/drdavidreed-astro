@@ -1,0 +1,777 @@
+---
+/**
+ * /harness-engineering — "The Production Harness" white paper.
+ * Standalone page (nav+footer+SEO via BaseLayout) built from
+ * ~/claude-harness/tasks/HARNESS_HANDBOOK.md, reorganized into seven
+ * capability pillars. All graphics are inline SVG / styled HTML — no Mermaid.
+ * PDF via print stylesheet + window.print() (see the <script> at the bottom).
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="The Production Harness — Engineering AI Agents You Can Walk Away From"
+  description="David Reed's production Claude Code harness: the seven-pillar engineering discipline — context, verification, deterministic enforcement, memory, unattended autonomy, multi-agent safety, and governance — that makes autonomous AI agents trustworthy. Grounded in Anthropic's own guidance."
+  path="/harness-engineering/"
+  pageType="article"
+>
+  <article class="paper">
+    <p class="eyebrow">White Paper · Harness Engineering</p>
+    <h1>The Production Harness</h1>
+    <p class="dek">Anyone can prompt an agent. The engineering is everything <em>around</em> the model call — the layer that lets a frontier model work on your production systems unattended <strong>and be trusted to</strong>. This is that layer: seven capability pillars, each earned through a documented failure, each grounded in Anthropic's own guidance.</p>
+    <p class="byline">David Reed, PhD · AI/ML engineering leader · <a href="https://drdavidreed.com">drdavidreed.com</a> · <a href="https://github.com/drdgreed">github.com/drdgreed</a></p>
+
+    <!-- Dual-track badge -->
+    <p class="dualtrack"><span>Frontier agentic-AI fluency</span><span>×</span><span>Classical staff-engineer judgment</span></p>
+
+    <div class="receipts" role="group" aria-label="Harness at a glance">
+      <div class="receipt"><div class="num"><em>4</em></div><div class="lbl">context layers, each priced by what it costs every call</div></div>
+      <div class="receipt"><div class="num"><em>7</em></div><div class="lbl">capability pillars, each with a value proposition and a war story</div></div>
+      <div class="receipt"><div class="num"><em>8</em></div><div class="lbl">primary Anthropic sources cited across the paper</div></div>
+      <div class="receipt"><div class="num"><em>0</em></div><div class="lbl">auto-merges — autonomy tops out below merge, by design</div></div>
+    </div>
+    <p class="receipts-note">Figures reflect the live harness as of July 2026. <a href="#pdf" data-print-link>Save this paper as PDF ↓</a></p>
+    <button type="button" id="pdf" data-print-btn class="printbtn" aria-label="Save this white paper as PDF">⬇ Save as PDF</button>
+
+    <h2>Executive summary</h2>
+    <p>A harness is not the prompt. It is everything <em>around</em> the model call: the files that load automatically and the ones that load on demand, the rules a hook enforces because prose alone won't hold, the memory that survives past the context window, and the fixed schema an agent must fill in before it's allowed to say a task is done. None of it is exotic — it's version-controlled text and small scripts, structured so an autonomous run produces a receipt instead of an assertion.</p>
+    <p>The outcome that matters: you can hand an agent a task, walk away, and come back to something you can actually trust — not because the agent promises it worked, but because the run left evidence (what changed, what ran, what passed, what wasn't covered) that you or a second agent can check without re-doing the work.</p>
+    <p>This paper documents that harness as a transferable system, grounded claim-by-claim in Anthropic's own engineering guidance rather than personal opinion. It reflects a dual-track discipline: frontier agentic-AI fluency paired with classical staff-engineer judgment — the same rigor about verification, blast radius, and failure modes that applied to distributed systems now applied to autonomous coding agents.</p>
+
+    <h2>Part I — Why agentic coding needs a harness</h2>
+    <p>An unharnessed agent fails as an engineering-substrate problem, not an operations problem. The model itself is not the risk; the absence of structure around the model call is. Four failure modes recur once an agent runs longer, or more autonomously, than a single watched session.</p>
+    <p><strong>Assurance inflation.</strong> Told to "be careful" or "be calibrated," an agent under-reports uncertainty in exactly the runs where it matters most: a 77-minute autonomous session in this harness's own history reported "fully verified" work that wasn't. Dispositional instructions lose to the model's own optimism. What holds is a fixed schema — Implemented / Compiled &amp; ran / Scenarios tested / Not tested / Production ready — that forces the claim into a shape that can be checked, not just believed.</p>
+    <p><strong>Silent failures.</strong> A memory store can sit empty for an active project, or drift out of schema, and nothing announced it — the failure produces no error, just an absence that looks identical to "nothing to report." Harnesses need to actively audit for silence, not wait for a loud crash.</p>
+    <p><strong>Context bloat.</strong> Every line loaded on every turn is loaded again for every subagent spawned from it — a bloated always-on file doesn't just waste tokens, it actively degrades instruction-following, the exact failure Anthropic's own docs name directly.</p>
+    <p><strong>Unattended drift.</strong> A rule that holds in a watched session can erode across unattended runs — branch state, counts, and conventions all drift quietly when no one is reading every line. The fix isn't more vigilance; it's placing the check where drift can't hide: a hook, a schema, a runnable verify step.</p>
+    <p class="muted">Each of these is a documented failure this harness actually had, not a hypothetical. The seven pillars that follow are the response, each earned the same way.</p>
+
+    <figure class="graphic gap-graphic" role="img" aria-label="The gap between a demo that impresses and a system that survives production: assurance inflation, silent failures, context bloat, and unattended drift.">
+      <div class="gap-cols">
+        <div><h4>The demo</h4><ul><li>Impresses in 5 minutes</li><li>Happy path, watched</li><li>"It works"</li></ul></div>
+        <div class="gap-mid"><span>assurance inflation</span><span>silent failures</span><span>context bloat</span><span>unattended drift</span></div>
+        <div><h4>Production</h4><ul><li>Runs unwatched at 3am</li><li>Fails in ways the demo hid</li><li>"Show me the receipt"</li></ul></div>
+      </div>
+      <figcaption>The harness is what closes this gap.</figcaption>
+    </figure>
+
+    <section class="pillar">
+      <h2>2 · Context Engineering</h2>
+      <p class="vp">An agent that stays accurate and cheap at scale.</p>
+      <p>Everything in the harness lives at exactly one of four layers, and the placement rule is a single sentence: <strong>content lives at the cheapest layer that still gets it applied.</strong> Layer 0 loads on every turn and is inherited by every subagent spawned from it — a bloated always-on file isn't just wasted tokens, it's tokens multiplied across every parallel worker before any of them has done a lick of work. Layers 1 through 3 exist precisely so everything else can stay out of that always-on path: skills that load only on a trigger-phrase match, reference material opened only when a task actually needs it, and unattended-loop logic that runs on its own schedule.</p>
+      <p>The placement test makes the rule operational: for every line that lives in Layer 0, ask <em>"Would removing this cause Claude to make mistakes?"</em> If the honest answer is no, the line moves down a layer or gets cut outright. That discipline is what keeps a project's CLAUDE.md — the file every session and every subagent pays for — short enough to still be read as instructions instead of skimmed as noise; bloated always-on files are a documented failure mode, not a hypothetical one.</p>
+      <p>Two rules carry most of the weight in practice. First, <strong>counts are pointers, not numbers:</strong> a CLAUDE.md that hard-codes a fact destined to change is a CLAUDE.md that will eventually lie to the agent reading it — write the command that counts, not the count itself. Second, memory lives in <strong>one-fact-per-file stores:</strong> an always-loaded index holds a one-line pointer per fact, while the fact's actual content and provenance sit in their own file, opened only when needed. That split is what lets memory grow without growing the tax every single call pays.</p>
+
+      <div class="war"><b>War story · count drift.</b> A project CLAUDE.md hard-coded "59 endpoints." The real number drifted to 141 while the file still said 59. The fix became a rule: <em>counts are pointers, not numbers</em> — never write the count, write the command that counts them. (HANDBOOK 2.2.)</div>
+
+      <figure class="graphic" role="img" aria-label="Four-layer context placement model. Layer 0 Always-on: loaded every turn and inherited by every subagent, paid on every call. Layer 1 Auto-triggered: on trigger match, paid only when relevant. Layer 2 On-demand: when opened, free until needed. Layer 3 Unattended: on schedule, governed by loop policy. Rule: content lives at the cheapest layer that still gets it applied.">
+        <div class="layers">
+          <div class="layer l0"><div class="tier">0 · ALWAYS-ON</div><div class="what"><b>~/CLAUDE.md, project CLAUDE.md, memory index</b> — every turn, inherited by every subagent. <span class="cost">Paid on EVERY call — keep ruthlessly lean.</span></div></div>
+          <div class="layer l1"><div class="tier">1 · AUTO-TRIGGERED</div><div class="what"><b>Skills</b> — load on trigger-phrase match. <span class="cost">Paid only when relevant.</span></div></div>
+          <div class="layer l2"><div class="tier">2 · ON-DEMAND</div><div class="what"><b>Operating reference, lessons, memory bodies</b> — when explicitly opened. <span class="cost">~Free until needed.</span></div></div>
+          <div class="layer l3"><div class="tier">3 · UNATTENDED</div><div class="what"><b>Nightly loops, cloud routines</b> — on schedule. <span class="cost">Governed by loop policy.</span></div></div>
+        </div>
+        <figcaption>Placement rule: content lives at the cheapest layer that still gets it applied.</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>3 · Evidence Over Assertion</h2>
+      <p class="vp">The end of false "done."</p>
+      <p>The Evidence Ledger is the fixed schema every completion claim must fill in: <strong>Implemented</strong> / <strong>Compiled &amp; ran</strong> (paste the passing line) / <strong>Scenarios tested</strong> (named, never counts) / <strong>Not tested</strong> / <strong>Domain validity</strong> / <strong>Production ready</strong>. Five words are banned unless the ledger backs them field-by-field: <em>verified, proven, fully, complete, independent</em>. The schema exists because dispositional instructions — "be careful," "be calibrated" — lose to a model's own optimism; a fixed shape that must be completed doesn't.</p>
+      <p>Verification is the harness's top practice for a reason: a runnable pass/fail check is the difference between a session you watch and one you walk away from. Per repo, that check is <code>make verify</code> — regenerate every input, run everything, compare against declared tolerances, write a timestamped report, exit nonzero on any failure. Two build rules keep it honest: delete prior outputs before each run, so a compile failure can't quietly "verify" yesterday's success; and prove the harness fails correctly before trusting its green — seed a known drift, confirm a nonzero exit with a named failure and no false positives, then restore. A verifier that can't fail is decoration.</p>
+      <p>For computational work, evidence has a floor: 3–5 hand-calculated golden fixtures per feature. At scale, a second agent derives the expected outputs from the requirements and inputs alone — never from the implementation — a blind oracle that can't inherit the implementer's own mistake. Agent-vs-agent agreement upgrades confidence in a result; it never establishes it on its own.</p>
+
+      <div class="war"><b>War story · the 77-minute run.</b> The harness had three prose rules against assurance inflation. A 77-minute run still reported "fully verified" work that wasn't. The lesson: dispositional instructions ("be calibrated") lose to fill-the-schema instructions. The Evidence Ledger — a fixed schema you must complete — replaced the prose and was adopted 2026-07-16. (HANDBOOK 2.1.)</div>
+
+      <figure class="graphic ledger-graphic" role="img" aria-label="Before and after the Evidence Ledger. Left panel, Assertion, marked with a cross: the claim is a bare bubble reading fully verified, with no supporting detail. Right panel, Evidence, marked with a check: the same claim as a completed checklist with six required fields — Implemented, Compiled and ran, Scenarios tested, Not tested, Domain validity, Production ready — with Compiled and ran shown filled in as an example: npm run build, exit 0.">
+        <div class="ledger-cols">
+          <div class="ledger-panel ledger-before">
+            <h4><span class="mark bad" aria-hidden="true">✗</span> Assertion</h4>
+            <div class="claim-bubble">"fully verified ✓"</div>
+            <p class="ledger-note">No schema behind it — just a claim. Dispositional instructions lose to the model's own optimism.</p>
+          </div>
+          <div class="ledger-panel ledger-after">
+            <h4><span class="mark good" aria-hidden="true">✓</span> Evidence</h4>
+            <ul class="ledger-fields">
+              <li><span class="box" aria-hidden="true">☐</span> Implemented</li>
+              <li><span class="box" aria-hidden="true">☐</span> Compiled &amp; ran</li>
+              <li><span class="box" aria-hidden="true">☐</span> Scenarios tested <em>(named, never counts)</em></li>
+              <li><span class="box" aria-hidden="true">☐</span> Not tested</li>
+              <li><span class="box" aria-hidden="true">☐</span> Domain validity</li>
+              <li><span class="box" aria-hidden="true">☐</span> Production ready</li>
+            </ul>
+            <div class="ledger-example"><span class="box checked" aria-hidden="true">☑</span> <b>Compiled &amp; ran:</b> <code>npm run build</code> → exit 0</div>
+          </div>
+        </div>
+        <figcaption>A fixed schema you must complete replaced the prose — adopted 2026-07-16.</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>4 · Deterministic Enforcement</h2>
+      <p class="vp">Advisory rules become guarantees.</p>
+      <p>The principle is one sentence: <strong>anything "always do X" is a hook, not a sentence.</strong> Sentences are probabilistic — a prose instruction competes with everything else in context, and the probability it fires decays as context length grows. A hook doesn't compete with anything; it runs. If Claude already does something correctly without being told, that's a signal to delete the instruction or convert it to a hook, not to leave it as one more sentence hoping to be read.</p>
+      <p>The harness's most transferable piece is a single registered <code>SessionStart</code> hook, <code>session-preflight.sh</code>, that runs five checks and is exception-based: silent when everything is clean, so a healthy session pays roughly zero tokens for the guarantee. It scans memory for poisoning (report-only), checks whether local main is behind origin or the current branch tracks a deleted remote, runs an opt-in per-repo project-health smoke test bounded to 15 seconds, injects lesson titles so "read lessons at session start" is deterministic instead of hoped-for, and flags an empty memory store on an active project. None of it depends on the model remembering to check — the check runs, every time, or it doesn't run at all.</p>
+      <p>Permissions are the second deterministic layer, enforced by the harness itself rather than by the model choosing to comply: an <strong>allow</strong> list for routine work, an <strong>ask</strong> list for destructive verbs, and a <strong>deny</strong> floor for secrets. That floor — denying reads on <code>.env</code>, <code>secrets/**</code>, <code>~/.ssh/**</code>, <code>~/.aws/**</code> — belongs at <em>user</em> scope specifically because permission rules merge across scopes and evaluate deny-first: a user-level deny blocks a project-level allow, so the floor costs nothing and no repo can override it by being configured more permissively. The complement matters too: a Read/Edit deny binds the agent layer, not arbitrary subprocesses it might spawn — the OS-level sandbox is what closes that gap, not another sentence telling the agent not to.</p>
+
+      <div class="war"><b>War story · the silent PATH failure.</b> A nightly loop's receipt said "opened draft PR" — but the <code>gh</code> call had failed (<code>command not found</code>, launchd's bare PATH) and the receipt asserted success without checking the exit code. Rules earned: gate every success message on the actual exit code; never <code>2&gt;/dev/null</code> a step whose failure you'd want to know about. (HANDBOOK 3.1.)</div>
+
+      <figure class="graphic" role="img" aria-label="A prose instruction's probability of firing decays as context length grows, while a hook stays flat at 100 percent because it is deterministic.">
+        <svg viewBox="0 0 600 200" width="100%" height="auto">
+          <line x1="50" y1="170" x2="580" y2="170" stroke="var(--paper-rule)"/>
+          <line x1="50" y1="20" x2="50" y2="170" stroke="var(--paper-rule)"/>
+          <path d="M50,40 C200,45 380,120 580,160" fill="none" stroke="#f59e0b" stroke-width="3"/>
+          <line x1="50" y1="35" x2="580" y2="35" stroke="var(--paper-accent)" stroke-width="3"/>
+          <text x="560" y="30" fill="var(--paper-accent)" font-size="13" text-anchor="end">hook (deterministic)</text>
+          <text x="300" y="110" fill="#f59e0b" font-size="13">prose instruction (decays)</text>
+          <text x="315" y="192" fill="var(--paper-muted)" font-size="12" text-anchor="middle">context length →</text>
+        </svg>
+        <figcaption>Sentences are probabilistic; the probability decays with context length. Hooks don't.</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>5 · Institutional Memory &amp; Learning</h2>
+      <p class="vp">A system that compounds — and stops repeating its mistakes.</p>
+      <p>Every lesson is a fixed record, not a vibe: <strong>ID · Date · Cost · Symptom → Cause → Rule → Recovery</strong>, with a RECURRENCE annotation if the rule gets broken again. IDs are append-only and never renumbered — external docs and scripts reference them — and task queues never live here; a lessons file is incident memory, not a to-do list. The Symptom→Cause→Rule shape forces a <em>mechanical</em> rule out of every incident, not a resolution to be more careful next time, and the <strong>Cost field is load-bearing</strong>: it's the line that convinces a future reader — human or agent — that the rule is actually worth obeying, not just worth reading past. This is Anthropic's own structured note-taking / agentic-memory pattern — an agent that regularly writes notes persisted outside the context window — and it isn't a nicety: Anthropic's file-based memory tool reported <strong>84% token savings</strong> and a <strong>39% performance improvement</strong> on long tasks when paired with context editing.</p>
+      <p>Memory that isn't structured the same way rots the same way. Each project keeps a <code>memory/</code> directory: one always-loaded index (one line per fact, pointer only) plus one file per fact carrying its type and a provenance line — which session wrote it, on what evidence. Facts get updated, not duplicated; wrong memories get deleted, not left to accumulate contradictions. A periodic audit checks index-to-body sync, cross-file contradictions, and ground-truth on load-bearing facts, plus a deterministic anti-poisoning scan — regex for hijack-shaped content and credential-shaped strings — that runs report-only, so it flags a problem but never blocks a session.</p>
+
+      <div class="war"><b>War story · the audit that found the gaps.</b> A memory audit found one project's store completely empty and another violating its own schema wholesale — both silently, both for active projects. The discipline isn't optional: memory that isn't audited quietly rots. (HANDBOOK 2.5.)</div>
+
+      <figure class="graphic lesson-graphic" role="img" aria-label="Lesson lifecycle loop: Correction leads to Symptom, then Cause, then a mechanical Rule, priced with a Cost, recalled at session start, which prevents recurrence, and loops back to the next Correction.">
+        <div class="lesson-cycle">
+          <div class="lesson-stage"><span class="lesson-num">1</span><b>Correction</b><span class="lesson-note">something gets fixed mid-session</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage"><span class="lesson-num">2</span><b>Symptom</b><span class="lesson-note">what was observed</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage"><span class="lesson-num">3</span><b>Cause</b><span class="lesson-note">why it happened</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage lesson-rule"><span class="lesson-num">4</span><b>Rule</b><span class="lesson-note">mechanical, not "be careful"</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage lesson-cost"><span class="lesson-num">5</span><b>Cost</b><span class="lesson-note">priced, so it's worth obeying</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage"><span class="lesson-num">6</span><b>Recalled</b><span class="lesson-note">injected at session start</span></div>
+          <span class="lesson-arrow" aria-hidden="true">→</span>
+          <div class="lesson-stage lesson-final"><span class="lesson-num">7</span><b>Prevents recurrence</b><span class="lesson-note">the mistake doesn't repeat</span></div>
+        </div>
+        <div class="lesson-loopback" aria-hidden="true">↻ loops back to the next Correction</div>
+        <figcaption>Entry format: ID · Date · Cost · Symptom → Cause → Rule → Recovery. The cost field is what convinces a future reader the rule is worth obeying.</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>6 · Unattended Autonomy</h2>
+      <p class="vp">Run it overnight. Wake to a receipt you can trust.</p>
+      <p>The loop that runs while I sleep maps to a fixed six-part doctrine, not an open-ended prompt: trigger, rules-load, executor, verifier, memory write, stop check. Every nightly run is one bounded unit through that shape — never an unscoped "keep going." The step that carries the most weight is the fourth: a separate, fresh-context, zero-tool model grades the diff the executor produced. The maker is never the grader — the same agent that wrote the change cannot be the one that certifies it.</p>
+      <p>A run only ends two ways: green-and-verified opens a draft PR, or anything else emits a BLOCKED receipt — never a claimed DONE that didn't earn it. Four exits, checked in priority order, keep a stuck or confidently-wrong loop from running past its evidence: the success condition itself, a retry ceiling, a verifier-disagreement ceiling, and a budget ceiling per cycle. Autonomy is earned per category on a trust ledger — runs and passes tracked, demotion on a pass-rate drop pages the human — but the ledger tops out below merge rights: promotion to auto-merge never happens, by design. The merge decision stays human, every time.</p>
+
+      <p class="muted">I run this every night. The full operations story — live receipts, named kill switches, the trust ledger in action — is its own case study: <a href="/agentic-os/">Operating an Agentic OS →</a>. Here I focus on the engineering doctrine that makes it safe.</p>
+
+      <figure class="graphic" role="img" aria-label="The six-part unattended loop: 1 trigger, 2 rules-load (quarantine-scan lessons first), 3 executor (one bounded goal, scoped tools, isolated worktree), 4 verifier (separate fresh-context zero-tool model grades the diff), 5 memory write (append-only ledgers committed to git), 6 stop check (green and verified opens a draft PR, anything else emits a BLOCKED receipt).">
+        <div class="loop6">
+          <div class="node"><em>1</em>Trigger<span>launchd / cron / cloud routine</span></div>
+          <div class="node"><em>2</em>Rules-load<span>quarantine-scan lessons first</span></div>
+          <div class="node"><em>3</em>Executor<span>one bounded goal · scoped tools · isolated worktree</span></div>
+          <div class="node verifier"><em>4</em>Verifier<span>separate fresh-context zero-tool model grades the diff</span></div>
+          <div class="node"><em>5</em>Memory write<span>append-only ledgers, committed</span></div>
+          <div class="node"><em>6</em>Stop check<span>green+verified → draft PR · else → BLOCKED</span></div>
+        </div>
+        <figcaption>One bounded unit per cycle. The maker is never the grader.</figcaption>
+      </figure>
+
+      <figure class="graphic" role="img" aria-label="The safe-autonomy ramp: manual run, then skill, then STATE and receipts, then a hard binary gate, then schedule — never skip a step, each step's value is provable before the next step's complexity is added. Four exits, checked in priority order: success condition, retry ceiling (same step failing three times stops and escalates), verifier-disagreement ceiling (three consecutive maker/verifier splits pauses the loop), and budget ceiling per cycle.">
+        <div class="ramp-wrap">
+          <ol class="ramp-bar">
+            <li class="ramp-step"><span class="ramp-n">1</span><span class="ramp-label">Manual run</span></li>
+            <li class="ramp-step"><span class="ramp-n">2</span><span class="ramp-label">Skill</span></li>
+            <li class="ramp-step"><span class="ramp-n">3</span><span class="ramp-label">STATE / receipts</span></li>
+            <li class="ramp-step ramp-gate"><span class="ramp-n">4</span><span class="ramp-label">Hard binary gate</span></li>
+            <li class="ramp-step"><span class="ramp-n">5</span><span class="ramp-label">Schedule</span></li>
+          </ol>
+          <ul class="ramp-exits">
+            <li><b>1</b> Success condition</li>
+            <li><b>2</b> Retry ceiling<span>same step failing 3× stops and escalates</span></li>
+            <li><b>3</b> Verifier-disagreement ceiling<span>3 consecutive maker/verifier splits pauses — catches confidently wrong, not just stuck</span></li>
+            <li><b>4</b> Budget ceiling<span>per cycle</span></li>
+          </ul>
+        </div>
+        <figcaption>Each step's value is provable before the next step's complexity. Never skip a step. Right: the four exits, in priority order.</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>7 · Multi-Agent &amp; Safety Discipline</h2>
+      <p class="vp">Parallelism and untrusted input — without the foot-guns.</p>
+      <p>A second agent that grades a diff earns its keep only if it never sees the builder's reasoning: fresh-context verification hands a reviewer the artifacts alone — the diff, the test output, the logs — nothing else. Graders run at low effort on purpose; judging evidence is cheaper than producing it. The prompt shape matters as much as the setup: ask for <strong>all</strong> findings plus severity, and filter downstream yourself. Told to "only report high-severity," a model obeys that literally and quietly suppresses real findings underneath the bar. None of this is free — multi-agent review is less effective on tightly interdependent code, and costs roughly <strong>15x</strong> the tokens of a single-agent pass. Reach for a second agent when an independent check is worth that multiplier, not as a default.</p>
+      <p>The same discipline that keeps a builder from grading its own work keeps an agent that reads the open internet from also holding the keys. An agent that ingests untrusted external content — scraped pages, emails, vendored bundles — runs <strong>read-only</strong>, full stop. The agent holding write or deploy power never parses that raw content directly; only sanitized data is allowed to cross the line between them.</p>
+      <p>Parallelism has its own physics once agents share a filesystem. Branch pointers, HEAD, and the stash list are shared mutable state across every worktree touching a repo: <code>git stash</code> is banned outright — a patch-file round-trip replaces it — and <code>commit --amend</code> never runs in a shared checkout. Parallel implementer agents get their <strong>own worktrees</strong> or run serially; there's no middle ground, and every parallel dispatch ends with a check that HEAD is still yours. Once a PR merges, its branch is <strong>frozen</strong> — a follow-up starts fresh off <code>origin/main</code>, because a squash-merge silently orphans anything still stacked on the old branch.</p>
+      <p>The same verify-before-you-act instinct applies to tools, not just agents: probe with a CLI or API before reaching for a dashboard. The ladder below runs CLI/API first, a headless script second, and a browser last — the browser is a fallback, capped at 2–3 attempts, because a model describing another product's UI from memory is guessing, not verifying.</p>
+
+      <p class="muted">The reader/actor boundary below is the same one that guards untrusted input in the nightly loop — see <a href="/agentic-os/">Operating an Agentic OS →</a> for it running in production.</p>
+
+      <figure class="graphic quar-graphic" role="img" aria-label="Reader/actor trust boundary. Left: reader agent, read-only, ingests untrusted content — scraped pages, emails, vendored bundles. A dashed trust boundary separates the two sides. Right: actor agent, write and deploy power, never parses raw untrusted input directly. An arrow labeled sanitized data only crosses the boundary from left to right.">
+        <div class="quar-cols">
+          <div class="quar-panel quar-reader">
+            <h4>Reader agent</h4>
+            <p class="quar-role">read-only</p>
+            <ul class="quar-list">
+              <li>scraped pages</li>
+              <li>emails</li>
+              <li>vendored bundles</li>
+            </ul>
+          </div>
+          <div class="quar-boundary" aria-hidden="true">
+            <span class="quar-boundary-label">trust boundary</span>
+            <span class="quar-cross">sanitized data only →</span>
+          </div>
+          <div class="quar-panel quar-actor">
+            <h4>Actor agent</h4>
+            <p class="quar-role">write / deploy</p>
+            <p class="quar-note">never parses raw untrusted input</p>
+          </div>
+        </div>
+        <figcaption>Only sanitized data crosses the boundary. The agent with write/deploy power never touches raw untrusted content.</figcaption>
+      </figure>
+
+      <figure class="graphic ladder-graphic" role="img" aria-label="Tool ladder, ordered top to bottom by preference. Rung 1, top, most preferred: CLI or API. Rung 2: headless script. Rung 3, bottom, fallback: browser, capped at 2 to 3 attempts.">
+        <ol class="ladder-rungs">
+          <li class="ladder-rung ladder-top"><span class="ladder-n">1</span><span class="ladder-body"><b>CLI / API</b><span class="ladder-note">preferred — probe here first</span></span></li>
+          <li class="ladder-rung ladder-mid"><span class="ladder-n">2</span><span class="ladder-body"><b>Headless script</b><span class="ladder-note">scripted, repeatable</span></span></li>
+          <li class="ladder-rung ladder-fallback"><span class="ladder-n">3</span><span class="ladder-body"><b>Browser</b><span class="ladder-note">fallback — capped at 2–3 attempts</span></span></li>
+        </ol>
+        <figcaption>Probe with CLIs before dashboards; never describe another product's UI from memory.</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>8 · Governance &amp; Honest Trade-offs</h2>
+      <p class="vp">Staff-level judgment: knowing exactly what to change at scale.</p>
+      <p>This pillar governs the harness itself, not the work it does. The rule is <strong>propose-only self-governance</strong>: the model drafts diffs to governing files — CLAUDE.md, permissions, hook configs — and a human approves before they take effect. That closes the one failure mode the other seven pillars can't: a model that could edit its own constraints without approval could edit away the limits meant to catch its own mistakes. One human stands in as the entire review board, and the board never rubber-stamps itself.</p>
+      <p>That only works because it's honest about its own scope. There is no universally right harness — only the harness matched to who's holding the leash. Solo, every default below buys velocity because the blast radius is one person's judgment and one person's repos: a broad allow list, one human as the whole review board, <code>curl</code> left open for CLI-first diagnostics. A team inherits the identical defaults and inherits the identical blast radius, except now it compounds across every engineer before anyone reviews it. None of these six calls are wrong for a solo harness; none of them survive contact with a second engineer unexamined (HANDBOOK 2.1; Part 5).</p>
+
+      <figure class="graphic tradeoff-graphic">
+        <div class="tradeoff-scroll" tabindex="0" role="group" aria-label="Solo-vs-team trade-off table, scrollable">
+          <table class="tradeoff-table">
+            <thead>
+              <tr>
+                <th scope="col">Choice here</th>
+                <th scope="col">Why (solo)</th>
+                <th scope="col">Team alternative</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Broad <code>allow</code> list</td>
+                <td>zero prompt fatigue</td>
+                <td>narrow allow, more <code>ask</code>, sandbox on</td>
+              </tr>
+              <tr>
+                <td>Propose-only self-governance</td>
+                <td>one human is the review board</td>
+                <td>PRs + CODEOWNERS on harness files</td>
+              </tr>
+              <tr>
+                <td>Prose + hook hybrid enforcement</td>
+                <td>hooks only for the highest-value invariants</td>
+                <td>more hooks; CI checks on instruction files</td>
+              </tr>
+              <tr>
+                <td>Per-project memory stores</td>
+                <td>matches Claude Code's layout</td>
+                <td>central store risks; keep per-project, add shared index</td>
+              </tr>
+              <tr>
+                <td><code>curl</code> allowed</td>
+                <td>CLI-first diagnostics</td>
+                <td>deny curl in unattended profiles (docs' default)</td>
+              </tr>
+              <tr>
+                <td>No agent teams</td>
+                <td>experimental, disabled by default; subagents cover the need</td>
+                <td>same — revisit when teams exit experimental</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figcaption>Six solo defaults and their team-scale alternative, reproduced verbatim from HANDBOOK Part 5. Context determines correctness — not one of these is a universal "best practice."</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>9 · Adoption Path</h2>
+      <p class="vp">Transferable and teachable — the mentor's signal.</p>
+      <p>None of the seven pillars above are exotic, and none require inheriting this harness's specific archaeology. What matters is the order: each step's value has to be provable before the next step's complexity gets added, or the later steps get built on a foundation nobody has actually confirmed holds.</p>
+      <p><strong>Day 1 (~2 hours).</strong> Write a ≤200-line <code>~/CLAUDE.md</code> — hard limits, the Evidence Ledger, a pointer to the lessons file. Add the settings deny floor (secrets, SSH, cloud credentials) at user scope and smoke-test it in a fresh session. Create an empty <code>~/tasks/lessons.md</code> with the entry format written at the top, before there's anything to log.</p>
+      <p><strong>Week 1.</strong> Install the SessionStart preflight hook, starting with git pre-flight plus the lessons digest. Per active repo: a lean <code>.claude/CLAUDE.md</code> — paths, commands, gotchas, counts written as pointers, not numbers — and a <code>docs/AGENT_LESSONS.md</code>. Build <code>make verify</code> and prove it fails correctly before trusting its green.</p>
+      <p><strong>Month 1.</strong> Convert your three most-repeated workflows into skills with trigger-phrase descriptions. Stand up one nightly loop through the full ramp — manual run, then skill, then receipts, then a hard binary gate, and only then a schedule. Put the memory audit and a periodic fresh-context harness re-audit on that same schedule.</p>
+
+      <figure class="graphic timeline-graphic" role="img" aria-label="Adoption ramp across three columns. Day 1, about two hours: write a 200-line CLAUDE.md with hard limits and the Evidence Ledger, add the settings deny floor for secrets and smoke-test it, create an empty lessons file with the entry format. Week 1: install the SessionStart preflight hook, add a lean per-repo CLAUDE.md and AGENT_LESSONS.md, build make verify and prove it fails correctly. Month 1: convert the three most-repeated workflows into skills, stand up one nightly loop through the full ramp, schedule the memory audit and a periodic harness re-audit.">
+        <div class="timeline-cols">
+          <div class="timeline-col">
+            <h4>Day 1<span class="timeline-sub">~2 hours</span></h4>
+            <ul>
+              <li>Write a ≤200-line <code>~/CLAUDE.md</code> — hard limits + Evidence Ledger + lessons pointer</li>
+              <li>Add the settings deny floor (secrets/SSH/cloud creds) at user scope, smoke-test it</li>
+              <li>Create an empty <code>~/tasks/lessons.md</code> with the entry format</li>
+            </ul>
+          </div>
+          <div class="timeline-col">
+            <h4>Week 1</h4>
+            <ul>
+              <li>Install the SessionStart preflight hook (git pre-flight + lessons digest)</li>
+              <li>Per active repo: a lean <code>.claude/CLAUDE.md</code> (paths, commands, gotchas as pointers) + <code>docs/AGENT_LESSONS.md</code></li>
+              <li>Build <code>make verify</code> and prove it fails correctly</li>
+            </ul>
+          </div>
+          <div class="timeline-col">
+            <h4>Month 1</h4>
+            <ul>
+              <li>Convert your 3 most-repeated workflows into skills with trigger-phrase descriptions</li>
+              <li>Stand up one nightly loop through the full ramp (manual → skill → receipts → gate → schedule)</li>
+              <li>Schedule the memory audit + a periodic fresh-context harness re-audit</li>
+            </ul>
+          </div>
+        </div>
+        <figcaption>The order matters: each step's value is provable before the next step's complexity.</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>10 · Grounded in Primary Sources</h2>
+      <p class="vp">Rigor, not invention.</p>
+      <p>The operating reference keeps a §7 rejected-practices section for exactly one reason: best-practice advice churns constantly, and re-litigating settled questions every time a new article appears is its own kind of drift. Every new candidate practice gets triaged against the doc instead — <strong>DUPLICATE</strong> (already covered), <strong>REJECTED</strong> (considered and declined, with the reason recorded), <strong>CONFLICT</strong> (contradicts a standing rule — flagged for a decision, not silently adopted), or <strong>NEW</strong> (actually adds something). That triage is what keeps the harness from re-arguing itself on a schedule set by other people's blog posts.</p>
+      <p>The same discipline applies to this paper: every externally-grounded practice above is traced to a primary source rather than asserted from memory or convention. Two are not, and are labeled as such rather than dressed up as cited — <strong>propose-only governance</strong> and the <strong>blind-oracle check</strong> are local safety invariants this harness adopted because the failure mode warranted it, with no Anthropic doc behind them. The map below is that trace, row by row.</p>
+
+      <figure class="graphic cite-graphic">
+        <h4 id="cite-map-heading">Practice → source citation map</h4>
+        <div class="cite-rows" role="list" aria-labelledby="cite-map-heading">
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Context layering (Layer 0–3 placement, the removal test)</span>
+            <span class="cite-sources"><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener noreferrer">effective-context-engineering-for-ai-agents</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Evidence Ledger (fixed schema over dispositional prose)</span>
+            <span class="cite-sources"><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener noreferrer">best-practices</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Hooks (deterministic enforcement over advisory sentences)</span>
+            <span class="cite-sources"><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener noreferrer">best-practices</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Memory (file-based architecture, one-fact-per-file, 84%/39% figures)</span>
+            <span class="cite-sources"><a href="https://www.anthropic.com/news/context-management" target="_blank" rel="noopener noreferrer">context-management</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Loop doctrine (six-part unattended loop, one-feature discipline, never-remove-tests)</span>
+            <span class="cite-sources"><a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener noreferrer">effective-harnesses-for-long-running-agents</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Permissions (scope precedence, deny-first merging, deny patterns)</span>
+            <span class="cite-sources"><a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener noreferrer">settings</a> · <a href="https://code.claude.com/docs/en/permissions" target="_blank" rel="noopener noreferrer">permissions</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Tool ladder (CLI/API → headless script → browser fallback)</span>
+            <span class="cite-sources"><a href="https://code.claude.com/docs/en/headless" target="_blank" rel="noopener noreferrer">headless</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Model routing (&lt;200-line aim, Opus-default cost trap)</span>
+            <span class="cite-sources"><a href="https://code.claude.com/docs/en/costs" target="_blank" rel="noopener noreferrer">costs</a></span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Propose-only self-governance</span>
+            <span class="cite-sources">local invariant — no external citation</span>
+          </div>
+          <div class="cite-row" role="listitem">
+            <span class="cite-practice">Blind-oracle check (requirements-only reviewer)</span>
+            <span class="cite-sources">local invariant — no external citation</span>
+          </div>
+        </div>
+        <p class="cite-note">Eight rows above resolve to an Anthropic engineering doc, not an inference from it; two are local invariants flagged as such rather than dressed up as cited — the same §7 discipline applied to this paper's own claims.</p>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>About the author</h2>
+      <!-- DRAFT BIO — David to confirm/edit -->
+      <p>David Reed, PhD, is an AI/ML engineering leader with 35+ years of experience, currently focused on agentic systems in regulated domains — healthcare, edtech, and fintech-adjacent. He holds two patents from his time in large-scale systems engineering: <a href="https://patents.google.com/patent/US6850988" target="_blank" rel="noopener noreferrer">US 6,850,988</a>, "Dynamic E-Commerce Click Stream Analysis" (foundational to Amazon's recommendation engine), and <a href="https://patents.google.com/patent/US6839229" target="_blank" rel="noopener noreferrer">US 6,839,229</a>, "Large-Grained Database Concurrency Management" for data warehouses. Prior roles include Master Technologist at Hewlett-Packard and Principal TPM-AI at Microsoft. Public work includes <strong>PACCA</strong>, a healthcare prior-authorization multi-agent platform, alongside education-focused agentic tools (ALCA, LPA) — all under <a href="https://github.com/drdgreed" target="_blank" rel="noopener noreferrer">github.com/drdgreed</a>, with more at <a href="https://drdavidreed.com" target="_blank" rel="noopener noreferrer">drdavidreed.com</a>.</p>
+      <p class="muted">This paper is itself the evidence: it documents AI-platform engineering (the four-layer context system, the memory architecture), staff/lead-level judgment (the honest trade-off tables, the propose-only governance model), and agentic QA discipline (the Evidence Ledger, fresh-context verification, the blind-oracle pattern) — applied to the author's own production harness, not a hypothetical one.</p>
+    </section>
+
+    <section class="pillar">
+      <h2>Appendix A — File-by-file inventory</h2>
+      <p class="vp">Every file in the harness, what layer it lives at, and why.</p>
+      <p>The full inventory behind Pillar 2's four-layer model, reproduced from HANDBOOK Part 2 — one row per file, faithful to the source's own description of what each does and why it sits where it sits.</p>
+
+      <figure class="graphic appendix-graphic">
+        <div class="appendix-scroll" tabindex="0" role="group" aria-label="File-by-file inventory table, scrollable">
+          <table class="appendix-table">
+            <thead>
+              <tr>
+                <th scope="col">File</th>
+                <th scope="col">Layer</th>
+                <th scope="col">Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>~/CLAUDE.md</code></td>
+                <td>0 · Always-on</td>
+                <td>Global identity and hard limits: engineer persona, unattended-work limits, core principles (verify empirically, KISS/YAGNI), the self-improvement loop pointers, the Polished-Output Checkpoint, the Evidence Ledger.</td>
+              </tr>
+              <tr>
+                <td><code>&lt;repo&gt;/.claude/CLAUDE.md</code></td>
+                <td>0 · Always-on</td>
+                <td>Per-project context: what the project is, key paths, run commands, conventions, active-workstream gotchas. Counts are written as pointers (the command that counts), never hard-coded numbers.</td>
+              </tr>
+              <tr>
+                <td><code>~/tasks/CLAUDE_SETUP.md</code></td>
+                <td>2 · On-demand</td>
+                <td>The operating reference: build lifecycle (Map→Plan→Build→Verify→Learn), model routing ladder, unattended-loop policy, session economics, quality levers, and a rejected-practices §7 so stale advice is auto-filtered on arrival.</td>
+              </tr>
+              <tr>
+                <td><code>~/tasks/lessons.md</code> + <code>&lt;repo&gt;/docs/AGENT_LESSONS.md</code></td>
+                <td>2 · On-demand</td>
+                <td>Append-only incident memory: ID · Date · Cost · Symptom → Cause → Rule → Recovery. Cross-project process lessons go in the global file; repo-specific gotchas go in the repo file.</td>
+              </tr>
+              <tr>
+                <td>Memory stores (<code>MEMORY.md</code> index + per-fact files)</td>
+                <td>0 index / 2 bodies</td>
+                <td>One-fact-per-file memory: an always-loaded index holds a one-line pointer per fact, while the fact's content and provenance (session, evidence) live in their own file, opened only when needed.</td>
+              </tr>
+              <tr>
+                <td><code>~/.claude/skills/*/SKILL.md</code></td>
+                <td>1 · Auto-triggered</td>
+                <td>~10 custom skills (loop engineering, model triage, memory audit, session handoff, QA capture...) that load on a trigger-phrase match rather than being remembered.</td>
+              </tr>
+              <tr>
+                <td><code>~/.claude/hooks/</code> (registered <code>SessionStart</code>)</td>
+                <td>Deterministic</td>
+                <td><code>session-preflight.sh</code>: memory anti-poisoning scan, git pre-flight, opt-in project-health smoke test, always-on lessons-title digest, empty-memory-store flag. Exception-based — silent when clean.</td>
+              </tr>
+              <tr>
+                <td><code>~/.claude/settings.json</code></td>
+                <td>0 · Always-on</td>
+                <td>Permissions: <code>allow</code> (routine work) / <code>ask</code> (destructive verbs) / <code>deny</code> (secrets floor: <code>.env</code>, <code>secrets/**</code>, <code>~/.ssh/**</code>, <code>~/.aws/**</code>) at user scope, where deny-first merging means no repo can override it.</td>
+              </tr>
+              <tr>
+                <td><code>make verify</code></td>
+                <td>Per project</td>
+                <td>One command per repo: regenerate all inputs → run everything → compare against declared tolerances → timestamped machine-readable report → exit nonzero on any failure. Proven to fail correctly, not just to pass.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figcaption>Reproduced from HANDBOOK Part 2 — one row per file, faithful to the source's stated purpose for each.</figcaption>
+      </figure>
+    </section>
+
+    <section class="pillar">
+      <h2>Appendix B — Source index &amp; known gaps</h2>
+      <p class="vp">Where every claim traces to, and what's still open.</p>
+      <p>Every practice in this paper resolves to one of the primary sources below, verified live against the docs on 2026-07-16. The known-gaps list that follows is deliberately unresolved — an honest harness names what it hasn't finished, not just what it has.</p>
+
+      <figure class="graphic appendix-graphic">
+        <div class="appendix-scroll" tabindex="0" role="group" aria-label="Source index table, scrollable">
+          <table class="appendix-table">
+            <thead>
+              <tr>
+                <th scope="col">Source</th>
+                <th scope="col">Used for</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><a href="https://code.claude.com/docs/en/best-practices" target="_blank" rel="noopener noreferrer">code.claude.com/docs/en/best-practices</a></td>
+                <td>CLAUDE.md concision test, hooks-over-instructions, verification-first, evidence-over-assertion, reviewer over-reporting</td>
+              </tr>
+              <tr>
+                <td><a href="https://code.claude.com/docs/en/costs" target="_blank" rel="noopener noreferrer">code.claude.com/docs/en/costs</a></td>
+                <td>&lt;200-line aim, model routing, Opus-default cost trap</td>
+              </tr>
+              <tr>
+                <td><a href="https://code.claude.com/docs/en/settings" target="_blank" rel="noopener noreferrer">code.claude.com/docs/en/settings</a> / <a href="https://code.claude.com/docs/en/permissions" target="_blank" rel="noopener noreferrer">permissions</a></td>
+                <td>Scope precedence, deny-first merging, documented deny patterns, sandbox caveat</td>
+              </tr>
+              <tr>
+                <td><a href="https://code.claude.com/docs/en/headless" target="_blank" rel="noopener noreferrer">code.claude.com/docs/en/headless</a></td>
+                <td><code>claude -p</code>, <code>--allowedTools</code>, <code>--bare</code> + keychain caveat, JSON cost output</td>
+              </tr>
+              <tr>
+                <td><a href="https://code.claude.com/docs/en/agent-teams" target="_blank" rel="noopener noreferrer">code.claude.com/docs/en/agent-teams</a></td>
+                <td>Teams experimental, subagents preferred for dependent work</td>
+              </tr>
+              <tr>
+                <td><a href="https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents" target="_blank" rel="noopener noreferrer">anthropic.com/engineering/effective-harnesses-for-long-running-agents</a></td>
+                <td>Loop architecture, JSON state, one-feature discipline, never-remove-tests</td>
+              </tr>
+              <tr>
+                <td><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents" target="_blank" rel="noopener noreferrer">anthropic.com/engineering/effective-context-engineering-for-ai-agents</a></td>
+                <td>Smallest-high-signal-tokens, structured note-taking, subagent clean contexts, 15x multi-agent cost</td>
+              </tr>
+              <tr>
+                <td><a href="https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool" target="_blank" rel="noopener noreferrer">platform.claude.com — memory tool</a> / <a href="https://www.anthropic.com/news/context-management" target="_blank" rel="noopener noreferrer">context-management</a></td>
+                <td>File-based memory architecture, 84%/39% figures</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figcaption>All sources verified live 2026-07-16. Re-verification is due quarterly — Claude Code ships weekly.</figcaption>
+      </figure>
+
+      <h3>Known gaps</h3>
+      <ul class="appendix-gaps">
+        <li>No deterministic Stop-hook verification gate for unattended runs yet — <code>/goal</code> conditions are evaluator-based (probabilistic), while the docs note Stop hooks give the hard guarantee.</li>
+        <li>The blind-oracle layer (golden fixtures + a requirements-only oracle) is policy, but not yet practiced in the newest repo's verify harness.</li>
+        <li><code>~/CLAUDE.md</code> persona/principles section is a placement-test prune candidate — pending owner call, not yet cut.</li>
+        <li>Prompt-caching guidance in the operating reference is the one section not re-verified against current docs this round (research fetches hit server errors) — needs a follow-up pass.</li>
+      </ul>
+      <p class="muted">Closed for the record: deny-rule runtime verification (flagged as a gap through 2026-07-17) was smoke-tested via fresh headless sessions and closed — <code>~/.ssh/known_hosts</code> and repo-local <code>.env</code> reads both denied, a control read of a benign file succeeded. Honesty cuts both ways: gaps get listed until closed, and closed gaps get marked closed, not quietly dropped.</p>
+    </section>
+  </article>
+</BaseLayout>
+
+<script>
+  // PDF via the browser's native print-to-PDF. Zero dependencies (spec §6, Option A).
+  const print = () => window.print();
+  document.querySelector('[data-print-btn]')?.addEventListener('click', print);
+  document.querySelector('[data-print-link]')?.addEventListener('click', (e) => { e.preventDefault(); print(); });
+</script>
+
+<style>
+  .paper {
+    --paper-bg: #0b0f14;          /* on-screen: native to the dark site */
+    --paper-fg: #e7edf3;
+    --paper-muted: #9fb0c0;
+    --paper-accent: #2dd4bf;      /* teal token */
+    --paper-rule: rgba(159,176,192,0.18);
+    max-width: 860px; margin: 0 auto; padding: 4rem 1.25rem 6rem;
+    color: var(--paper-fg);
+    font-family: Inter, system-ui, sans-serif; line-height: 1.7;
+  }
+  .paper h1, .paper h2, .paper h3 { font-family: "Playfair Display", Georgia, serif; line-height: 1.15; }
+  .paper h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); margin: .25rem 0 1rem; }
+  .paper h2 { font-size: clamp(1.6rem, 4vw, 2.1rem); margin: 3.5rem 0 1rem; }
+  .paper h3 { font-size: 1.2rem; margin: 2rem 0 .5rem; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; color: var(--paper-accent); font-weight: 600; }
+  .dek { font-size: 1.25rem; color: var(--paper-fg); margin: 0 0 1.25rem; }
+  .byline { color: var(--paper-muted); font-size: .95rem; }
+  .byline a, .paper a { color: var(--paper-accent); }
+  .dualtrack { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin: 1.5rem 0; }
+  .dualtrack span { border: 1px solid var(--paper-rule); border-radius: 999px; padding: .35rem .8rem; font-size: .85rem; color: var(--paper-muted); }
+  .dualtrack span:nth-child(2) { border: 0; color: var(--paper-accent); font-weight: 700; }
+  .receipts { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 1rem; margin: 2rem 0 .5rem; }
+  .receipt { border: 1px solid var(--paper-rule); border-radius: 12px; padding: 1rem; }
+  .receipt .num em { font-style: normal; font-size: 2rem; font-weight: 800; color: var(--paper-accent); }
+  .receipt .lbl { color: var(--paper-muted); font-size: .85rem; margin-top: .35rem; }
+  .receipts-note { color: var(--paper-muted); font-size: .85rem; }
+  .paper .muted { color: var(--paper-muted); }
+  .printbtn { background: var(--paper-accent); color:#04201c; border:0; border-radius:8px; padding:.6rem 1rem; font-weight:700; cursor:pointer; margin:1rem 0; }
+  /* PDF deliverable (Option A): flip the paper to light for print, hide interactive chrome, keep graphics unbroken.
+     Consolidated print stylesheet lives in a single block at the end of this <style> tag
+     (placed there so it wins the cascade over the later .tradeoff-table / .appendix-table base rules). */
+  /* Pillar + value-prop + war-story primitives (used by Tasks 3–9) */
+  .pillar { border-top: 1px solid var(--paper-rule); padding-top: .5rem; }
+  .vp { font-size: 1.15rem; color: var(--paper-fg); font-weight: 600; border-left: 3px solid var(--paper-accent); padding-left: 1rem; margin: .5rem 0 1.25rem; }
+  .war { border: 1px solid var(--paper-rule); border-left: 3px solid #f59e0b; border-radius: 8px; padding: 1rem 1.1rem; margin: 1.25rem 0; background: rgba(245,158,11,0.05); }
+  .war b { color: #f59e0b; }
+  figure.graphic { margin: 1.75rem 0; border: 1px solid var(--paper-rule); border-radius: 12px; padding: 1.25rem; }
+  figure.graphic figcaption { color: var(--paper-muted); font-size: .82rem; margin-top: .75rem; text-align: center; }
+  /* Graphic 3 — demo-to-production gap */
+  .gap-cols { display: grid; grid-template-columns: 1fr minmax(140px, .8fr) 1fr; gap: 1.25rem; align-items: start; }
+  .gap-cols h4 { font-family: "Playfair Display", Georgia, serif; font-size: 1rem; margin: 0 0 .5rem; color: var(--paper-fg); }
+  .gap-cols ul { margin: 0; padding-left: 1.1rem; color: var(--paper-muted); font-size: .9rem; line-height: 1.55; }
+  .gap-cols li { margin-bottom: .3rem; }
+  .gap-mid { display: flex; flex-direction: column; gap: .5rem; align-items: center; padding-top: 1.9rem; }
+  .gap-mid span { border: 1px solid rgba(245,158,11,0.4); background: rgba(245,158,11,0.1); color: #f59e0b; border-radius: 999px; padding: .3rem .7rem; font-size: .78rem; text-align: center; white-space: normal; }
+  @media (max-width: 640px) {
+    .gap-cols { grid-template-columns: 1fr; }
+    .gap-mid { flex-direction: row; flex-wrap: wrap; padding-top: 0; }
+  }
+  /* Graphic 4 — four-layer context placement pyramid */
+  .layers { display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+  .layer { border: 1px solid var(--paper-rule); border-left-width: 4px; border-radius: 8px; padding: .85rem 1.1rem; display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; box-sizing: border-box; }
+  .tier { font-family: "Playfair Display", Georgia, serif; font-weight: 700; font-size: .95rem; white-space: nowrap; min-width: 9.5rem; }
+  .what { color: var(--paper-muted); font-size: .92rem; flex: 1 1 240px; }
+  .what b { color: var(--paper-fg); }
+  .cost { display: block; margin-top: .3rem; font-size: .8rem; font-style: italic; }
+  .l0 { width: 100%; border-left-color: #f43f5e; background: rgba(244,63,94,0.09); }
+  .l0 .tier, .l0 .cost { color: #f43f5e; }
+  .l1 { width: 92%; border-left-color: #f59e0b; background: rgba(245,158,11,0.07); }
+  .l1 .tier, .l1 .cost { color: #f59e0b; }
+  .l2 { width: 84%; border-left-color: #2dd4bf; background: rgba(45,212,191,0.05); }
+  .l2 .tier, .l2 .cost { color: #2dd4bf; }
+  .l3 { width: 76%; border-left-color: #64748b; background: rgba(100,116,139,0.04); }
+  .l3 .tier, .l3 .cost { color: #94a3b8; }
+  @media (max-width: 480px) {
+    .l0, .l1, .l2, .l3 { width: 100%; }
+  }
+  /* Graphic 5 — Evidence Ledger before/after */
+  .ledger-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; align-items: stretch; }
+  .ledger-panel { border: 1px solid var(--paper-rule); border-radius: 10px; padding: 1rem 1.1rem; box-sizing: border-box; }
+  .ledger-panel h4 { font-family: "Playfair Display", Georgia, serif; font-size: 1rem; margin: 0 0 .75rem; display: flex; align-items: center; gap: .5rem; }
+  .ledger-before { border-left: 4px solid #f43f5e; background: rgba(244,63,94,0.06); }
+  .ledger-after { border-left: 4px solid #2dd4bf; background: rgba(45,212,191,0.05); }
+  .mark { font-weight: 800; font-size: 1.1rem; }
+  .mark.bad { color: #f43f5e; }
+  .mark.good { color: #2dd4bf; }
+  .claim-bubble { display: inline-block; border: 1px solid rgba(244,63,94,0.4); background: rgba(244,63,94,0.1); color: #f43f5e; border-radius: 999px; padding: .4rem .9rem; font-size: .95rem; font-weight: 600; margin-bottom: .75rem; }
+  .ledger-note { color: var(--paper-muted); font-size: .85rem; margin: 0; }
+  .ledger-fields { list-style: none; margin: 0 0 .85rem; padding: 0; font-size: .88rem; color: var(--paper-fg); }
+  .ledger-fields li { display: flex; align-items: baseline; gap: .5rem; padding: .25rem 0; border-bottom: 1px dashed var(--paper-rule); }
+  .ledger-fields li:last-child { border-bottom: none; }
+  .ledger-fields em { color: var(--paper-muted); font-style: italic; font-size: .82rem; }
+  .box { font-size: 1rem; color: var(--paper-muted); flex-shrink: 0; }
+  .ledger-example { display: flex; align-items: baseline; gap: .5rem; font-size: .88rem; background: rgba(45,212,191,0.08); border-radius: 6px; padding: .5rem .7rem; flex-wrap: wrap; }
+  .ledger-example .box.checked { color: #2dd4bf; }
+  .ledger-example code { background: rgba(159,176,192,0.12); padding: .1rem .35rem; border-radius: 4px; font-size: .85rem; }
+  @media (max-width: 640px) {
+    .ledger-cols { grid-template-columns: 1fr; }
+  }
+  /* Graphic 7 — lesson lifecycle loop */
+  .lesson-cycle { display: flex; flex-wrap: wrap; align-items: stretch; justify-content: center; gap: .5rem; }
+  .lesson-stage { display: flex; flex-direction: column; gap: .2rem; border: 1px solid var(--paper-rule); border-radius: 10px; padding: .7rem .85rem; min-width: 7.5rem; flex: 1 1 7.5rem; text-align: center; box-sizing: border-box; }
+  .lesson-stage b { font-family: "Playfair Display", Georgia, serif; font-size: .95rem; color: var(--paper-fg); }
+  .lesson-num { font-size: .72rem; color: var(--paper-accent); font-weight: 700; }
+  .lesson-note { font-size: .78rem; color: var(--paper-muted); }
+  .lesson-rule { border-left: 3px solid var(--paper-accent); }
+  .lesson-cost { border-left: 3px solid #f59e0b; background: rgba(245,158,11,0.06); }
+  .lesson-final { border-left: 3px solid #2dd4bf; background: rgba(45,212,191,0.05); }
+  .lesson-arrow { align-self: center; color: var(--paper-muted); font-size: 1.1rem; flex: 0 0 auto; }
+  .lesson-loopback { text-align: center; color: var(--paper-accent); font-size: .85rem; margin-top: .85rem; }
+  @media (max-width: 640px) {
+    .lesson-cycle { flex-direction: column; }
+    .lesson-arrow { transform: rotate(90deg); }
+  }
+  /* Graphic 8 — six-part unattended loop (centerpiece) */
+  .loop6 { display: flex; flex-wrap: nowrap; align-items: stretch; gap: 1.6rem; }
+  .loop6 .node { flex: 1 1 0; min-width: 0; position: relative; box-sizing: border-box; border: 1px solid var(--paper-rule); border-radius: 10px; padding: .75rem .5rem; display: flex; flex-direction: column; gap: .35rem; text-align: center; background: rgba(45,212,191,0.03); }
+  .loop6 .node em { font-style: normal; font-family: "Playfair Display", Georgia, serif; font-weight: 700; color: var(--paper-accent); font-size: 1rem; }
+  .loop6 .node span { font-size: .72rem; color: var(--paper-muted); line-height: 1.35; }
+  .loop6 .node:not(:last-child)::after { content: "→"; position: absolute; top: 50%; right: -1.5rem; transform: translateY(-50%); color: var(--paper-muted); font-size: 1.1rem; }
+  .loop6 .node.verifier { border: 2px solid var(--paper-accent); background: rgba(45,212,191,0.09); }
+  .loop6 .node.verifier em { color: var(--paper-accent); }
+  @media (max-width: 760px) {
+    .loop6 { flex-direction: column; gap: 1.7rem; }
+    .loop6 .node:not(:last-child)::after { content: "↓"; top: auto; bottom: -1.6rem; right: 50%; transform: translateX(50%); }
+  }
+  /* Graphic 9 — safe-autonomy ramp + four exits */
+  .ramp-wrap { display: flex; gap: 1.75rem; align-items: flex-end; flex-wrap: wrap; }
+  .ramp-bar { flex: 1 1 320px; display: flex; align-items: flex-end; gap: .5rem; list-style: none; margin: 0; padding: 0; }
+  .ramp-step { flex: 1 1 0; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: .3rem; border: 1px solid var(--paper-rule); border-bottom: 3px solid var(--paper-accent); border-radius: 8px 8px 0 0; padding: .6rem .3rem; text-align: center; background: rgba(45,212,191,0.04); }
+  .ramp-step:nth-child(1) { height: 3.4rem; }
+  .ramp-step:nth-child(2) { height: 4.6rem; }
+  .ramp-step:nth-child(3) { height: 5.8rem; }
+  .ramp-step:nth-child(4) { height: 7rem; }
+  .ramp-step:nth-child(5) { height: 8.2rem; }
+  .ramp-n { font-family: "Playfair Display", Georgia, serif; font-weight: 700; color: var(--paper-accent); font-size: 1.05rem; }
+  .ramp-label { font-size: .78rem; color: var(--paper-fg); }
+  .ramp-gate { border-bottom-color: #f59e0b; background: rgba(245,158,11,0.07); }
+  .ramp-gate .ramp-n { color: #f59e0b; }
+  .ramp-exits { flex: 1 1 220px; list-style: none; margin: 0; padding: 0; font-size: .85rem; color: var(--paper-muted); }
+  .ramp-exits li { border-bottom: 1px dashed var(--paper-rule); padding: .4rem 0; }
+  .ramp-exits li:last-child { border-bottom: none; }
+  .ramp-exits b { color: var(--paper-accent); margin-right: .4rem; font-family: "Playfair Display", Georgia, serif; }
+  .ramp-exits span { display: block; color: var(--paper-muted); font-size: .78rem; margin-top: .15rem; }
+  @media (max-width: 640px) {
+    .ramp-wrap { flex-direction: column; align-items: stretch; }
+    .ramp-bar { flex-direction: column; align-items: stretch; }
+    .ramp-step { height: auto !important; flex-direction: row; justify-content: flex-start; text-align: left; border-radius: 8px; border-bottom: 1px solid var(--paper-rule); border-left: 3px solid var(--paper-accent); gap: .6rem; }
+    .ramp-gate { border-left-color: #f59e0b; }
+  }
+  /* Graphic 10 — reader/actor trust boundary */
+  .quar-cols { display: grid; grid-template-columns: 1fr minmax(150px, .9fr) 1fr; gap: 1.25rem; align-items: stretch; }
+  .quar-panel { border: 1px solid var(--paper-rule); border-radius: 10px; padding: 1rem 1.1rem; box-sizing: border-box; }
+  .quar-panel h4 { font-family: "Playfair Display", Georgia, serif; font-size: 1rem; margin: 0 0 .4rem; color: var(--paper-fg); }
+  .quar-reader { border-left: 4px solid #f59e0b; background: rgba(245,158,11,0.06); }
+  .quar-actor { border-left: 4px solid #2dd4bf; background: rgba(45,212,191,0.05); }
+  .quar-role { font-size: .78rem; color: var(--paper-muted); text-transform: uppercase; letter-spacing: .05em; margin: 0 0 .6rem; }
+  .quar-list { list-style: none; margin: 0; padding: 0; font-size: .88rem; color: var(--paper-muted); }
+  .quar-list li { padding: .2rem 0; border-bottom: 1px dashed var(--paper-rule); }
+  .quar-list li:last-child { border-bottom: none; }
+  .quar-note { font-size: .88rem; color: var(--paper-muted); font-style: italic; margin: 0; }
+  .quar-boundary { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .6rem; padding: 0 .25rem; text-align: center; position: relative; }
+  .quar-boundary::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; border-left: 2px dashed var(--paper-rule); }
+  .quar-boundary-label { font-size: .66rem; text-transform: uppercase; letter-spacing: .08em; color: var(--paper-muted); background: var(--paper-bg); padding: .2rem .4rem; z-index: 1; }
+  .quar-cross { font-size: .72rem; color: var(--paper-accent); font-weight: 600; background: var(--paper-bg); padding: .1rem .3rem; z-index: 1; }
+  @media (max-width: 640px) {
+    .quar-cols { grid-template-columns: 1fr; }
+    .quar-boundary { flex-direction: row; justify-content: center; padding: .5rem 0; }
+    .quar-boundary::before { top: 50%; bottom: auto; left: 0; right: 0; border-left: none; border-top: 2px dashed var(--paper-rule); }
+  }
+  /* Graphic 11 — tool ladder, CLI/API preferred → headless → browser fallback */
+  .ladder-rungs { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; gap: .6rem; }
+  .ladder-rung { display: flex; align-items: center; gap: 1rem; border: 1px solid var(--paper-rule); border-left-width: 4px; border-radius: 8px; padding: .75rem 1.1rem; box-sizing: border-box; }
+  .ladder-n { font-family: "Playfair Display", Georgia, serif; font-weight: 700; font-size: 1.1rem; flex-shrink: 0; min-width: 1.5rem; text-align: center; }
+  .ladder-body { display: flex; flex-direction: column; gap: .15rem; }
+  .ladder-body b { color: var(--paper-fg); font-size: .98rem; }
+  .ladder-note { font-size: .8rem; color: var(--paper-muted); }
+  .ladder-top { width: 100%; border-left-color: #2dd4bf; background: rgba(45,212,191,0.06); }
+  .ladder-top .ladder-n { color: #2dd4bf; }
+  .ladder-mid { width: 88%; border-left-color: #64748b; background: rgba(100,116,139,0.04); }
+  .ladder-mid .ladder-n { color: #94a3b8; }
+  .ladder-fallback { width: 76%; border-left-color: #f59e0b; background: rgba(245,158,11,0.07); }
+  .ladder-fallback .ladder-n { color: #f59e0b; }
+  @media (max-width: 480px) {
+    .ladder-top, .ladder-mid, .ladder-fallback { width: 100%; }
+  }
+  /* Graphic 12 — solo→team trade-off matrix */
+  .tradeoff-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tradeoff-table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: .9rem; }
+  .tradeoff-table th, .tradeoff-table td { border: 1px solid var(--paper-rule); padding: .6rem .85rem; text-align: left; vertical-align: top; }
+  .tradeoff-table th { font-family: "Playfair Display", Georgia, serif; font-weight: 700; color: var(--paper-accent); background: rgba(45,212,191,0.05); white-space: nowrap; }
+  .tradeoff-table td:first-child { color: var(--paper-fg); font-weight: 600; }
+  .tradeoff-table td { color: var(--paper-muted); }
+  .tradeoff-table code { background: rgba(159,176,192,0.12); padding: .1rem .35rem; border-radius: 4px; font-size: .85rem; color: var(--paper-fg); }
+  /* Graphic 13 — Day 1 / Week 1 / Month 1 adoption timeline */
+  .timeline-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; align-items: start; }
+  .timeline-col { border: 1px solid var(--paper-rule); border-top: 3px solid var(--paper-accent); border-radius: 8px; padding: 1rem 1.1rem; box-sizing: border-box; background: rgba(45,212,191,0.03); }
+  .timeline-col h4 { font-family: "Playfair Display", Georgia, serif; font-size: 1rem; margin: 0 0 .7rem; color: var(--paper-fg); display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap; }
+  .timeline-sub { font-family: Inter, system-ui, sans-serif; font-size: .72rem; font-weight: 400; color: var(--paper-muted); }
+  .timeline-col ul { margin: 0; padding-left: 1.1rem; color: var(--paper-muted); font-size: .85rem; line-height: 1.55; }
+  .timeline-col li { margin-bottom: .5rem; }
+  .timeline-col li:last-child { margin-bottom: 0; }
+  .timeline-col code { background: rgba(159,176,192,0.12); padding: .1rem .35rem; border-radius: 4px; font-size: .82rem; color: var(--paper-fg); }
+  @media (max-width: 640px) {
+    .timeline-cols { grid-template-columns: 1fr; }
+  }
+  /* Graphic 14 — practice→source citation map (contains real links, not role="img") */
+  .cite-graphic h4 { font-family: "Playfair Display", Georgia, serif; font-size: 1rem; margin: 0 0 1rem; color: var(--paper-fg); }
+  .cite-rows { display: flex; flex-direction: column; gap: .1rem; }
+  .cite-row { display: grid; grid-template-columns: 1.3fr 1fr; gap: 1rem; padding: .65rem 0; border-bottom: 1px dashed var(--paper-rule); align-items: baseline; }
+  .cite-row:last-child { border-bottom: none; }
+  .cite-practice { color: var(--paper-fg); font-size: .9rem; }
+  .cite-sources { font-size: .85rem; }
+  .cite-sources a { color: var(--paper-accent); text-decoration: underline; text-underline-offset: 2px; }
+  .cite-note { color: var(--paper-muted); font-size: .82rem; margin-top: 1rem; }
+  @media (max-width: 640px) {
+    .cite-row { grid-template-columns: 1fr; gap: .35rem; }
+  }
+  /* Back matter — Appendix A/B tables + known-gaps list */
+  .appendix-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .appendix-table { width: 100%; min-width: 640px; border-collapse: collapse; font-size: .9rem; }
+  .appendix-table th, .appendix-table td { border: 1px solid var(--paper-rule); padding: .6rem .85rem; text-align: left; vertical-align: top; }
+  .appendix-table th { font-family: "Playfair Display", Georgia, serif; font-weight: 700; color: var(--paper-accent); background: rgba(45,212,191,0.05); white-space: nowrap; }
+  .appendix-table td:first-child { color: var(--paper-fg); font-weight: 600; }
+  .appendix-table td { color: var(--paper-muted); }
+  .appendix-table code { background: rgba(159,176,192,0.12); padding: .1rem .35rem; border-radius: 4px; font-size: .85rem; color: var(--paper-fg); }
+  .appendix-gaps { margin: 0; padding-left: 1.1rem; color: var(--paper-muted); font-size: .92rem; line-height: 1.6; }
+  .appendix-gaps li { margin-bottom: .5rem; }
+  .appendix-gaps li:last-child { margin-bottom: 0; }
+  /* Consolidated print stylesheet — flip the paper to light for print, hide interactive chrome
+     and site nav/footer, keep graphics unbroken, and let the scrollable tables print in full. */
+  @media print {
+    .paper { --paper-bg:#fff; --paper-fg:#111; --paper-muted:#444; --paper-accent:#0f766e; --paper-rule:#ccc; max-width:100%; padding:0; }
+    .printbtn, .dualtrack { display:none; }
+    .paper a { color:#0f766e; text-decoration:underline; }
+    figure.graphic, .war, .receipt, table { break-inside: avoid; page-break-inside: avoid; }
+    h2 { break-after: avoid; }
+    body { background:#fff; }
+    /* BaseLayout nav/footer are outside .paper; :global() escapes Astro's scoping so this matches the bare tags */
+    :global(header), :global(footer), :global(nav) { display: none !important; }
+    .tradeoff-scroll { overflow-x: visible; }
+    .tradeoff-table { min-width: 0; font-size: .78rem; }
+    .appendix-scroll { overflow-x: visible; }
+    .appendix-table { min-width: 0; font-size: .78rem; }
+  }
+</style>
