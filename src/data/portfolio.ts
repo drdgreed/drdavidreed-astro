@@ -38,19 +38,6 @@ export const portfolioItems: PortfolioItem[] = [
     featured: true,
   },
   {
-    id: 'whitepaper-harness',
-    title: '© The Production Harness: Engineering AI Agents You Can Walk Away From',
-    description:
-      "Anyone can prompt an agent. The engineering is everything around the model call. This white paper documents the seven-pillar discipline behind a production Claude Code harness — context layering priced by what it costs every call, an Evidence Ledger that ends false \"done,\" hooks that turn advisory rules into guarantees, and unattended loops whose autonomy tops out below auto-merge by design. Every practice traced to Anthropic's own engineering guidance; every pillar earned through a documented failure. Read the full white paper →",
-    fullDescription:
-      "A definitive, graphics-rich white paper on production harness engineering for autonomous AI agents, reorganized into seven capability pillars: (1) Context Engineering — a four-layer placement model where content lives at the cheapest layer that still gets it applied; (2) Evidence Over Assertion — a fixed Evidence Ledger schema that beat three prose rules after a 77-minute run reported \"fully verified\" work that wasn't; (3) Deterministic Enforcement — hooks and a permissions deny-floor that make \"always do X\" a guarantee, not a decaying sentence; (4) Institutional Memory & Learning — priced, append-only lessons and audited per-fact memory; (5) Unattended Autonomy — a six-part loop doctrine, four priority-ordered exits, and an earned-autonomy trust ledger that never reaches auto-merge; (6) Multi-Agent & Safety Discipline — fresh-context verification, a reader/actor quarantine against prompt injection, and multi-worktree hazard rules; (7) Governance & Honest Trade-offs — propose-only self-governance and an explicit solo-vs-team matrix. Closes with a Day-1/Week-1/Month-1 adoption path and a practice-to-primary-source citation map. Grounded throughout in Anthropic's published engineering guidance; complements the /agentic-os/ operations case study.",
-    category: 'whitepaper',
-    tags: ['Agentic AI', 'Harness Engineering', 'Claude Code', 'AI Safety', 'Verification', 'Context Engineering', 'AI Operations'],
-    link: '/harness-engineering/',
-    metrics: '7 Capability Pillars · Primary-Source Cited',
-    featured: true,
-  },
-  {
     id: 'github-1',
     title: '© PACCA: Healthcare Prior Authorization AI Platform',
     description:
@@ -126,6 +113,19 @@ export const portfolioItems: PortfolioItem[] = [
     tags: ['Agentic AI', 'AI Operations', 'Course', 'Claude', 'AI Safety', 'Loop Engineering'],
     link: '/agentic-ops/',
     metrics: '5 Modules · Operations Curriculum',
+    featured: true,
+  },
+  {
+    id: 'whitepaper-harness',
+    title: '© The Production Harness: Engineering AI Agents You Can Walk Away From',
+    description:
+      "Anyone can prompt an agent. The engineering is everything around the model call. This white paper documents the seven-pillar discipline behind a production Claude Code harness — context layering priced by what it costs every call, an Evidence Ledger that ends false \"done,\" hooks that turn advisory rules into guarantees, and unattended loops whose autonomy tops out below auto-merge by design. Every practice traced to Anthropic's own engineering guidance; every pillar earned through a documented failure. Read the full white paper →",
+    fullDescription:
+      "A definitive, graphics-rich white paper on production harness engineering for autonomous AI agents, reorganized into seven capability pillars: (1) Context Engineering — a four-layer placement model where content lives at the cheapest layer that still gets it applied; (2) Evidence Over Assertion — a fixed Evidence Ledger schema that beat three prose rules after a 77-minute run reported \"fully verified\" work that wasn't; (3) Deterministic Enforcement — hooks and a permissions deny-floor that make \"always do X\" a guarantee, not a decaying sentence; (4) Institutional Memory & Learning — priced, append-only lessons and audited per-fact memory; (5) Unattended Autonomy — a six-part loop doctrine, four priority-ordered exits, and an earned-autonomy trust ledger that never reaches auto-merge; (6) Multi-Agent & Safety Discipline — fresh-context verification, a reader/actor quarantine against prompt injection, and multi-worktree hazard rules; (7) Governance & Honest Trade-offs — propose-only self-governance and an explicit solo-vs-team matrix. Closes with a Day-1/Week-1/Month-1 adoption path and a practice-to-primary-source citation map. Grounded throughout in Anthropic's published engineering guidance; complements the /agentic-os/ operations case study.",
+    category: 'whitepaper',
+    tags: ['Agentic AI', 'Harness Engineering', 'Claude Code', 'AI Safety', 'Verification', 'Context Engineering', 'AI Operations'],
+    link: '/harness-engineering/',
+    metrics: '7 Capability Pillars · Primary-Source Cited',
     featured: true,
   },
   {
