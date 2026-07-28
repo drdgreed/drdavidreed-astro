@@ -24,7 +24,7 @@ This post explains the methodology, where it comes from, and what auditing it lo
 
 PACCA is an agentic AI system for healthcare prior authorization — the back-and-forth between providers, payers, and clinical reviewers that determines whether a treatment is covered before it's delivered. It's exactly the kind of domain where "the model decided" is not a sufficient explanation. Decisions are appealable; appeals require audit trails; audit trails require knowing which version of which behavior made each call.
 
-The system is open-source, runs on synthetic data only, and lives at [github.com/Chaos-6/pacca](https://github.com/Chaos-6/pacca). There is no PHI involved at any point in this work — every case in the eval suite is generated, and the methodology is published precisely so other teams in regulated domains can adopt, fork, or critique it.
+The system is open-source, runs on synthetic data only, and lives at [github.com/drdgreed/pacca](https://github.com/drdgreed/pacca). There is no PHI involved at any point in this work — every case in the eval suite is generated, and the methodology is published precisely so other teams in regulated domains can adopt, fork, or critique it.
 
 What changes with v2.3 isn't the agents themselves. It's the discipline around how their behavior evolves.
 
@@ -131,7 +131,7 @@ Iter-1 begins this week. Phase H1 is the component-decoupling refactor — extra
 
 Iter-2 is where the methodology's central transferability claim gets tested. The AHE paper found +5.6 percentage points on pass@1 from the long-term memory component alone — the largest single-component gain in their ablation. Whether that transfers to clinical decision support is the question with the most uncertain answer in this entire cycle.
 
-If you're working on agentic AI in regulated domains — healthcare, finance, legal — I would genuinely value a critical read. The repo is at [github.com/Chaos-6/pacca](https://github.com/Chaos-6/pacca); the four open documents are reachable from the README. Skeptical engagement is the most useful kind.
+If you're working on agentic AI in regulated domains — healthcare, finance, legal — I would genuinely value a critical read. The repo is at [github.com/drdgreed/pacca](https://github.com/drdgreed/pacca); the four open documents are reachable from the README. Skeptical engagement is the most useful kind.
 
 This is the first in a series of six posts mirroring the six-phase cycle. Each iteration's findings ship as a separate post, with the LinkedIn version pointing here for the full write-up.
 
