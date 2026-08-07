@@ -15,7 +15,7 @@ export const profile = {
    * Sourced verbatim-flavored from the MASTER resume positioning.
    */
   elevatorPitch:
-    'Senior AI/ML leader who designs, codes, and ships production agentic systems — not demos. 25+ years delivering complex platforms; current hands-on work in multi-agent architectures, LLM evaluation, RAG, and Model Context Protocol (MCP). Sole inventor of US Patent 6,850,988 (foundational to Amazon\'s recommendation engine). PhD CS, MBA, PMP, Wharton Fellow.',
+    'Senior AI/ML leader who designs, codes, and ships production agentic systems — not demos. 35+ years delivering complex platforms; current hands-on work in multi-agent architectures, LLM evaluation, RAG, and Model Context Protocol (MCP). Sole inventor of US Patent 6,850,988 (foundational to Amazon\'s recommendation engine). PhD CS, MBA, PMP, Wharton Fellow.',
 
   /**
    * Hero status pill. The first two target titles render as
