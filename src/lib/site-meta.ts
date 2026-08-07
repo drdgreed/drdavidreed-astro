@@ -92,7 +92,7 @@ export const PERSON = {
       name: 'US Patent 6,839,229',
       description:
         'Sole inventor — large-grained database concurrency with dynamically re-definable business logic.',
-      url: 'https://patents.google.com/patent/US6839229B1/',
+      url: 'https://patents.google.com/patent/US6839229B2/',
     },
   ],
   knowsAbout: [
