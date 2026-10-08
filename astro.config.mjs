@@ -1,9 +1,10 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, passthroughImageService } from 'astro/config';
 
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import rehypeUnpublishedPapers from './src/lib/rehype-unpublished-papers.mjs';
 
 // Production site URL — used by sitemap, RSS, and canonical links.
 const SITE = 'https://drdavidreed.com';
@@ -14,6 +15,13 @@ const SITE = 'https://drdavidreed.com';
 // boring, stable one.
 export default defineConfig({
   site: SITE,
+
+  // Links to series papers that are not yet published render as plain text.
+  markdown: { rehypePlugins: [rehypeUnpublishedPapers] },
+
+  // Paper figures are SVG and need no optimization; passthrough avoids a
+  // sharp dependency. Revisit if raster images are added to content.
+  image: { service: passthroughImageService() },
 
   integrations: [
     react(),

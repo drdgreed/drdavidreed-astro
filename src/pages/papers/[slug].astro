@@ -1,0 +1,78 @@
+---
+/**
+ * /papers/[slug] — one white paper in the "Agentic AI Governance in Practice"
+ * series. The markdown body carries its own title, dek, version line and series
+ * nav (per the series rulebook), so this page adds only the back link and the
+ * typography. Links to unpublished series papers are flattened at build time
+ * (src/lib/rehype-unpublished-papers.mjs).
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const papers = await getCollection('papers');
+  return papers.map((paper) => ({ params: { slug: paper.id }, props: { paper } }));
+}
+
+interface Props {
+  paper: CollectionEntry<'papers'>;
+}
+
+const { paper } = Astro.props;
+const { Content } = await render(paper);
+const { title, subtitle, description, date } = paper.data;
+---
+
+<BaseLayout
+  title={`${title} — ${subtitle}`}
+  description={description}
+  path={`/papers/${paper.id}/`}
+  pageType="article"
+  articleData={{ headline: title, datePublished: `${date}-01`, description }}
+>
+  <article class="paper container mx-auto px-4 py-12">
+    <a href="/portfolio/" class="back">← Portfolio</a>
+    <Content />
+  </article>
+</BaseLayout>
+
+<style>
+  .paper { max-width: 46rem; color: var(--color-text-secondary); line-height: 1.7; }
+  .back { display: inline-block; margin-bottom: 2rem; font-size: 0.875rem; color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
+
+  .paper :global(h1) { font-family: var(--font-serif); color: var(--color-text-primary); font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.15; margin-bottom: 1rem; }
+  .paper :global(h2) { font-family: var(--font-serif); color: var(--color-text-primary); font-size: 1.75rem; margin: 3rem 0 1rem; padding-top: 2.5rem; border-top: 1px solid var(--color-border-subtle); }
+  .paper :global(h3) { font-family: var(--font-serif); color: var(--color-text-primary); font-size: 1.3rem; margin: 2.25rem 0 0.75rem; }
+  .paper :global(p), .paper :global(ul), .paper :global(ol) { margin-bottom: 1rem; }
+  .paper :global(strong) { color: var(--color-text-primary); }
+  .paper :global(ul) { list-style: disc; padding-left: 1.25rem; }
+  .paper :global(ol) { list-style: decimal; padding-left: 1.5rem; }
+  .paper :global(li) { margin-bottom: 0.35rem; }
+  .paper :global(a) { color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
+  .paper :global(.unpublished) { color: var(--color-text-tertiary); }
+  .paper :global(code) { font-size: 0.85em; background: var(--color-bg-card); border: 1px solid var(--color-border-subtle); border-radius: 4px; padding: 0.05em 0.35em; color: var(--color-text-primary); }
+  .paper :global(pre) { background: var(--color-bg-card); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.5rem; font-size: 0.8rem; }
+  .paper :global(pre code) { border: 0; padding: 0; background: none; }
+
+  .paper :global(.paper-dek) { font-size: 1.15rem; color: var(--color-text-primary); opacity: 0.9; }
+  .paper :global(.paper-meta) { font-size: 0.875rem; }
+  .paper :global(.paper-meta strong) { color: var(--color-accent); }
+
+  .paper :global(.series-nav) { margin: 2rem 0; padding: 1rem 1.25rem; background: var(--color-bg-card); border: 1px solid var(--color-border-subtle); border-left: 3px solid var(--color-accent); border-radius: 10px; font-size: 0.85rem; }
+  .paper :global(.series-nav p) { margin-bottom: 0.5rem; }
+  .paper :global(.series-nav ol) { columns: 2; margin: 0; }
+  .paper :global(.series-nav .current) { color: var(--color-text-primary); font-weight: 600; }
+  .paper :global(.series-pager) { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border-subtle); font-size: 0.9rem; }
+
+  /* Wide tables scroll inside themselves, never the page. */
+  .paper :global(table) { display: block; overflow-x: auto; width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.8rem; line-height: 1.45; }
+  .paper :global(th) { background: var(--color-accent-dark); color: var(--color-accent); text-align: left; font-weight: 600; }
+  .paper :global(th), .paper :global(td) { border: 1px solid var(--color-border-subtle); padding: 0.5rem 0.65rem; vertical-align: top; }
+
+  .paper :global(img) { width: 100%; height: auto; margin: 1.5rem 0 0.5rem; border-radius: 14px; }
+  .paper :global(p:has(> img) + p > em:only-child) { display: block; font-size: 0.8rem; color: var(--color-text-tertiary); }
+  .paper :global(blockquote) { margin: 1.25rem 0 2rem; padding: 0.85rem 1.1rem; border-left: 3px solid var(--color-accent); background: var(--color-bg-card); border-radius: 0 8px 8px 0; font-size: 0.9rem; }
+  .paper :global(blockquote p:last-child) { margin-bottom: 0; }
+
+  @media (max-width: 640px) { .paper :global(.series-nav ol) { columns: 1; } }
+</style>

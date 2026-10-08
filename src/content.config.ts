@@ -45,4 +45,24 @@ const blog = defineCollection({
   }),
 });
 
-export const collections = { blog };
+// White-paper series ("Agentic AI Governance in Practice"). Each paper's body
+// carries its own title, dek, version line and series nav, so the route only
+// adds the page chrome. Frontmatter mirrors the series metadata header.
+const papers = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/papers' }),
+  schema: z.object({
+    title: z.string().min(1),
+    subtitle: z.string().min(1),
+    series: z.string().min(1),
+    seriesPart: z.number().int().positive(),
+    code: z.string().min(1),
+    version: z.string().min(1),
+    date: z.string().regex(/^\d{4}-\d{2}$/),
+    author: z.string().min(1),
+    description: z.string().min(1).max(300),
+    keywords: z.array(z.string()),
+    readTime: z.number().int().positive(),
+  }),
+});
+
+export const collections = { blog, papers };

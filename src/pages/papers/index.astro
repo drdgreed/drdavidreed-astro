@@ -1,0 +1,31 @@
+---
+/**
+ * /papers/ — the published papers of the series, in series order. The papers'
+ * "All papers in the series" pager links here.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const papers = (await getCollection('papers')).sort((a, b) => a.data.seriesPart - b.data.seriesPart);
+---
+
+<BaseLayout
+  title="Agentic AI Governance in Practice — White-Paper Series"
+  description="A cross-linked white-paper series on governing enterprise agentic AI, from governance framework to delivery workflow. By David Reed, PhD."
+  path="/papers/"
+>
+  <section class="container mx-auto px-4 py-12 max-w-3xl">
+    <a href="/portfolio/" class="text-sm text-primary underline underline-offset-4">← Portfolio</a>
+    <h1 class="font-serif text-4xl mt-8 mb-3">Agentic AI Governance in Practice</h1>
+    <p class="text-muted-foreground mb-10">A cross-linked white-paper series. Papers appear here as they are published.</p>
+    <ol class="space-y-6">
+      {papers.map((p) => (
+        <li class="glass-card p-6">
+          <p class="text-xs text-muted-foreground mb-1">Part {p.data.seriesPart} · Version {p.data.version}</p>
+          <a href={`/papers/${p.id}/`} class="font-serif text-2xl hover:text-primary">{p.data.title}</a>
+          <p class="text-muted-foreground mt-2">{p.data.description}</p>
+        </li>
+      ))}
+    </ol>
+  </section>
+</BaseLayout>
