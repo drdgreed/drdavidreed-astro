@@ -151,7 +151,7 @@ Text marked *Note* or *Why*, and every clause marked informative, contains no re
 
 The Standard was developed in three passes.
 
-**From a consolidated agentic PRD.** It was first derived by abstracting a consolidated, single-author agentic PRD — the author's *PACCA — Prior Authorization & Care Coordination Agent Platform*, v2.5 (2026) — into a generic outline. The table below lists the elements the Standard carries from that source and where they now live.
+**From a consolidated agentic PRD.** It was first derived by abstracting a consolidated, single-author agentic PRD — the author's [*PACCA — Prior Authorization & Care Coordination Agent Platform*](https://docs.google.com/document/d/1OifHO-2_0yLzUxKFaKo3kdRDx4Ot0ERyGOsLPSRK4D8/edit) (2026) — into a generic outline. The table below lists the elements the Standard carries from that source and where they now live.
 
 | Source element | Standard location |
 |---|---|

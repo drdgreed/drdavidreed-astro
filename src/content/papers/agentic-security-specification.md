@@ -1298,7 +1298,7 @@ Reed, D. (2026). *Agentic Security Specification* (Version 1.0). Agentic AI Gove
 35. Wang, Poskitt, Sun. [*AgentSpec*](https://arxiv.org/abs/2503.18666). arXiv 2503.18666 (ICSE 2026).
 36. Chen, Kang, Li. [*ShieldAgent*](https://arxiv.org/abs/2503.22738). arXiv 2503.22738 (v2, 27 November 2025).
 37. Ma et al. [*AutoDojo: Adaptive Black-Box Attacks Reveal the Limits of IPI Defenses and Task-Specification Effects in LLM Agents*](https://arxiv.org/abs/2606.15057). arXiv 2606.15057 (13 June 2026, rev. 19 June 2026).
-38. Narisetty et al. [*Adaptive Evaluation of Out-of-Band Defenses Against Prompt Injection in LLM Agents*](https://arxiv.org/abs/2606.26479). arXiv 2606.26479 (25 June 2026).
+38. Narisetty, P., Kore, S. N. B., Kattamanchi, U. K. R., and Kumarapu, J. [*Adaptive Evaluation of Out-of-Band Defenses Against Prompt Injection in LLM Agents*](https://arxiv.org/abs/2606.26479). arXiv 2606.26479 (25 June 2026).
 39. Anthropic. [*Agent SDK: Configure permissions*](https://code.claude.com/docs/en/agent-sdk/permissions). Claude Code documentation.
 40. Microsoft 365 Message Center MC1297981. [*Agent Registry API transition to Agent 365*](https://mc.merill.net/message/MC1297981). 1 May 2026.
 41. NIST National Vulnerability Database. [*CVE-2025-32711*](https://nvd.nist.gov/vuln/detail/CVE-2025-32711).

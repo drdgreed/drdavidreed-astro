@@ -788,21 +788,6 @@ Reed, D. (2026). *Enterprise Agentic AI Harness Specification* (Version 1.3). Ag
 84. Databricks. [*Unity Gateway release notes*](https://docs.databricks.com/aws/en/release-notes/unity-gateway/).
 85. Databricks. [*Retired models policy*](https://docs.databricks.com/aws/en/machine-learning/retired-models-policy).
 86. European Parliament and Council. [*Regulation (EU) 2022/2554 (Digital Operational Resilience Act)*](https://eur-lex.europa.eu/eli/reg/2022/2554/oj/eng), Art. 28(8). (unverified)
-87. Anthropic. [*Claude Code: hooks guide*](https://code.claude.com/docs/en/hooks-guide).
-88. Anthropic. [*Claude Code: settings*](https://code.claude.com/docs/en/settings).
-89. Anthropic. [*Claude Code: settings reference*](https://code.claude.com/docs/en/settings-reference).
-90. Anthropic. [*Claude Code: server-managed settings*](https://code.claude.com/docs/en/server-managed-settings).
-91. Anthropic. [*Claude Code: security*](https://code.claude.com/docs/en/security).
-92. Anthropic. [*Claude Code: environment variables*](https://code.claude.com/docs/en/env-vars).
-93. Anthropic. [*Claude Agent SDK: permissions*](https://code.claude.com/docs/en/agent-sdk/permissions).
-94. Anthropic. [*Claude API release notes*](https://platform.claude.com/docs/en/release-notes/api).
-95. Google. [*Agent Development Kit: callbacks*](https://adk.dev/callbacks/).
-96. Microsoft Learn. [*Azure Well-Architected Framework: AI workloads*](https://learn.microsoft.com/en-us/azure/well-architected/ai/).
-97. Databricks. [*Manage budgets for Unity Gateway*](https://docs.databricks.com/aws/en/ai-gateway/budgets).
-98. Model Context Protocol. [*Model Context Protocol*](https://modelcontextprotocol.io).
-99. NIST. [*AI Risk Management Framework*](https://www.nist.gov/itl/ai-risk-management-framework).
-
-Entries 1–86 are cited in the text; entries 87–99 are further primary sources consulted for the specification.
 
 ## Appendix A — Prescribed hooks inventory (reference implementation)
 
