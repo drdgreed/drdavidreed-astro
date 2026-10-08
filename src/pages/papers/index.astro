@@ -1,7 +1,7 @@
 ---
 /**
- * /papers/ — the published papers of the series, in series order. The papers'
- * "All papers in the series" pager links here.
+ * /papers/ — index of the "Agentic AI Governance in Practice" series.
+ * Lists the seven papers in reading order from the `papers` content collection.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
@@ -10,22 +10,43 @@ const papers = (await getCollection('papers')).sort((a, b) => a.data.seriesPart 
 ---
 
 <BaseLayout
-  title="Agentic AI Governance in Practice — White-Paper Series"
-  description="A cross-linked white-paper series on governing enterprise agentic AI, from governance framework to delivery workflow. By David Reed, PhD."
+  title="Agentic AI Governance in Practice"
+  description="A seven-paper series on governing enterprise agentic AI: a governance framework, a requirements standard, a design method, harness, security and vendor-control specifications, and the delivery workflow that binds them."
   path="/papers/"
 >
-  <section class="container mx-auto px-4 py-12 max-w-3xl">
-    <a href="/portfolio/" class="text-sm text-primary underline underline-offset-4">← Portfolio</a>
-    <h1 class="font-serif text-4xl mt-8 mb-3">Agentic AI Governance in Practice</h1>
-    <p class="text-muted-foreground mb-10">A cross-linked white-paper series. Papers appear here as they are published.</p>
-    <ol class="space-y-6">
+  <section class="series">
+    <a href="/portfolio/" class="series-back">← Portfolio</a>
+    <p class="series-eyebrow">White-paper series · David Reed, PhD</p>
+    <h1>Agentic AI Governance in Practice</h1>
+    <p class="series-dek">
+      Seven papers that take an agentic AI system from governance concept to monitored production. Read them in order, or
+      start with the one that matches your role; each cites the others by section.
+    </p>
+    <ol class="series-list">
       {papers.map((p) => (
-        <li class="glass-card p-6">
-          <p class="text-xs text-muted-foreground mb-1">Part {p.data.seriesPart} · Version {p.data.version}</p>
-          <a href={`/papers/${p.id}/`} class="font-serif text-2xl hover:text-primary">{p.data.title}</a>
-          <p class="text-muted-foreground mt-2">{p.data.description}</p>
+        <li>
+          <a href={`/papers/${p.id}/`} class="series-card">
+            <span class="series-part">Part {p.data.seriesPart} · {p.data.code} · v{p.data.version}</span>
+            <span class="series-title">{p.data.title}</span>
+            <span class="series-sub">{p.data.subtitle}</span>
+          </a>
         </li>
       ))}
     </ol>
   </section>
 </BaseLayout>
+
+<style>
+  .series { max-width: 860px; margin: 0 auto; padding: 3rem 1.25rem 4rem; color: #e7edf3; font-family: Inter, system-ui, sans-serif; }
+  .series-back { display: inline-block; color: #9fb0c0; font-size: 0.9rem; margin-bottom: 2rem; }
+  .series-back:hover { color: #2dd4bf; }
+  .series-eyebrow { text-transform: uppercase; letter-spacing: 0.12em; font-size: 0.8rem; color: #2dd4bf; font-weight: 600; margin: 0 0 0.75rem; }
+  .series h1 { font-family: "Playfair Display", Georgia, serif; font-size: clamp(2.1rem, 5.5vw, 3.2rem); line-height: 1.15; margin: 0 0 1rem; font-variant-numeric: lining-nums; }
+  .series-dek { font-size: 1.15rem; line-height: 1.6; margin: 0 0 2.5rem; }
+  .series-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; }
+  .series-card { display: flex; flex-direction: column; gap: 0.35rem; border: 1px solid rgba(159, 176, 192, 0.18); border-left: 3px solid #2dd4bf; border-radius: 10px; padding: 1rem 1.2rem; background: rgba(159, 176, 192, 0.05); transition: border-color 0.2s, background 0.2s; }
+  .series-card:hover { border-color: rgba(45, 212, 191, 0.6); background: rgba(45, 212, 191, 0.06); }
+  .series-part { font-size: 0.8rem; color: #2dd4bf; font-weight: 600; letter-spacing: 0.03em; }
+  .series-title { font-family: "Playfair Display", Georgia, serif; font-size: 1.35rem; line-height: 1.25; color: #e7edf3; font-variant-numeric: lining-nums; }
+  .series-sub { font-size: 0.95rem; color: #9fb0c0; line-height: 1.5; }
+</style>

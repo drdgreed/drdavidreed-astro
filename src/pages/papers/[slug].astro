@@ -1,10 +1,12 @@
 ---
 /**
- * /papers/[slug] — one white paper in the "Agentic AI Governance in Practice"
- * series. The markdown body carries its own title, dek, version line and series
- * nav (per the series rulebook), so this page adds only the back link and the
- * typography. Links to unpublished series papers are flattened at build time
- * (src/lib/rehype-unpublished-papers.mjs).
+ * /papers/[slug]/ — one white paper from the "Agentic AI Governance in Practice" series.
+ *
+ * The Markdown body is self-contained: it carries its own H1, dek, version line,
+ * series navigation, abstract and references, so the same file also reads well on
+ * GitHub. This template only supplies the page chrome (BaseLayout), SEO from the
+ * frontmatter, and the `.paper` typography below. Tokens follow
+ * src/pages/harness-engineering.astro so the series matches the existing paper.
  */
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getCollection, render, type CollectionEntry } from 'astro:content';
@@ -14,65 +16,264 @@ export async function getStaticPaths() {
   return papers.map((paper) => ({ params: { slug: paper.id }, props: { paper } }));
 }
 
-interface Props {
-  paper: CollectionEntry<'papers'>;
-}
-
+interface Props { paper: CollectionEntry<'papers'> }
 const { paper } = Astro.props;
 const { Content } = await render(paper);
-const { title, subtitle, description, date } = paper.data;
+const { title, description, date } = paper.data;
 ---
 
-<BaseLayout
-  title={`${title} — ${subtitle}`}
-  description={description}
-  path={`/papers/${paper.id}/`}
-  pageType="article"
-  articleData={{ headline: title, datePublished: `${date}-01`, description }}
->
-  <article class="paper container mx-auto px-4 py-12">
-    <a href="/portfolio/" class="back">← Portfolio</a>
+<BaseLayout title={title} description={description} path={`/papers/${paper.id}/`} pageType="article" articleData={{ headline: title, datePublished: `${date}-01`, description }}>
+  <article class="paper">
+    <a href="/portfolio/" class="paper-back">← Portfolio</a>
     <Content />
   </article>
+  {/* Progressive enhancement: label table cells so 3–8 column tables (and long 2-column ones)
+      become stacked cards on phones, flag exit-check tables, wrap long inline code only at
+      sensible points, and keep short IDs (W0-1, HRN-12) on one line.
+      Without JavaScript the tables still render and scroll horizontally. */}
+  <script is:inline>
+    (() => {
+      for (const t of document.querySelectorAll('.paper table')) {
+        const heads = [...t.querySelectorAll('thead th')].map((th) => th.textContent.trim());
+        const n = heads.length;
+        if (heads[0] === '#' && n === 3) t.classList.add('checks');
+        else if (heads[0] === '#') t.classList.add('numbered');
+        if (n >= 5) t.classList.add('wide');
+        if (n >= 9) t.classList.add('matrix');
+        if (n === 8) t.classList.add('xwide');
+        const longest = Math.max(0, ...[...t.querySelectorAll('tbody td')].map((td) => td.textContent.trim().length));
+        const longCode = [...t.querySelectorAll('tbody td code')].some((c) => c.textContent.length > 20);
+        // On phones: 4–8 column tables stack as cards; 3- and 2-column tables do too when their cells are long.
+        if ((n >= 4 && n <= 8) || (n === 3 && longest > 60) || (n === 2 && (longest > 140 || longCode))) {
+          t.classList.add('cards');
+          for (const tr of t.querySelectorAll('tbody tr')) {
+            [...tr.children].forEach((td, i) => td.setAttribute('data-label', heads[i] === '#' ? '' : (heads[i] || '')));
+          }
+        }
+        if (n === 4) {
+          for (const tr of t.querySelectorAll('tbody tr')) {
+            [...tr.children].forEach((td, i) => { if (i < n - 1 && (heads[i] || '').length >= 4) td.classList.add('lab'); });
+          }
+        }
+      }
+      // Inline code: short tokens stay on one line; long ones break at spaces or after _ :: / . , =
+      // (never after the dashes of a flag such as --bare).
+      for (const c of document.querySelectorAll('.paper :not(pre) > code')) {
+        const text = c.textContent;
+        if (text.length <= 24 && !/\s/.test(text)) { c.classList.add('nwc'); continue; }
+        if (c.children.length) continue;
+        c.classList.add('long');
+        c.textContent = '';
+        text.split(/(\s+)/).forEach((tok) => {
+          if (/^\s+$/.test(tok)) { c.append(tok); return; }
+          if (!tok) return;
+          const span = document.createElement('span');
+          if (tok.length <= 24) { span.className = 'tok'; span.textContent = tok; }
+          else {
+            // Break only after _ :: / . , = — never inside a word or at a hyphen.
+            span.className = 'lt';
+            tok.split(/(?<=::|[_\/.,=])/).forEach((part, i) => {
+              if (i) span.append(document.createElement('wbr'));
+              const seg = document.createElement('span');
+              seg.className = 'seg';
+              seg.textContent = part;
+              span.append(seg);
+            });
+          }
+          c.append(span);
+        });
+      }
+      // Keep identifiers such as HRN-01, W0-1, CRISP-AG, H0–H14 or SB 26-189 on one line.
+      const id = /\b(?:[A-Z][A-Za-z0-9]*|\d+)(?:[-–][A-Za-z0-9]+)+\b/g;
+      const walker = document.createTreeWalker(document.querySelector('.paper'), NodeFilter.SHOW_TEXT, {
+        acceptNode: (n) => (n.parentElement.closest('pre, code, .nw, script, style') || !new RegExp(id.source).test(n.nodeValue)) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT,
+      });
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      for (const node of nodes) {
+        const frag = document.createDocumentFragment();
+        let last = 0;
+        node.nodeValue.replace(id, (m, off) => {
+          if (m.length > 24) return m;
+          frag.append(node.nodeValue.slice(last, off));
+          const span = document.createElement('span');
+          span.className = 'nw';
+          span.textContent = m;
+          frag.append(span);
+          last = off + m.length;
+          return m;
+        });
+        frag.append(node.nodeValue.slice(last));
+        node.replaceWith(frag);
+      }
+    })();
+  </script>
 </BaseLayout>
 
 <style>
-  .paper { max-width: 46rem; color: var(--color-text-secondary); line-height: 1.7; }
-  .back { display: inline-block; margin-bottom: 2rem; font-size: 0.875rem; color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
+  .paper {
+    --paper-bg: #0b0f14;
+    --paper-fg: #e7edf3;
+    --paper-muted: #9fb0c0;
+    --paper-accent: #2dd4bf;
+    --paper-rule: rgba(159, 176, 192, 0.18);
+    --paper-surface: rgba(159, 176, 192, 0.05);
+    --figure-bg: #eeede8;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 3rem 1.25rem 4rem;
+    color: var(--paper-fg);
+    font-family: Inter, system-ui, sans-serif;
+    line-height: 1.7;
+    overflow-wrap: break-word;
+  }
+  .paper-back { display: inline-block; color: var(--paper-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .paper-back:hover { color: var(--paper-accent); }
 
-  .paper :global(h1) { font-family: var(--font-serif); color: var(--color-text-primary); font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.15; margin-bottom: 1rem; }
-  .paper :global(h2) { font-family: var(--font-serif); color: var(--color-text-primary); font-size: 1.75rem; margin: 3rem 0 1rem; padding-top: 2.5rem; border-top: 1px solid var(--color-border-subtle); }
-  .paper :global(h3) { font-family: var(--font-serif); color: var(--color-text-primary); font-size: 1.3rem; margin: 2.25rem 0 0.75rem; }
-  .paper :global(p), .paper :global(ul), .paper :global(ol) { margin-bottom: 1rem; }
-  .paper :global(strong) { color: var(--color-text-primary); }
-  .paper :global(ul) { list-style: disc; padding-left: 1.25rem; }
-  .paper :global(ol) { list-style: decimal; padding-left: 1.5rem; }
-  .paper :global(li) { margin-bottom: 0.35rem; }
-  .paper :global(a) { color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
-  .paper :global(.unpublished) { color: var(--color-text-tertiary); }
-  .paper :global(code) { font-size: 0.85em; background: var(--color-bg-card); border: 1px solid var(--color-border-subtle); border-radius: 4px; padding: 0.05em 0.35em; color: var(--color-text-primary); }
-  .paper :global(pre) { background: var(--color-bg-card); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.5rem; font-size: 0.8rem; }
-  .paper :global(pre code) { border: 0; padding: 0; background: none; }
+  /* ── Headings. Lining numerals: Playfair's old-style figures make "W0" read "Wo". ── */
+  .paper :global(:is(h1, h2, h3, h4)) { font-family: "Playfair Display", Georgia, serif; line-height: 1.2; color: var(--paper-fg); scroll-margin-top: 5rem; font-variant-numeric: lining-nums; }
+  .paper :global(h1) { font-size: clamp(2.1rem, 5.5vw, 3.2rem); margin: 0 0 1rem; font-weight: 600; }
+  .paper :global(h2) { font-size: clamp(1.5rem, 3.6vw, 2rem); font-weight: 600; margin: 3.25rem 0 1rem; padding-top: 1.25rem; border-top: 1px solid var(--paper-rule); }
+  .paper :global(:is(h1, h2, h3)) { text-wrap: balance; }
+  .paper :global(h3 code) { font-size: 0.82em; font-weight: 600; padding: 0.05em 0.3em; }
+  .paper :global(.nw) { white-space: nowrap; }
+  .paper :global(h3) { font-size: 1.45rem; font-weight: 600; margin: 2.5rem 0 0.75rem; }
+  .paper :global(h4) { font-size: 1.2rem; margin: 2.1rem 0 0.6rem; font-weight: 600; }
 
-  .paper :global(.paper-dek) { font-size: 1.15rem; color: var(--color-text-primary); opacity: 0.9; }
-  .paper :global(.paper-meta) { font-size: 0.875rem; }
-  .paper :global(.paper-meta strong) { color: var(--color-accent); }
+  /* ── Title block and series navigation (raw HTML in the Markdown) ── */
+  .paper :global(.paper-dek) { font-size: 1.2rem; line-height: 1.55; color: var(--paper-fg); margin: 0 0 1rem; }
+  .paper :global(.paper-meta) { color: var(--paper-muted); font-size: 0.95rem; margin: 0 0 1.5rem; }
+  .paper :global(.paper-meta strong) { color: var(--paper-accent); font-weight: 600; }
+  .paper :global(.series-nav) { border: 1px solid var(--paper-rule); border-left: 3px solid var(--paper-accent); border-radius: 10px; padding: 0.9rem 1.1rem; margin: 0 0 2.5rem; background: var(--paper-surface); font-size: 0.9rem; color: var(--paper-muted); line-height: 1.5; }
+  .paper :global(.series-nav p) { margin: 0 0 0.5rem; font-size: 0.9rem; }
+  .paper :global(.series-nav ol) { margin: 0; padding-left: 1.4rem; list-style: decimal; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-flow: column; grid-template-rows: repeat(4, auto); column-gap: 1.5rem; }
+  .paper :global(.series-nav li) { margin: 0; padding: 0.15rem 0; }
+  .paper :global(.series-nav a) { color: var(--paper-accent); }
+  .paper :global(.series-nav .current) { color: var(--paper-fg); font-weight: 600; }
+  .paper :global(.series-pager) { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; margin-top: 3rem; padding-top: 1.25rem; border-top: 1px solid var(--paper-rule); font-size: 0.95rem; }
+  .paper :global(.series-pager a) { text-decoration: none; }
 
-  .paper :global(.series-nav) { margin: 2rem 0; padding: 1rem 1.25rem; background: var(--color-bg-card); border: 1px solid var(--color-border-subtle); border-left: 3px solid var(--color-accent); border-radius: 10px; font-size: 0.85rem; }
-  .paper :global(.series-nav p) { margin-bottom: 0.5rem; }
-  .paper :global(.series-nav ol) { columns: 2; margin: 0; }
-  .paper :global(.series-nav .current) { color: var(--color-text-primary); font-weight: 600; }
-  .paper :global(.series-pager) { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border-subtle); font-size: 0.9rem; }
+  /* ── Body text ────────────────────────────────────────── */
+  .paper :global(p) { margin: 0 0 1.1rem; font-size: 1.0625rem; }
+  .paper :global(strong) { color: var(--paper-fg); font-weight: 600; }
+  .paper :global(a) { color: var(--paper-accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+  .paper :global(ul),
+  .paper :global(ol) { margin: 0 0 1.2rem; padding-left: 1.5rem; }
+  .paper :global(ul) { list-style: disc; }
+  .paper :global(ol) { list-style: decimal; }
+  .paper :global(li) { margin-bottom: 0.4rem; }
+  .paper :global(li > ul),
+  .paper :global(li > ol) { margin: 0.4rem 0; }
+  .paper :global(hr) { border: 0; border-top: 1px solid var(--paper-rule); margin: 2.5rem 0; }
+  .paper :global(sup) { font-size: 0.7em; line-height: 0; }
 
-  /* Wide tables scroll inside themselves, never the page. */
-  .paper :global(table) { display: block; overflow-x: auto; width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.8rem; line-height: 1.45; }
-  .paper :global(th) { background: var(--color-accent-dark); color: var(--color-accent); text-align: left; font-weight: 600; }
-  .paper :global(th), .paper :global(td) { border: 1px solid var(--color-border-subtle); padding: 0.5rem 0.65rem; vertical-align: top; }
+  /* ── Contents list ────────────────────────────────────── */
+  .paper :global(h2#contents + ul) { list-style: none; padding-left: 0; columns: 2; column-gap: 2rem; font-size: 0.95rem; }
+  .paper :global(h2#contents + ul li) { margin-bottom: 0.25rem; }
+  .paper :global(h2#contents + ul ul li) { break-inside: avoid; }
+  .paper :global(h2#contents + ul ul) { list-style: none; padding-left: 1rem; margin: 0.25rem 0 0.4rem; }
+  .paper :global(h2#contents + ul a) { text-decoration: none; }
 
-  .paper :global(img) { width: 100%; height: auto; margin: 1.5rem 0 0.5rem; border-radius: 14px; }
-  .paper :global(p:has(> img) + p > em:only-child) { display: block; font-size: 0.8rem; color: var(--color-text-tertiary); }
-  .paper :global(blockquote) { margin: 1.25rem 0 2rem; padding: 0.85rem 1.1rem; border-left: 3px solid var(--color-accent); background: var(--color-bg-card); border-radius: 0 8px 8px 0; font-size: 0.9rem; }
+  /* ── Callouts ─────────────────────────────────────────── */
+  .paper :global(blockquote) { border: 1px solid var(--paper-rule); border-left: 3px solid var(--paper-accent); border-radius: 8px; background: var(--paper-surface); padding: 0.9rem 1.1rem; margin: 1.5rem 0; color: var(--paper-fg); }
   .paper :global(blockquote p:last-child) { margin-bottom: 0; }
 
-  @media (max-width: 640px) { .paper :global(.series-nav ol) { columns: 1; } }
+  /* ── Code ─────────────────────────────────────────────── */
+  .paper :global(code) { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.86em; background: rgba(159, 176, 192, 0.12); border-radius: 4px; padding: 0.1em 0.25em; color: var(--paper-fg); }
+  .paper :global(pre) {
+    background-color: #05080b !important; border: 1px solid var(--paper-rule); border-radius: 8px; padding: 1rem 1.15rem; overflow-x: auto; margin: 0 0 1.5rem; font-size: 0.85rem; line-height: 1.55;
+    background-image:
+      linear-gradient(90deg, #05080b 1.1rem, rgba(5, 8, 11, 0)), linear-gradient(270deg, #05080b 1.1rem, rgba(5, 8, 11, 0)),
+      radial-gradient(farthest-side at 0 50%, rgba(45, 212, 191, 0.85), rgba(0, 0, 0, 0)), radial-gradient(farthest-side at 100% 50%, rgba(45, 212, 191, 0.85), rgba(0, 0, 0, 0));
+    background-size: 2rem 100%, 2rem 100%, 1rem 100%, 1rem 100%; background-position: left, right, left, right; background-repeat: no-repeat; background-attachment: local, local, scroll, scroll;
+  }
+  .paper :global(pre code) { background: transparent; padding: 0; font-size: inherit; }
+
+  /* ── Tables: scroll inside their own box, never the page; edge glow shows they scroll ── */
+  .paper :global(table) {
+    display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; margin: 1.25rem 0 1.75rem; font-size: 0.9rem; line-height: 1.5; -webkit-overflow-scrolling: touch;
+    background:
+      linear-gradient(90deg, #000 1.1rem, rgba(0, 0, 0, 0)) left / 2rem 100% no-repeat local,
+      linear-gradient(270deg, #000 1.1rem, rgba(0, 0, 0, 0)) right / 2rem 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, rgba(45, 212, 191, 0.85), rgba(0, 0, 0, 0)) left / 1rem 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgba(45, 212, 191, 0.85), rgba(0, 0, 0, 0)) right / 1rem 100% no-repeat scroll;
+  }
+  .paper :global(th),
+  .paper :global(td) { border: 1px solid var(--paper-rule); padding: 0.55rem 0.75rem; text-align: left; vertical-align: top; }
+  .paper :global(th) { font-weight: 600; color: var(--paper-accent); background: rgba(45, 212, 191, 0.12); }
+  .paper :global(th strong) { color: inherit; }
+  .paper :global(td) { color: var(--paper-fg); }
+  .paper :global(tbody tr:nth-child(even) td) { background: rgba(159, 176, 192, 0.11); }
+  .paper :global(td code) { white-space: nowrap; }
+  .paper :global(code.nwc) { white-space: nowrap; }
+  .paper :global(code.long) { white-space: normal; }
+  .paper :global(code.long .tok) { white-space: nowrap; }
+  .paper :global(code.long .lt .seg) { white-space: nowrap; }
+  .paper :global(table.checks :is(td, th):first-child) { width: 4.75rem; }
+  .paper :global(table.numbered :is(td, th):first-child) { width: 1%; white-space: nowrap; }
+  .paper :global(table.checks :is(td, th):last-child) { width: 11rem; }
+  @media (min-width: 641px) {
+    .paper :global(table.cards td.lab) { min-width: 8.5rem; }
+    .paper :global(table.wide :is(td, th):first-child) { min-width: 7.5rem; }
+    .paper :global(table.wide:is(.numbered, .checks) :is(td, th):first-child) { min-width: 0; }
+  }
+  @media (min-width: 1100px) {
+    .paper :global(table.wide) { width: max-content; max-width: min(68rem, calc(100vw - 4rem)); margin-left: 50%; transform: translateX(-50%); }
+    .paper :global(table.xwide) { max-width: min(82rem, calc(100vw - 3rem)); font-size: 0.84rem; }
+  }
+
+  /* ── Figures: Markdown image, then an italic caption paragraph ─ */
+  .paper :global(p:has(> img)) { margin: 1.75rem 0 0.6rem; text-align: center; }
+  .paper :global(img) { display: inline-block; width: 100%; max-width: 100%; height: auto; background: var(--figure-bg); border-radius: 10px; padding: 0.6rem; border: 1px solid var(--paper-rule); filter: brightness(0.94); }
+  .paper :global(img[src$=".svg"]) { width: min(100%, 36rem); }
+  .paper :global(p:has(> img[src$=".svg"]) + p:has(> em:only-child)) { max-width: 36rem; margin-inline: auto; }
+  .paper :global(p:has(> img) + p:has(> em:only-child)) { color: var(--paper-muted); font-size: 0.9rem; line-height: 1.55; margin-bottom: 2rem; }
+  .paper :global(p:has(> img) + p > em:only-child) { font-style: normal; }
+
+  /* ── References: show the [n] markers the text cites ─── */
+  .paper :global(h2#references + ol) { list-style: none; padding-left: 2.6rem; counter-reset: ref; font-size: 0.92rem; color: var(--paper-muted); }
+  .paper :global(h2#references + ol > li) { counter-increment: ref; position: relative; }
+  .paper :global(h2#references + ol > li::before) { content: "[" counter(ref) "]"; position: absolute; left: -2.6rem; width: 2.2rem; text-align: right; color: var(--paper-fg); }
+
+  @media (max-width: 640px) {
+    .paper { padding: 2rem 1rem 1.5rem; }
+    .paper :global(p) { font-size: 1rem; }
+    .paper :global(h3) { font-size: 1.3rem; }
+    .paper :global(h4) { font-size: 1.12rem; }
+    .paper :global(.series-nav ol) { display: block; }
+    .paper :global(.series-nav li) { padding: 0.35rem 0; }
+    .paper :global(h2#contents + ul) { columns: 1; }
+    .paper :global(table) { font-size: 0.82rem; }
+    .paper :global(th),
+    .paper :global(td) { padding: 0.45rem 0.55rem; }
+    /* 4–8 column tables become stacked cards (labels set by the inline script). */
+    .paper :global(table.cards) { display: block; background: none; overflow: visible; }
+    .paper :global(table.cards thead) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+    .paper :global(table.cards tbody) { display: block; }
+    .paper :global(table.cards tr) { display: block; border: 1px solid var(--paper-rule); border-left: 3px solid var(--paper-accent); border-radius: 8px; margin: 0 0 0.75rem; padding: 0.55rem 0.8rem; background: var(--paper-surface); }
+    .paper :global(table.cards td) { display: block; border: 0; padding: 0.2rem 0; background: none !important; }
+    .paper :global(table.cards td::before) { content: attr(data-label); display: block; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--paper-accent); }
+    .paper :global(table.cards td:first-child) { font-weight: 600; }
+    .paper :global(table.cards td) { width: auto !important; }
+    /* In a card the cell is full width, so long code may wrap rather than push the page sideways. */
+    .paper :global(table.cards td code.long) { white-space: normal; }
+    .paper :global(table.checks :is(td, th):last-child) { width: 6.5rem; }
+    /* The 9-column RACI matrix fits the phone when compact. */
+    .paper :global(table.matrix) { font-size: 0.72rem; }
+    .paper :global(table.matrix :is(td, th)) { padding: 0.35rem 0.25rem; text-align: center; }
+    .paper :global(table.matrix :is(td, th):first-child) { text-align: left; min-width: 6rem; }
+    .paper :global(img) { padding: 0.35rem; }
+    .paper :global(pre) { font-size: 0.74rem; padding: 0.8rem 0.9rem; }
+  }
+
+  @media print {
+    .paper { --paper-fg: #111; --paper-muted: #444; --paper-accent: #0f766e; --paper-rule: #ccc; --paper-surface: #f6f6f6; max-width: 100%; padding: 0; }
+    .paper-back, .paper :global(.series-pager) { display: none; }
+    .paper :global(table) { display: table; overflow: visible; font-size: 0.78rem; background: none; }
+    .paper :global(pre) { background: #f6f6f6 !important; white-space: pre-wrap; }
+    .paper :global(img), .paper :global(table), .paper :global(blockquote) { break-inside: avoid; }
+    .paper :global(h2), .paper :global(h3) { break-after: avoid; }
+    :global(header), :global(footer) { display: none !important; }
+    :global(body) { background: #fff; }
+  }
 </style>
