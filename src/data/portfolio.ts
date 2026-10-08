@@ -64,6 +64,19 @@ export const portfolioItems: PortfolioItem[] = [
     featured: true,
   },
   {
+    id: 'whitepaper-workflow',
+    title: '© Agentic Delivery Workflow: Request to Monitored Production',
+    description:
+      'Enterprise agentic AI is governed by documents that each own one piece — and together offer three gate numberings, two role vocabularies, and no path from a request to a running system. This workflow is that path: eight stages, W0–W7, each closing a named gate and exiting only on evidence an auditor can check, with eleven roles in one RACI and 21 cross-framework conflicts resolved on the record. Hub of a seven-paper series; its worked examples are specifications, not results.',
+    fullDescription:
+      "Agentic Delivery Workflow (v1.10, October 2026) is the hub of the seven-part white-paper series Agentic AI Governance in Practice. It binds a governance framework (CRISP-AG), a requirements standard (the Agentic PRD Standard), a design method (Specification-Driven Design) and a runtime harness specification — with security and vendor-control specifications beside them — into one executable path from a request to a monitored production system, without restating any of them.\n\nThe spine is eight stages: intake and classify (W0), hub (W1), SDD specification (W2), evaluation specification and machine-readable spec (W3), harness binding (W4), build under harness (W5), evaluation and red team (W6), and deploy and monitor (W7). Each stage has typed inputs and outputs, a responsible role, an approver, a return path when its gate fails, and an exit checklist in which every item names the artifact or run ID that proves it. A failed gate without a logged exception is a stop, not a warning.\n\nThe paper reconciles the source frameworks' roles into one RACI of eleven roles, adding Legal and a Vendor Control Owner where the governance framework requires them. It specifies how sections of a product's requirements document compile into the twelve harness controls (HRN-01 to HRN-12), so a boundary written in the PRD becomes a deny rule in the runtime. It fixes the single point — Gate 3, with a run ID — at which a claim moves from specified to demonstrated, and records 21 conflicts between its sources with the resolution, the owning document, and the reason.\n\nThe stage specifications are generated from a YAML definition so that an agent can execute the workflow. The worked example is an assembling agent that drafts document sets for other agents while living inside the same boundaries it writes: propose-only, Full form, every action PROHIBITED or HITL-REQUIRED. The paper states its own limits — thresholds that need production data are left unset, vendor-configured agents have a weaker harness, and both worked examples are specifications, not results, until W6 runs on built code.",
+    category: 'whitepaper',
+    tags: ['Agentic AI', 'AI Governance', 'Delivery Workflow', 'RACI', 'Harness Engineering', 'EU AI Act', 'NIST AI RMF'],
+    link: 'https://docs.google.com/document/d/1c5_ZSPdhG2JTeHD9foFlh-p14GtP9kXB6BP1mEyCaOM/edit',
+    metrics: '8 Gated Stages · 21 Conflicts Resolved',
+    featured: true,
+  },
+  {
     id: 'whitepaper-1',
     title: '© SOTA Agentic PRD: PACCA Healthcare AI',
     description:
