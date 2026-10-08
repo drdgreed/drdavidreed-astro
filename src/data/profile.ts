@@ -17,11 +17,6 @@ export const profile = {
   elevatorPitch:
     'Senior AI/ML leader who designs, codes, and ships production agentic systems — not demos. 35+ years delivering complex platforms; current hands-on work in multi-agent architectures, LLM evaluation, RAG, and Model Context Protocol (MCP). Sole inventor of US Patent 6,850,988 (foundational to Amazon\'s recommendation engine). PhD CS, MBA, PMP, Wharton Fellow.',
 
-  /** Company stages rendered as pills under the hero pitch. */
-  availability: {
-    targetStages: ['Series B', 'Series C', 'Growth-stage', 'Enterprise'],
-  },
-
   /** Quick-fact bullets for the bio block + Ask-AI grounding. */
   highlights: [
     'Senior Director, Data Science & AI, Cushman & Wakefield (Aug 2026 – Present)',

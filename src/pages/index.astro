@@ -42,15 +42,6 @@ import { SITE } from '../lib/site-meta';
         {profile.elevatorPitch}
       </p>
 
-      {/* Target stages as pills */}
-      <div class="flex flex-wrap justify-center gap-3 mb-12 animate-fade-in" style="animation-delay: 240ms">
-        {profile.availability.targetStages.map((stage) => (
-          <span class="px-5 py-2.5 text-sm font-medium rounded-full border border-border text-muted-foreground bg-muted/40 hover:border-primary/50 hover:text-foreground hover:bg-muted/60 transition-all duration-300 cursor-default">
-            {stage}
-          </span>
-        ))}
-      </div>
-
       {/* CTAs */}
       <div class="flex flex-wrap justify-center gap-3 mb-12 animate-fade-in" style="animation-delay: 320ms">
         <a
