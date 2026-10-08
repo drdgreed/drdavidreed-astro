@@ -77,7 +77,7 @@ Five lifecycle gates, from intent and risk classification to continuous monitori
 
 ### 1.1 The problem
 
-Every AI agent an organization deploys — whether built on Anthropic Claude, OpenAI, Google Gemini, or Microsoft Foundry — must run inside a **harness**: an out-of-model enforcement layer that constrains what the agent can do, records what it did, and proves it did what it claims. Anthropic states this directly: “Permission rules are enforced by Claude Code, not by the model” [8]. Anthropic also states that the auto-mode classifier “is a per-action control, not an isolation boundary” — which is why this specification separates the permission model (HRN-01) from the isolation boundary (HRN-11) and the spend governor (HRN-12). Microsoft frames the same problem for **Microsoft Foundry Agent Service**: without “visibility, policy enforcement, and orchestration,” models can “drift, be incorrect, and lack accountability” [9]. OWASP ranks **Excessive Agency** (LLM03:2026, up from sixth in 2025) and **Prompt Injection** (LLM01:2026) among the top ten risks of LLM applications [10]. NIST’s AI Risk Management Framework requires that risk controls be applied through four durable functions — GOVERN, MAP, MEASURE, MANAGE — with GOVERN “infused throughout AI risk management” [11].
+Every AI agent an organization deploys — whether built on Anthropic Claude, OpenAI, Google Gemini, or Microsoft Foundry — must run inside a **harness**: an out-of-model enforcement layer that constrains what the agent can do, records what it did, and proves it did what it claims. Anthropic states this directly: “Permission rules are enforced by Claude Code, not by the model” [8]. Anthropic also states that the auto-mode classifier “is a per-action control, not an isolation boundary” [44] — which is why this specification separates the permission model (HRN-01) from the isolation boundary (HRN-11) and the spend governor (HRN-12). Microsoft frames the same problem for **Microsoft Foundry Agent Service**: without “visibility, policy enforcement, and orchestration,” models can “drift, be incorrect, and lack accountability” [9]. OWASP ranks **Excessive Agency** (LLM03:2026, up from sixth in 2025) and **Prompt Injection** (LLM01:2026) among the top ten risks of LLM applications [10]. NIST’s AI Risk Management Framework requires that risk controls be applied through four durable functions — GOVERN, MAP, MEASURE, MANAGE — with GOVERN “infused throughout AI risk management” [11].
 
 ### 1.2 What this specification prescribes
 
@@ -123,7 +123,7 @@ The AI Governance Board (AIGB) owns this specification. According to NIST, GOVER
 
 Required roles:
 
-- **AI Product Owner** — owns each agent’s Intended Use Statement (NIST MAP).
+- **AI Product Owner** — owns each agent’s intended-use statement (NIST MAP).
 - **AI Risk Officer** — signs off on risk classification, EU AI Act tier, and Annex III determinations.
 - **Harness Engineer** — implements and maintains hooks, guards, and evaluators.
 - **Legal** — is consulted on every delegation-authority classification at Gate 0; approves PROHIBITED and HUMAN-ONLY rows that rest on regulatory or contractual exposure (CRISP-AG §5.1.1; Workflow §4).
@@ -152,7 +152,7 @@ Each agent passes through five gates. A gate cannot be skipped; a failed gate is
 
 Deliverables:
 
-- **Intended Use Statement**, following Microsoft’s Responsible AI Standard v2 Goal A3 (Fit for Purpose) [22].
+- **Intended-use statement**, following Microsoft’s Responsible AI Standard v2 Goal A3 (Fit for Purpose) [22].
 - **EU AI Act tier determination** using the four-tier framework (unacceptable, high-risk, limited, minimal) and the Annex III checklist [23].
 - **NIST GAI risk applicability review** against the twelve GAI risks defined in NIST AI 600-1 — CBRN, Confabulation, Dangerous/Violent/Hateful Content, Data Privacy, Environmental, Human-AI Configuration, Information Integrity, Information Security, Intellectual Property, Obscene/Degrading, Value Chain and Component Integration, Harmful Bias and Homogenization [24].
 - **Impact Assessment (Microsoft RAI Goal A1)** for any consequential agent [22].
@@ -227,7 +227,7 @@ For agents the organization configures inside a vendor product — Copilot Studi
 
 **Reference implementation.** `hooks/session-preflight.sh` is wired to Claude Code’s `SessionStart` hook event [16]. The reference `CLAUDE.md` requires reading `~/tasks/lessons.md` and any project’s `docs/AGENT_LESSONS.md` at session start, so that mistakes do not recur across sessions.
 
-**Cross-vendor.** OpenAI: on-start Guardrails in the Agents SDK. Google ADK: pre-run graph nodes. Microsoft: Semantic Kernel filters at agent construction.
+**Cross-vendor.** OpenAI: on-start Guardrails in the Agents SDK. Google ADK: pre-run graph nodes. Microsoft: Agent Framework agent-run middleware registered at agent construction, which ends the run before execution (MiddlewareTermination) [36].
 
 **Databricks equivalent.** Job or notebook init as the preflight; the manifest and budget declarations are read from the workspace at task start.
 
@@ -418,7 +418,7 @@ Where the agent platform cannot enforce the boundary itself, device management, 
 
 *Tier (b):* the whole process — Claude Code, its file tools, hooks and MCP servers — inside a container, a VM or the sandbox runtime, running as a non-root user, or in an Anthropic-hosted cloud session. The sandbox runtime wraps an entire process in the same Seatbelt or bubblewrap isolation and by default blocks writes to `.git/hooks`, `.git/config`, `.mcp.json`, `.claude/commands`, `.claude/agents` and shell startup files; on Linux it builds the deny list once at launch. Claude Code refuses `--dangerously-skip-permissions` as root on Linux and macOS. In an Anthropic-hosted cloud session, a network proxy enforces a default allowlist, and a separate proxy holds the GitHub token outside the sandbox. Runners are Linux (SEC MRB-1).
 
-*Tier (c):* a VM or microVM per session; Docker Sandboxes is one vendor-named option (unverified).
+*Tier (c):* a VM or microVM per session; Docker Sandboxes, a microVM with its own Docker daemon, is one vendor-named option [44].
 
 **OpenAI equivalent.** Codex sandbox `read-only` or `workspace-write` (Seatbelt via `sandbox-exec` on macOS; bubblewrap plus seccomp on Linux) with `network_access=false` (network off by default), approval policy pinned by enterprise `requirements.toml` [46]. Codex cloud uses a two-phase runtime (setup online, agent phase offline by default), and Agents SDK runs are hosted in a container the organization controls.
 
@@ -456,7 +456,7 @@ The budget, alert threshold, cap, metering unit and reconciliation source for ea
 
 **Microsoft equivalents.** Spend control spans three planes, and VCS Appendix B carries the Copilot Studio and Microsoft 365 Copilot columns. *Foundry:* Azure Cost Management budgets are alert-only: “Resources aren’t affected, and your consumption isn’t stopped” [56]. Cost data lands within 8–24 hours and budgets are evaluated every 24 hours, so the enforcing step is an action-group automation (a webhook or Function that reduces deployment quota or TPM, or rotates the key), which the organization’s platform engineers specify. Foundry Model Router in balanced or cost mode provides tiering; Foundry Control Plane (preview) [57] provides cost and token tracking as evidence, not control. Coverage: Partial until the automation is wired.
 
-*Copilot Studio:* text and generative AI tools bill 1, 15 or 100 Copilot Credits per 10 responses for basic, standard or premium models, respectively (0.1, 1.5 or 10 credits per 1K tokens); a generative answer bills 2 credits and an agent action 5. Premium is about 6.7× the standard tier and 50× a generative answer. The per-agent monthly consumption limit, with notification and hard stop, is set in the Power Platform admin center before first use, and prepaid enforcement disables custom agents at 125% of prepaid capacity. Use by a Microsoft 365 Copilot-licensed user under their own USL identity is “No charge” ([58], 3 August 2026). Coverage: Full per agent.
+*Copilot Studio:* text and generative AI tools bill 1, 15 or 100 Copilot Credits per 10 responses for basic, standard or premium models, respectively (0.1, 1.5 or 10 credits per 1K tokens); a generative answer bills 2 credits and an agent action 5. Premium is about 6.7× the standard tier and, per response, 5× a generative answer. The per-agent monthly consumption limit, with notification and hard stop, is set in the Power Platform admin center before first use, and prepaid enforcement disables custom agents at 125% of prepaid capacity. Use by a Microsoft 365 Copilot-licensed user under their own USL identity is “No charge” ([58], 3 August 2026). Coverage: Full per agent.
 
 *Microsoft 365 Copilot agents:* usage is metered through the Microsoft 365 admin center billing policy at US$0.01 per message; the budget limit sends percentage-milestone emails; there is no per-agent limit, and the only hard stop is disconnecting the billing policy. Coverage: Partial; the resulting DAS ceiling is recorded in the configured-agent profile (VCS VC-06).
 
@@ -624,7 +624,7 @@ The Use-Case Register is the AI Risk Officer’s operational artifact: every pro
 
 Sources: EU AI Act tier framework and Annex III [12]; the twelve GAI risks [24].
 
-Each row links to the product’s hub H0 and its registry record, which carry the Intended Use Statement, the AISIA (CRISP-AG), the eval suite and the incident runbook required by Gates 0–4.
+Each row links to the product’s hub H0 and its registry record, which carry the intended-use statement, the AISIA (CRISP-AG), the eval suite and the incident runbook required by Gates 0–4.
 
 Copilot Studio agents and Microsoft 365 Copilot agents are within the register’s scope as vendor-configured agents (VCS VC-06): each has a row with owner business line, tier, load-bearing controls per the configured-agent profile, human-oversight posture and the configured HRN-12 limit.
 
@@ -680,7 +680,7 @@ The assumption is confirmed on day one and at every Gate 2 by running `claude do
 
 ### 12.3 What is not yet verified
 
-**Source verification.** Vendor and regulatory statements reflect their sources as of September 2026, and the stack posture in §9 and the framework status in §6.6 reflect them as of 19 September 2026. A statement whose basis is a secondary source rather than the primary text carries “(unverified)”. This applies to the DORA Art. 28(8) wording adopted in §10 [86], which rests on a secondary source rather than the regulation text; to the behavior of an Anthropic Console **workspace** spend limit at the cap, and to Google Cloud budget and AWS Budgets **actions** as a hard stop, in HRN-12, which rest on secondary sources rather than the vendors’ own documentation; and to Docker Sandboxes as a microVM option in HRN-11, which rests on a secondary source rather than the vendor’s product documentation.
+**Source verification.** Vendor and regulatory statements reflect their sources as of September 2026, and the stack posture in §9 and the framework status in §6.6 reflect them as of 19 September 2026. A statement whose basis is a secondary source rather than the primary text carries “(unverified)”. This applies to the DORA Art. 28(8) wording adopted in §10 [86], which rests on a secondary source rather than the regulation text; and to the behavior of an Anthropic Console **workspace** spend limit at the cap, and to Google Cloud budget and AWS Budgets **actions** as a hard stop, in HRN-12, which rest on secondary sources rather than the vendors’ own documentation.
 
 The following also rest on partial or secondary sources: (a) the ISO/IEC 42001 clause structure (4–10), which is inferred from the standard’s Plan-Do-Check-Act management-system architecture because the publisher’s summary does not give the clause numbering [20]; (b) the Skills claims, which rest on the Agent Skills documentation [19] rather than the launch announcement; (c) the ATF version label “v0.9.1” [71], which is not confirmed on the CSA page; (d) the mitigation guidance of the OWASP Top 10 for Agentic Applications, which rests on the publisher’s summary rather than the full document; and (e) the description of Foundry Control Plane as one of “two control planes”, which comes from a Microsoft community blog post rather than the product documentation.
 
@@ -734,7 +734,7 @@ This paper is licensed under [Creative Commons Attribution 4.0 International (CC
 28. Anthropic. [*Claude Code: deploy managed settings*](https://code.claude.com/docs/en/managed-settings).
 29. OpenAI. [*Agents SDK: guardrails*](https://openai.github.io/openai-agents-python/guardrails/).
 30. Databricks. [*AI governance with Unity Gateway*](https://docs.databricks.com/aws/en/ai-gateway/).
-31. UC Berkeley. [*Progent: Securing AI Agents with Privilege Control*](https://arxiv.org/abs/2504.11703). arXiv:2504.11703, v3, 14 May 2026; v1 titled “Programmable Privilege Control for LLM Agents”.
+31. Shi, T., He, J., Wang, Z., Li, H., Wu, L., Guo, W., and Song, D. [*Progent: Securing AI Agents with Privilege Control*](https://arxiv.org/abs/2504.11703). arXiv:2504.11703, v3, 14 May 2026; v1 titled “Programmable Privilege Control for LLM Agents”.
 32. Wang, H., Poskitt, C. M., and Sun, J. [*AgentSpec: Customizable Runtime Enforcement for Safe and Reliable LLM Agents*](https://arxiv.org/abs/2503.18666). arXiv:2503.18666, 2025; ICSE 2026.
 33. Chen, Z., Kang, M., and Li, B. [*ShieldAgent: Shielding Agents via Verifiable Safety Policy Reasoning*](https://arxiv.org/abs/2503.22738). arXiv:2503.22738, 2025.
 34. Anthropic. [*Claude Code auto mode*](https://www.anthropic.com/engineering/claude-code-auto-mode). Engineering blog, 25 March 2026.
@@ -772,7 +772,7 @@ This paper is licensed under [Creative Commons Attribution 4.0 International (CC
 66. Anthropic. [*Responsible Scaling Policy*](https://www.anthropic.com/responsible-scaling-policy), v3.4 (effective 8 July 2026).
 67. European Parliament and Council. [*Regulation (EU) 2026/1744 (Digital Omnibus on AI)*](https://eur-lex.europa.eu/eli/reg/2026/1744/oj/eng). In force 27 July 2026.
 68. AI Act Explorer. [*EU AI Act implementation timeline*](https://artificialintelligenceact.eu/implementation-timeline/).
-69. lawandtechnology.eu. [*ISO/IEC 42001 and the AI Act: why certification is not yet a presumption of conformity*](https://lawandtechnology.eu/en/iso-iec-42001-and-the-ai-act-why-certification-is-not-yet-a-presumption-of-conformity/).
+69. Law & Technology. [*ISO/IEC 42001 and the AI Act: why certification is not (yet) a presumption of conformity*](https://lawandtechnology.eu/en/iso-iec-42001-and-the-ai-act-why-certification-is-not-yet-a-presumption-of-conformity/). lawandtechnology.eu, 4 July 2026.
 70. ISO/IEC. [*ISO/IEC 42005:2025 — AI system impact assessment*](https://www.iso.org/standard/44545.html).
 71. Cloud Security Alliance. [*Agentic Trust Framework*](https://github.com/massivescale-ai/agentic-trust-framework), v0.9.1 public review draft, 3 April 2026.
 72. European Commission. [*Draft Commission guidelines on the classification of high-risk AI systems*](https://digital-strategy.ec.europa.eu/en/library/draft-commission-guidelines-classification-high-risk-ai-systems), 19 May 2026.
@@ -808,7 +808,7 @@ This paper is licensed under [Creative Commons Attribution 4.0 International (CC
 | `SubagentStop` | `hooks/subagent-claim-check.sh` | Subagent claim verification (a `Stop` hook in subagent frontmatter is converted to `SubagentStop`) | HRN-05, HRN-10 | Sub-agent invocation |
 | `SessionEnd` | `hooks/session-metrics.sh` | Session metrics rollup | HRN-07 | Lifecycle |
 
-The Claude Code hook lifecycle has **32 events** in the September 2026 documentation (`SessionStart`, `Setup`, `UserPromptSubmit`, `UserPromptExpansion`, `PreToolUse`, `PermissionRequest`, `PermissionDenied`, `PostToolUse`, `PostToolUseFailure`, `PostToolBatch`, `Notification`, `MessageDisplay`, `SubagentStart`, `SubagentStop`, `TaskCreated`, `TaskCompleted`, `Stop`, `StopFailure`, `TeammateIdle`, `InstructionsLoaded`, `ConfigChange`, `CwdChanged`, `DirectoryAdded`, `FileChanged`, `WorktreeCreate`, `WorktreeRemove`, `PreCompact`, `PostCompact`, `PreModelSwitch`, `PostModelSwitch`, `Elicitation`, `ElicitationResult`) [16]; hook types are `command`, `http`, `mcp_tool`, `prompt` and `agent`; all matching hooks run in parallel; default timeouts are 600 s (`command`/`http`/`mcp_tool`), 30 s (`prompt`) and 60 s (`agent`).
+The Claude Code hook lifecycle has **33 events** in the September 2026 documentation (`SessionStart`, `Setup`, `UserPromptSubmit`, `UserPromptExpansion`, `PreToolUse`, `PermissionRequest`, `PermissionDenied`, `PostToolUse`, `PostToolUseFailure`, `PostToolBatch`, `Notification`, `MessageDisplay`, `SubagentStart`, `SubagentStop`, `TaskCreated`, `TaskCompleted`, `Stop`, `StopFailure`, `TeammateIdle`, `InstructionsLoaded`, `ConfigChange`, `CwdChanged`, `DirectoryAdded`, `FileChanged`, `WorktreeCreate`, `WorktreeRemove`, `PreCompact`, `PostCompact`, `PreModelSwitch`, `PostModelSwitch`, `Elicitation`, `ElicitationResult`, `SessionEnd`) [16]; hook types are `command`, `http`, `mcp_tool`, `prompt` and `agent`; all matching hooks run in parallel; default timeouts are 600 s (`command`/`http`/`mcp_tool`), 30 s (`prompt`) and 60 s (`agent`).
 
 The twelve bindings above are the enterprise baseline. The following are recommended for high-risk agents (§7): `PermissionDenied` (auto-mode denials, where `auto` is layered); `PreCompact` (matcher `manual` or `auto`), which snapshots the context before compaction; and `InstructionsLoaded`, which records which `CLAUDE.md` and `.claude/rules/*.md` files were in force (evidence for HRN-10 and LLM08:2026). Hooks are delivered from managed settings (`allowManagedHooksOnly`) and every guard hook is fail-closed (HRN-03). The ACS column maps each binding to the OWASP Agent Control Standard v0.1 hook points (Input, Output, Tool call, Tool response, Memory operations, Code execution, Sub-agent invocation, Lifecycle events) for portability; ACS is vocabulary, not enforcement. Codex has direct equivalents for every baseline event except two: `StopFailure`, for which Codex has only an `Interrupt` event (HRN-05), and `ConfigChange`.
 

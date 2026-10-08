@@ -152,7 +152,7 @@ Every requirement in a specification written to this method names its enforcing 
 | **Permission and scope** | Unity Catalog grants; service principal per agent; tool allow-lists; Claude Code `permissions.deny` (`Edit(path)`, `Read(path)`, `Bash(...)` forms); isolation-boundary rules (read roots, write roots, egress allow-list) per SEC-10 / HRN-11 | Yes — the action is denied | Fail-closed (deny rules block in every mode). Path deny rules do not bind unnamed reads or arbitrary subprocesses; OS-level enforcement needs the isolation boundary, which itself fails open unless `sandbox.failIfUnavailable` is set | Platform; agent runtime; coding agent; OS |
 | **Policy rule (tool-argument constraint)** | PreToolUse hooks; Progent- or AgentSpec-style rules [49], [50] over tool names and arguments (trigger → predicate → enforcement); contextual policies with deterministic enforcement [51]; Cedar-style policies; Unity Gateway service policies | Yes — when the evaluator runs to completion | **Fail-open on timeout** (Claude Code `command`, `http` and `mcp_tool` hooks; Copilot command and HTTP hooks); fail-closed on exit 2 (Claude Code) or any non-zero exit (Copilot); in Claude Code, exit 1 or invalid JSON does not block (note 1) | Agent runtime; coding agent; gateway |
 | **Protocol rule** | State-machine transitions the orchestrator will not make; absorbing terminal states; human-only transitions; monotone privilege (PROTO-INV-07) | Yes — the transition does not exist | Fail-closed | Orchestrator |
-| **Model-based gate** | Claude Code auto-mode classifier; `prompt` and `agent` hooks; an LLM judge used as a CI scorer | Yes — probabilistically (the published auto-mode sets show 0.4% false approvals and 17% missed denials) | Probabilistic refusal; falls back from server-side to client-side review behind an LLM gateway; pauses after repeated denials. Treated as guidance-plus: never the sole control on an irreversible action | Agent runtime; CI |
+| **Model-based gate** | Claude Code auto-mode classifier; `prompt` and `agent` hooks; an LLM judge used as a CI scorer | Yes — probabilistically (Anthropic's published evaluation: 0.4% of benign actions blocked; 17% of overeager actions let through [10]) | Probabilistic refusal; falls back from server-side to client-side review behind an LLM gateway; pauses after repeated denials. Treated as guidance-plus: never the sole control on an irreversible action | Agent runtime; CI |
 | **Spend cap** | Per-request `max_tokens` (API); per-case and per-period counters in the orchestrator; Unity Gateway budgets with *Block usage*; Console and Claude for Enterprise monthly caps; Anthropic `task_budget` | Per layer: `max_tokens` and orchestrator counters refuse; gateway budgets block *approximately*; `task_budget` is "a soft hint, not a hard cap" and is guidance [54] | API and orchestrator layers fail closed; gateway budgets are the backstop, not the bound; alert-only budgets (Azure Cost Management, Google Cloud) are monitoring (note 2) | API; orchestrator; gateway; vendor admin plane |
 | **Test and CI gate** | Golden-set evaluation with thresholds; hallucination zero-tolerance; consistency tests; Stop hooks that fail while tests fail | Yes — deployment is blocked | Fail-closed when configured as a required check. A Stop hook is overridden after eight consecutive blocks (cap configurable), so it is not the control of record | CI pipeline; coding agent |
 | **Monitoring and switch** | Drift metrics with alerts; autonomy switch; alert-only budgets; rate limits without a block action | After the fact — stops future actions | Not applicable: detects, does not prevent | Platform; admin API |
@@ -254,7 +254,7 @@ Each principle is stated, justified, shown in the lease-administration example s
 
 > **Rule.** Any confidence score used to route work shall come from an estimator with a current calibration record, and routing thresholds shall be inoperative in its absence.
 
-**Why.** Verbalized confidence from language models is systematically overconfident [33]. In document extraction, a model's own self-critique reached 12.9% specificity — it almost never said it was wrong when it was — while a lightweight classifier over the model's final-token embeddings achieved 99.9% precision at a 5% base error rate [28]. Routing on the former is routing on noise.
+**Why.** Verbalized confidence from language models is systematically overconfident [33]. In document extraction, LLM self-critique reached 12.9% specificity — it passed almost every erroneous extraction as correct — while a lightweight classifier over the model's last-token embeddings achieved 99.9% precision at a 5% base error rate [28]. Routing on the former is routing on noise.
 
 **In the lease-administration example.** CAL-01 requires an external calibrated estimator (or cross-model agreement plus citation verification) with expected calibration error (ECE) ≤ 0.05 on Tier A fields for the pinned model identifier; ROUTE-INV-06 sends everything to human verification when no current record exists.
 
@@ -304,7 +304,7 @@ Each principle is stated, justified, shown in the lease-administration example s
 
 > **Rule.** The model identifier and prompt version shall be pinned in configuration and recorded on every decision; any change to either, or to a judge model or a rule set, shall require the golden set, the calibration record, and the judge validation to be re-run and approved by a named person before autonomous operation resumes.
 
-**Why.** Vendors retire and update identifiers on their own schedule — Databricks retires `databricks-claude-sonnet-4` on 9 October 2026, for instance [38] — and a system that pins nothing is drifting whether or not anyone is watching. FDA's predetermined-change-control thinking (adopted by analogy, in the sense A6 defines) and the RICS requirement for written reliability assessments of high-impact outputs both describe the same control.
+**Why.** Vendors retire and update identifiers on their own schedule — Databricks retires `databricks-claude-sonnet-4` on 9 October 2026, for instance [38] — and a system that pins nothing is drifting whether or not anyone is watching. The RICS requirement for written reliability assessments of high-impact outputs describes the same control.
 
 **In the lease-administration example.** CHG-01 through CHG-04 in Part B4 specify exact identifiers only; provenance on every record; a change gate with six evidence items (a)–(f) — evaluation pass, calibration record, consistency record, judge validation, stratified report, named approval — and a named approver; and immutable prompt versions once referenced by any persisted decision. DRIFT-DEF-05 makes an observed identifier mismatch a drift event.
 
@@ -409,7 +409,7 @@ Drift is a change in the distribution of outputs not explained by a change in th
 
 Infrastructure is part of the configuration. The evaluation run record pins the CI runner class, the container's CPU and memory floor and its kill ceiling, and per-call timeouts. A change to any of them, or to the binding (Principle 11), is a drift event by definition (DRIFT-DEF-07). The noise band of the pinned configuration is measured by re-running it at least three times and is recorded with the baseline (EVAL-09); a gate comparison that falls within the band is reported as "no evidence of change", not as a regression or an improvement [47]. The injection suite is scored against an adaptive attacker as well as the static corpus, and reports static and adaptive attack success and utility for the defended and undefended configurations (EVAL-10; evaluation form per SEC §5 (SEC-14)) [42], [43].
 
-> **A note on evidence quality throughout.** Rath's Agent Stability Index is cited for its structure, not its magnitudes — its validation is simulation-based [7]. The 2026 spec-driven-development studies are small, high-variance, and in some cases pre-registered without results yet [15], [29]. The independent contract-extraction benchmarks are the strongest evidence in this paper, and they are not lease-specific [24]–[27]. The method is designed so that the organization replaces these priors with its own measurements within the first two quarters of operation.
+> **A note on evidence quality throughout.** Rath's Agent Stability Index is cited for its structure, not its magnitudes — its validation is simulation-based [7]. The 2026 spec-driven-development studies are small, high-variance, and in some cases pre-registered without results yet [14], [15]. The independent contract-extraction benchmarks are the strongest evidence in this paper, and they are not lease-specific [24]–[27]. The method is designed so that the organization replaces these priors with its own measurements within the first two quarters of operation.
 
 ## 3. Part B — Illustrative worked example: the Lease Administration Agent Set (LAAS)
 
@@ -443,7 +443,7 @@ The safety property is: *lease-administrator time shall move from transcription 
 - Client-specific interpretation precedents (institutional memory) and governed playbook evolution
 - Audit trail, evaluation, calibration, drift detection, and change control as specified in B4
 
-**Out of scope (by design, not deferral).** LAAS excludes any counterparty or client-facing communication; exercise, waiver, or notice on any option or right; opinions of value or rent benchmarking presented as advice; natural-person creditworthiness or tenant/guarantor screening; edits to source documents or to the lease system's record of record; CAM reconciliation calculation (see vignette B6.1 for the pattern); and valuation support (see B6.2).
+**Out of scope (by design, not deferral).** LAAS excludes any counterparty or client-facing communication; exercise, waiver, or notice on any option or right; opinions of value or rent benchmarking presented as advice; natural-person creditworthiness or tenant/guarantor screening; edits to source documents or to the lease system of record; CAM reconciliation calculation (see vignette B6.1 for the pattern); and valuation support (see B6.2).
 
 #### B1.4 Regulatory and professional frame
 
@@ -556,7 +556,7 @@ The journeys are hypothetical: Client A is an illustrative occupier client, and 
 
 **C-HARD-05 (No natural-person scoring):** No agent shall evaluate the creditworthiness, suitability, or risk of a natural person, and any document content that constitutes tenant or guarantor screening of a natural person shall route to a human without a model call. *Source: EU AI Act Annex III 5(b); GDPR Art. 22 (SCHUFA); FCRA; CA/CO ADMT.*
 
-**C-HARD-06 (Source and record immutability):** No agent shall modify a source document, the lease system's record of record, or any released abstract version. Agents write only to staging objects; humans promote. *Source: SOC 1 change management; audit integrity.*
+**C-HARD-06 (Source and record immutability):** No agent shall modify a source document, the lease system of record, or any released abstract version. Agents write only to staging objects; humans promote. *Source: SOC 1 change management; audit integrity.*
 
 **C-HARD-07 (Citation or abstention):** Every extracted field value shall carry a citation to document, page, and clause, or shall be marked NOT_FOUND or AMBIGUOUS; no agent shall infer, assume, or default a value. *Source: PCAOB AS 1105 amendments; safety property.*
 
@@ -799,7 +799,7 @@ Tiering by consequence is the design decision everything else depends on. The ti
 
 **Invariants.** **INV-AUD-01:** The agent is read-only; it has no write access to abstracts, the lease system, feeds, or playbooks.
 
-**Prohibitions.** **PROHIB-AUD-01:** The agent shall not correct, adjust, or annotate any record of record.
+**Prohibitions.** **PROHIB-AUD-01:** The agent shall not correct, adjust, or annotate any record in the lease system of record.
 
 **PROHIB-AUD-02:** The agent shall not communicate a finding outside the system.
 
@@ -851,7 +851,7 @@ Tiering by consequence is the design decision everything else depends on. The ti
 
 **EST-03:** The estimator shall be retrained only through the change gate (CHG-03); its training data shall exclude the golden set.
 
-**Recovery.** **RECOV-EST-01:** On a schema or citation violation, TERM-04 applies (mark VERIFIER_REJECTED → HUMAN_VERIFY; no retry); on a PRE failure, the case routes to a human with no retry (C3.2); on RES exhaustion, TERM-06 applies; the case is left in HUMAN_VERIFY (or HELD under TERM-06(a)) and an audit record is written. Agent-specific refinements are completed under the contract-author skill.
+**Recovery.** **RECOV-EST-01:** The estimator makes no model call and emits no citation, so TERM-04 and TERM-06 do not apply to it. When CAL-01 is not met — no current calibration record for (`estimator_id`, extractor `model_id`, golden-set hash), or one outside its ECE thresholds — ROUTE-INV-06 applies: every field goes to HUMAN_VERIFY and the audit action `straight_through_disabled_uncalibrated` is written. The estimator is not retrained or recalibrated in response except through the change gate (EST-03, CHG-03).
 
 #### B2.8 Drift specification
 
@@ -1026,7 +1026,7 @@ AuditLogEntry {
 
 Each role is assigned exactly the capabilities the specification grants it. Scope violations are detected by unit tests and by Unity Catalog grant audits, and are auditable through the controlled action vocabulary.
 
-| Role | Read docs & abstracts | Write staging | Write record of record | Write playbook | External comms | Release | Exercise option |
+| Role | Read docs & abstracts | Write staging | Write lease system of record | Write playbook | External comms | Release | Exercise option |
 |---|---|---|---|---|---|---|---|
 | **IntakeAgent** | Yes (own doc) | Classification | No | No | No | No | No |
 | **ExtractionAgent** | Yes (own doc + playbook) | AbstractFields | No | No | No | No | No |
@@ -1106,8 +1106,8 @@ State: HUMAN_VERIFY
   → No agent transition leaves HUMAN_VERIFY.
 
 Terminal states (per abstract version):
-  RELEASED — promoted to staging → record of
-      record by the human of record
+  RELEASED — promoted to staging → lease
+      system of record by the human of record
       (C-HARD-01)
   REJECTED — human decision; document may be
       re-ingested as a new version
@@ -1431,7 +1431,7 @@ The enforcing share counts deterministic gates, types/schemas, permissions, prot
 | C-HARD-03 | No agent exercises, waives or gives notice on rights; option enum restricted | B1.8 | Type / schema | `test_models.py::test_option_enum_agent_writable` | Licensing; contract law | specified |
 | C-HARD-04 | No opinion of value or negotiation by any agent | B1.8 | Permission / scope | `test_scope.py::test_no_value_fields`; SC-02 | Tex. Occ. Code §1101; NC 93A-83; USPAP; RICS | specified |
 | C-HARD-05 | No natural-person scoring; screening content routes to human | B1.8 | Deterministic gate | `test_preflight.py::test_screening_content_holds` | AI Act Annex III 5(b); GDPR Art. 22; FCRA; CA/CO ADMT | specified |
-| C-HARD-06 | Source and record-of-record immutability | B1.8 | Permission / scope | grant audit; `test_scope.py::test_agents_write_staging_only` | SOC 1 change management | specified |
+| C-HARD-06 | Source and system-of-record immutability | B1.8 | Permission / scope | grant audit; `test_scope.py::test_agents_write_staging_only` | SOC 1 change management | specified |
 | C-HARD-07 | Citation or abstention; no inferred values | B1.8 | Type / schema | `test_models.py`; eval abstention traps | PCAOB AS 1105 | specified |
 | C-HARD-08 | Tier A 100% human verification until measured error \< 0.5% over ≥ 500 instances and sampling is authorized | B1.8 | Protocol rule | `test_routing.py::test_tier_a_always_human`; RUN-06 test | ASC 842; SOC 1 | specified |
 | C-HARD-09 | No model call when the period budget is exhausted; case bound → TERM-06 | B1.8 | Deterministic gate / Protocol rule | assigned at build | HS HRN-12; VCS VC-01; OWASP LLM06 (2026) | specified |
@@ -1503,7 +1503,7 @@ The enforcing share counts deterministic gates, types/schemas, permissions, prot
 | POST-AUD-01 | Typed AuditFinding, status PROPOSED only | B2.5 | Type / schema | `test_models.py::test_finding_status_enum` | Contract | specified |
 | POST-AUD-02 | UNKNOWN rather than guess | B2.5 | Test / CI gate | `eval/golden.py::variance_subset` | Contract | specified |
 | INV-AUD-01 | Read-only | B2.5 | Permission / scope | grant audit | Contract | specified |
-| PROHIB-AUD-01 | No correction of records of record | B2.5 | Permission / scope | grant audit; `test_scope.py` | Contract | specified |
+| PROHIB-AUD-01 | No correction of records in the lease system of record | B2.5 | Permission / scope | grant audit; `test_scope.py` | Contract | specified |
 | PROHIB-AUD-02 | No external communication of findings | B2.5 | Permission / scope | `test_scope.py::test_no_outbound_tools` | Contract | specified |
 | RES-AUD-01 | `max_tokens` 4096; ≤ 1 call per variance | B2.5 | Test / CI gate | `test_audit_agent.py::test_call_count` | Contract | specified |
 | CONSIST-AUD-01 | Classification agreement ≥ 95% | B2.5 | Test / CI gate | `eval/consistency.py::audit` | Contract | specified |
@@ -1639,9 +1639,9 @@ The enforcing share counts deterministic gates, types/schemas, permissions, prot
 | PRO-02 | No opinion of value; benchmark data labeled | B4.8 | Type / schema | `test_models.py::test_no_value_fields` | USPAP; RICS; licensing | specified |
 | PRO-03 | No signing or notice | B4.8 | Permission / scope | `test_scope.py` | Licensing; contract law | specified |
 | PRO-04 | No holding out as licensed; responsible human named | B4.8 | Test / CI gate | artifact template tests | Licensing law | specified |
-| CHG-01 | Exact identifiers pinned | B4.9 | Deterministic gate | `test_config.py::test_no_floating_alias` | FDA PCCP (by analogy); RICS | specified |
+| CHG-01 | Exact identifiers pinned | B4.9 | Deterministic gate | `test_config.py::test_no_floating_alias` | RICS | specified |
 | CHG-02 | Provenance recorded; mismatch job | B4.9 | Monitoring / switch | scheduled job; `test_change.py` | Principle 9 | specified |
-| CHG-03 | Change gate with six evidence items and named approver | B4.9 | Documented process | change records; `test_change.py::test_gate_items` | FDA PCCP (by analogy); RICS; SOC 1 | specified |
+| CHG-03 | Change gate with six evidence items and named approver | B4.9 | Documented process | change records; `test_change.py::test_gate_items` | RICS; SOC 1 | specified |
 | CHG-04 | Prompt immutability once referenced | B4.9 | Test / CI gate | `test_prompts.py::test_immutability` | SOC 1 | specified |
 | CHG-05 | Vendor-initiated change through the Vendor Change Register and substitution suite | B4.9 | Documented process; Deterministic gate (preflight lifecycle read) | assigned at build | VCS VC-05 | specified |
 | CAM-01 | Model emits only RuleParameters; no amounts | B6.1 | Type / schema | `test_cam.py::test_schema` | Vignette | specified |
@@ -1771,8 +1771,9 @@ spec/laas_requirements.csv first.
 ## Non-negotiables (also enforced by hooks and tests; do not rely on this text)
 - Agents never construct ReleaseDecision,
   never set option status beyond DERIVED |
-  UNRESOLVED, never write to record-of-record
-  tables, never call outbound tools.
+  UNRESOLVED, never write to lease
+  system-of-record tables, never call
+  outbound tools.
 - Every FOUND field carries a verbatim
   citation; abstain (NOT_FOUND / AMBIGUOUS)
   otherwise.
@@ -1812,7 +1813,7 @@ spec/laas_requirements.csv first.
 
 #### C2.2 Permissions and hooks: the enforcing layer
 
-Deny rules in `permissions.deny` and PreToolUse hooks refuse actions; the Stop hook refuses to end a task while the gate fails. Claude Code overrides a Stop hook after eight consecutive blocks without progress (documented as eight, observed as nine, and raisable via `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`), and in a headless run the override is indistinguishable from a pass — so the CI gate, not the Stop hook, is the control of record [10]. A hook that times out, exits 1 or prints invalid JSON does not block; only exit 2 or a valid JSON deny does.
+Deny rules in `permissions.deny` and PreToolUse hooks refuse actions; the Stop hook refuses to end a task while the gate fails. Claude Code overrides a Stop hook once it has continued the turn eight consecutive times without a tool call: the ninth block is overridden and the turn ends (eight is the default cap, raisable via `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`), and in a headless run the override is indistinguishable from a pass — so the CI gate, not the Stop hook, is the control of record [10]. A hook that times out, exits 1 or prints invalid JSON does not block; only exit 2 or a valid JSON deny does.
 
 Every path a hook denies is therefore also a `permissions.deny` rule in `Edit(path)` form (a `Write(path)` rule is accepted and never consulted), and the deny rule is the control; the hook is the argument-level layer that explains the refusal. Deny rules do not bind unnamed reads or subprocesses that open files themselves, so the audit and golden-set directories are also inside the isolation boundary's write-deny set (SEC-10 / HRN-11). The managed baseline that pins all of this is SEC MRB-1; the excerpts below show the project-level part and the managed part separately.
 
@@ -2248,7 +2249,7 @@ A contract says what a component requires before it runs, what it guarantees aft
 
 #### C4.2 Why a model's confidence is not confidence
 
-When a language model writes `confidence: 0.97`, it is producing text that looks like a probability. Measured against outcomes, such numbers are systematically too high and poorly ordered [33]; in document extraction, a model asked to critique its own output caught its mistakes 12.9% of the time [28]. Calibration — the property that 0.9 is right about 90% of the time — is achievable, but only by measuring it: a separate estimator trained on reviewer outcomes, an ECE figure and a reliability diagram, all tied to a specific model version and dataset. Routing work to humans on the model's self-report is routing on noise. LAAS forbids generative agents from emitting confidence at all.
+When a language model writes `confidence: 0.97`, it is producing text that looks like a probability. Measured against outcomes, such numbers are systematically too high and poorly ordered [33]; in document extraction, a language model asked to judge whether extractions were correct flagged only 12.9% of the incorrect ones [28]. Calibration — the property that 0.9 is right about 90% of the time — is achievable, but only by measuring it: a separate estimator trained on reviewer outcomes, an ECE figure and a reliability diagram, all tied to a specific model version and dataset. Routing work to humans on the model's self-report is routing on noise. LAAS forbids generative agents from emitting confidence at all.
 
 #### C4.3 Enforce versus guide, in one page
 
@@ -2302,7 +2303,7 @@ Third, according to Databricks' own telemetry across 20,000 organizations, those
 
 ### 5.1 What the method does not claim
 
-The method does not make language models deterministic, does not make a judge model correct, and does not substitute for a control environment. It makes the places where those things fail visible, measurable, and stoppable. The evidence for specification-first work with executable checks is encouraging but young — small studies, preprints, and practitioner reports — and this paper treats it that way [29]–[32].
+The method does not make language models deterministic, does not make a judge model correct, and does not substitute for a control environment. It makes the places where those things fail visible, measurable, and stoppable. The evidence for specification-first work with executable checks is encouraging but young — small studies, preprints, and practitioner reports — and this paper treats it that way [1], [13]–[15].
 
 ### 5.2 Where the evidence is weakest
 
@@ -2311,7 +2312,7 @@ The method does not make language models deterministic, does not make a judge mo
 - **Some figures are vendor claims.** Databricks' telemetry on evaluation tooling and unified governance [32] is labeled as a vendor claim wherever it appears.
 - **The thresholds are defaults, not measurements.** An ECE of at most 0.05, a Cohen's κ of at least 0.6, a golden set of at least 200 leases and the sampling-authorization threshold of under 0.5% error over at least 500 instances are defensible defaults with citations. The 0.05 calibration default is not externally validated for document extraction (A7). The method is designed so that an adopting organization replaces these priors with its own measurements within the first two quarters of operation.
 - **Coverage is specified, not demonstrated.** The B5 coverage table states how each requirement will be enforced and verified; it is not a measurement of behavior. Every row is *specified*, and the enforcing share restricted to demonstrated rows stays at zero until the first measured coverage report (C5, month 3).
-- **Some enforcing mechanisms fail open.** Hooks that time out, gateway budgets enforced approximately, a sandbox without `failIfUnavailable`, and a Stop hook overridden after repeated blocks are each classified as conditionally enforced and paired with a fail-closed backstop (A2, C2.2). Model-based gates refuse only probabilistically — the published auto-mode evaluation sets show 0.4% false approvals and 17% missed denials — and are never the sole control on an irreversible action.
+- **Some enforcing mechanisms fail open.** Hooks that time out, gateway budgets enforced approximately, a sandbox without `failIfUnavailable`, and a Stop hook overridden after repeated blocks are each classified as conditionally enforced and paired with a fail-closed backstop (A2, C2.2). Model-based gates refuse only probabilistically — the published auto-mode evaluation shows a 0.4% false-positive rate (benign actions blocked; n = 10,000) and a 17% false-negative rate (overeager actions let through; n = 52) [10] — and are never the sole control on an irreversible action.
 
 ### 5.3 What is not yet verified
 
@@ -2350,7 +2351,7 @@ This paper is licensed under [Creative Commons Attribution 4.0 International (CC
 7. Rath, A. [*Agent Drift: Quantifying Behavioral Degradation in Multi-Agent LLM Systems Over Extended Interactions*](https://arxiv.org/abs/2601.04170). arXiv:2601.04170, January 2026. Agent Stability Index (12 metrics, 4 categories); validation is simulation-based — cited for structure, not magnitudes.
 8. Feng, K. J. K., McDonald, D. W., and Zhang, A. X. [*Levels of Autonomy for AI Agents*](https://arxiv.org/abs/2506.12469). arXiv:2506.12469, June 2025 (operator, collaborator, consultant, approver, observer).
 9. Delimarsky, D. *Spec-driven development with AI: Get started with a new open source toolkit*. GitHub Blog, 2 September 2025. GitHub Spec Kit v1.0.3 (1 September 2026; v1.0.0 21 August 2026); v0.16.0 added JSON-envelope agent hooks and governance presets (Autonomous Run, Agent Parity, Security Governance) — templates and prompts, guidance-class; README disclaimer on community extensions ([spec-kit releases](https://github.com/github/spec-kit/releases)).
-10. Anthropic. Claude Code documentation, accessed 19 September 2026: *Memory* ("context, not enforced configuration… use a PreToolUse hook instead"; `AGENTS.md` read natively from v2.1.277; `managed-only` instruction mode); [*Hooks reference*](https://code.claude.com/docs/en/hooks) and [*Automate actions with hooks*](https://code.claude.com/docs/en/hooks-guide) (exit-code semantics; timed-out `command`, `http` and `mcp_tool` hooks do not block; Agent SDK callback hooks block on timeout; default timeout 600 s; Stop-hook eight-block cap, `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`; `stop_hook_active`); [*Choose a permission mode*](https://code.claude.com/docs/en/permission-modes) (`dontAsk`; auto-mode classifier; deny rules block in every mode; cloud sessions ignore `dontAsk` from settings files); [*Configure permissions*](https://code.claude.com/docs/en/permissions) (`Edit(path)` and `Read(path)` only; subprocess caveat); *Run Claude Code programmatically* (`--output-format json` with `--json-schema`; `structured_output`; `--bare`; `--permission-prompts none` from v2.1.259; `total_cost_usd` is a client-side estimate); [*Configure the sandboxed Bash tool*](https://code.claude.com/docs/en/sandboxing) (`failIfUnavailable`; `allowUnsandboxedCommands`; hooks and MCP servers run on the host); [*Deploy managed settings*](https://code.claude.com/docs/en/managed-settings); *Skills*; *Best practices*.
+10. Anthropic. Claude Code documentation, accessed 19 September 2026: *Memory* ("context, not enforced configuration… use a PreToolUse hook instead"; `AGENTS.md` read natively from v2.1.277; `managed-only` instruction mode); [*Hooks reference*](https://code.claude.com/docs/en/hooks) and [*Automate actions with hooks*](https://code.claude.com/docs/en/hooks-guide) (exit-code semantics; timed-out `command`, `http` and `mcp_tool` hooks do not block; Agent SDK callback hooks block on timeout; default timeout 600 s; Stop-hook eight-block cap, `CLAUDE_CODE_STOP_HOOK_BLOCK_CAP`; `stop_hook_active`); [*Choose a permission mode*](https://code.claude.com/docs/en/permission-modes) (`dontAsk`; auto-mode classifier; deny rules block in every mode; cloud sessions ignore `dontAsk` from settings files); [*Configure permissions*](https://code.claude.com/docs/en/permissions) (`Edit(path)` and `Read(path)` only; subprocess caveat); *Run Claude Code programmatically* (`--output-format json` with `--json-schema`; `structured_output`; `--bare`; `--permission-prompts none` from v2.1.259; `total_cost_usd` is a client-side estimate); [*Configure the sandboxed Bash tool*](https://code.claude.com/docs/en/sandboxing) (`failIfUnavailable`; `allowUnsandboxedCommands`; hooks and MCP servers run on the host); [*Deploy managed settings*](https://code.claude.com/docs/en/managed-settings); *Skills*; *Best practices*. Anthropic Engineering. [*Claude Code auto mode*](https://www.anthropic.com/engineering/claude-code-auto-mode). 25 March 2026 (pipeline false-positive rate 0.4%, n = 10,000; false-negative rate 17%, n = 52).
 11. Agentic AI Foundation (Linux Foundation). *AGENTS.md* specification, donated by OpenAI 9 December 2025. OpenAI. Codex documentation, [*Hooks*](https://learn.chatgpt.com/docs/hooks) (events; exit 2 blocks; `{"decision":"block"}`; `permissionDecision: "deny"`; enabled by default; default timeout 600 s; `~/.codex/hooks.json` and `<repo>/.codex/hooks.json`), accessed 19 September 2026. OpenAI. Agents SDK, [*Guardrails*](https://openai.github.io/openai-agents-python/guardrails/) (input guardrails run in parallel by default; blocking mode), accessed 19 September 2026. GitHub Docs. *Hooks configuration reference* (`preToolUse` non-zero exit denies; timeouts and HTTP hooks fail open; `agentStop` can block), accessed 19 September 2026.
 12. Amazon Web Services. *Kiro documentation*: specs (`requirements.md` in EARS notation, `design.md`, `tasks.md`), steering, agent hooks, property-based tests generated from EARS requirements. Generally available 17 November 2025; accessed September 2026.
 13. Thoughtworks. *Technology Radar*, Vol. 33 (November 2025; spec-driven development, Assess) and Vol. 34 (published 15 April 2026; GitHub Spec Kit and OpenSpec, Assess — "two broad camps"; context engineering and curated shared instructions, Adopt; agent instruction bloat, Caution; spec-driven development not on the current edition; "Feedback sensors for coding agents", Trial). Cursor documentation: "AI guidance should not be your only security control."
@@ -2416,7 +2417,7 @@ Terms owned by this paper are defined here. Terms owned by other papers in the s
 - **Agent set** — A group of agents plus a deterministic orchestrator that routes between them, enforces invariants, and terminates.
 - **Binding** — Provider, surface, Geo and gateway on which a contract clause was verified; pinned with the model identifier and prompt version and recorded on every decision; a change is a change-gate event (Principle 11; CHG-01; DRIFT-DEF-07).
 - **Calibration record** — Evidence that a confidence score means what it says (expected calibration error, Brier score, reliability diagram) for a specific model identifier and dataset version.
-- **Contract** — Preconditions, postconditions, invariants, prohibitions, resource bounds, and consistency properties stated for one agent, in testable form.
+- **Contract** — Preconditions, postconditions, invariants, prohibitions, resource bounds, consistency properties, escalation triggers, and recovery actions stated for one agent or the estimator, in testable form (A3).
 - **Eleven principles** — The method's eleven design principles (A4); cited in a product's H7, not restated.
 - **Enforce / guide** — A mechanism *enforces* when it can refuse (a schema validator, a permission rule, a deterministic check, a failing test, a blocking hook). It *guides* when it can only influence (prompt text, instruction files). The distinction is the spine of the method.
 - **Failure mode (of a mechanism)** — Whether an enforcing mechanism fails closed or open (hooks fail open on timeout; sandboxes fail open unless pinned); a conditionally enforced requirement needs a fail-closed backstop (A2).
