@@ -87,13 +87,13 @@ The Agentic Delivery Workflow is the sequence by which an organization takes an 
 - the **Agentic PRD Standard** [2] — what the document set is, what each artifact contains, the proportionality rule, the completeness and reader tests, and the change gate;
 - **Specification-Driven Design for Agentic Systems** [3] — the specification form the spokes are written in (intent, behavioral contracts, protocol invariants, governance, traceability), its principles, and the distinction between mechanisms that *enforce* and text that only *guides*;
 - the **Enterprise Agentic AI Harness Specification** [4] — the twelve mandatory controls HRN-01 to HRN-12, lifecycle Gates 0 to 4, the governance roles, the metrics and SLOs, and the cross-framework map;
-- **CRISP-AG** [1] — the governance concepts and artifacts the set carries: DAS positions, agent class, lifecycle phases, impact assessment, the Workflow & Workforce Impact Record, the agent identity record, the capability frontier, standing governance invariants, and the consequential-decision flag.
+- **CRISP-AG** [1] — the governance concepts and artifacts the set carries: delegation authority scope (DAS) positions, agent class, lifecycle phases, impact assessment, the Workflow & Workforce Impact Record, the agent identity record, the capability frontier, standing governance invariants, and the consequential-decision flag.
 
 It is written so that an agent can execute it: every stage has typed inputs and outputs, a checklist with an evidence ID per item, and a return path when a gate fails.
 
 ### 1.3 Scope
 
-The workflow covers every agentic system within the Harness Specification's scope — internal productivity agents, client-facing agents, and agents that participate in decisions — from stage W0 (intake) through W7 (deploy and monitor), and the change-gate loop that follows. The product requirements document occupies stages W0 to W3 of eight. The workflow does not stop where the PRD does, because the hub's claims only become demonstrated at W6.
+The workflow covers every agentic system within the Harness Specification's scope — internal productivity agents, client-facing agents, and agents that participate in decisions — from stage W0 (intake) through W7 (deploy and monitor), and the change-gate loop that follows. The product requirements document occupies stages W0 to W3 of eight. The workflow does not stop where the PRD does, because the hub's claims become demonstrated only at W6.
 
 ### 1.4 How to read this paper
 
@@ -143,19 +143,19 @@ Figure 1 shows the eight stages and the order in which they run; the table below
 | **W0 Intake and classify** | Harness Gate 0 (intent and risk classification); Standard proportionality worksheet | Intended-use statement (H3); EU AI Act tier determination; NIST GAI risk applicability review; full list in §6 | AI Product Owner | AI Risk Officer; Data Protection Officer (when T5 or personal data); Legal (PROHIBITED and HUMAN-ONLY DAS rows with a legal source) | — (entry stage) |
 | **W1 Hub** | Standard completeness test (§8.1) | Hub H0–H14 complete and tagged | AI Product Owner | AI Product Owner; Eval Owner; AI Risk Officer | W0 |
 | **W2 SDD specification** | Harness Gate 1 (architecture review); SDD chapter gates (contracts, protocol invariants, governance, traceability) | S1 design record including the Orchestration section; S3 identity, access and security; S4 risk, jurisdiction and compliance; full list in §6 | Architect (S1); AI Security Reviewer (S3); Data Protection Officer and AI Risk Officer (S4) | AI Governance Board (Gate 1); Vendor Control Owner (consulted — VSP currency and model tier); Finance (consulted — budget) | W1 |
-| **W3 Evaluation specification and machine-readable spec** | Standard reader test (§8.2); M generation | S2 evaluation specification; M (specs/, AGENTS.md, traceability.csv, changes/); reader-test record | Eval Owner (S2); product engineering (M) | Eval Owner; AI Product Owner (accepts the reader test) | W1 or W2 |
+| **W3 Evaluation specification and machine-readable spec** | Standard reader test (§8.2); M generation | S2 evaluation specification; M (`specs/`, `AGENTS.md`, `traceability.csv`, `changes/`); reader-test record | Eval Owner (S2); product engineering (M) | Eval Owner; AI Product Owner (accepts the reader test) | W1 or W2 |
 | **W4 Harness binding** | Harness Gate 2 (harness implementation review) | Harness binding package — HRN-01 permission rules; HRN-02 preflight; HRN-03 pre-tool guards; full list in §6 | Harness Engineer | AI Security Reviewer (Gate 2) | W1 (H8, H9) |
 | **W5 Build under harness** | None — the HRN-05 claim auditor gates every turn | Code; tests; evidence ledgers; full list in §6 | Product engineering | None — evidence is the gate | W3 |
 | **W6 Evaluation and red team** | Harness Gate 3 (evaluation and red team); H14 claims move from specified to demonstrated | Evaluation results on holdout; adversarial and red-team findings in the ledger; judge κ record; full list in §6 | Eval Owner; AI Security Reviewer (red team) | AI Risk Officer (Gate 3); AI Governance Board additionally for Annex III agents | W5 |
-| **W7 Deploy and monitor** | Harness Gate 4 (deployment and continuous monitoring) | Canary rollout; runbook and on-call live; §5 metrics live; full list in §6 | Harness Engineer (deployment); AI Product Owner (business outcome) | AI Governance Board (Gate 4); Business Line Owner (accepts the business outcome) | Change gate on drift, standards change or request |
+| **W7 Deploy and monitor** | Harness Gate 4 (deployment and continuous monitoring) | Canary rollout; runbook and on-call live; Harness §5 metrics live; full list in §6 | Harness Engineer (deployment); AI Product Owner (business outcome) | AI Governance Board (Gate 4); Business Line Owner (accepts the business outcome) | Change gate on drift, standards change or request |
 
-**Parallelism.** After the hub is approved at W1, W2 and W3 may run in parallel; W4 requires both. Everything else is sequential.
+**Parallelism.** Once the hub is approved at W1, stages W2 and W3 may run in parallel; W4 requires both. Everything else is sequential.
 
 **Named gates preserved.** Harness Gate 0 = W0; Gate 1 = W2; Gate 2 = W4; Gate 3 = W6; Gate 4 = W7. The Standard's completeness test = W1; its reader test = W3; its change gate = the loop in §8. SDD's chapter gates — contracts, protocol invariants, governance, traceability — close inside W2.
 
 ## 4. Roles — one RACI, eleven roles
 
-The Harness Specification names seven roles; the Standard names seven role types. Five coincide; two exist only in the Standard (Architect, Eval Owner); one exists only in the Harness Specification — the Business Line Owner, the line's outcome owner, not to be confused with the **Business-line Technology Lead**, the line's technology leader, who may hold the Eval Owner role. The workflow uses one vocabulary of eleven roles: those nine, plus **Legal** (required by CRISP-AG §5.1.1, which sets a Legal review level on every DAS classification) and the **Vendor Control Owner** (required by the Vendor Control Specification §6, which owns the vendor registers, the Vendor Service Profiles and the budgets). The mapping is recorded so that either source document can still be read.
+The Harness Specification names seven roles; the Standard names seven role types. Five coincide; two exist only in the Standard (Architect, Eval Owner); one exists only in the Harness Specification — the Business Line Owner, the line's outcome owner, not to be confused with the **Business-line Technology Lead**, the line's technology leader, who may hold the Eval Owner role. The workflow uses one vocabulary of eleven roles: those nine, plus **Legal** (required by CRISP-AG §5.1.1, which sets a Legal review level on every DAS classification) and the **Vendor Control Owner** (required by the Vendor Control Specification §6, under which the role owns the vendor registers, the Vendor Service Profiles and the budgets). The mapping is recorded so that either source document can still be read.
 
 | Role | Harness Specification | Standard role type | Owns in this workflow |
 |---|---|---|---|
@@ -167,7 +167,7 @@ The Harness Specification names seven roles; the Standard names seven role types
 | Eval Owner | — | Eval owner | S2; M's eval tasks; the suites; judge validation; the model half of the reader test. **Assigned per product at W0:** an accountable holder is named — any role, and it may be the Business-line Technology Lead — and a named engineer is responsible for building and running the suites, judge calibration, the holdout and harness versioning. Both are recorded in the W0 packet and the registry pre-entry; neither may be blank |
 | AI Security Reviewer | AI Security Reviewer | Security / identity | S3; the threat model; Gate 2; the red team at W6 |
 | Data Protection Officer | Data Protection Officer | Compliance / data protection | S4 with the AI Risk Officer; DPIA; the jurisdiction table; trigger T5 |
-| Harness Engineer | Harness Engineer | Platform engineering | The harness binding; ledgers, telemetry, distribution; deployment |
+| Harness Engineer | Harness Engineer | Platform operator | The harness binding; ledgers, telemetry, distribution; deployment |
 | Legal | — | Legal (DAS rows) | Consulted on every DAS classification at W0; approves any PROHIBITED or HUMAN-ONLY row whose source is a regulatory waiver, statutory exposure, contract decision, negotiation position or executory commitment (CRISP-AG §5.1.1); consulted at the change gate when such a row changes |
 | Vendor Control Owner | — | — | The Approved AI Service Register, the Vendor Service Profiles and the Vendor Change Register (VCS §6); partners with Legal on the clause checklist and with Finance on budgets and showback; consulted on vendor rows at W0, on VSP currency and model tier at W2 (Gate 1), and at W7 (Gate 4); responsible for vendor-change capture (SDD CHG-05) at the change gate |
 
@@ -191,7 +191,7 @@ Figure 3 shows how the three source frameworks contribute to a single document s
 
 Each stage below states what it closes, its inputs and outputs, what the agent does, who is responsible, who approves, the exit checklist with an evidence ID per item, and the return path on failure. A stage exits when every item is answered *yes* or carries a logged exception. These specifications are generated from the workflow's YAML definition (an excerpt is in Appendix F).
 
-After each specification, a short **worked example** shows how the Portfolio Orchestration Engine (POE) — the illustrative product used throughout the PRD Standard [2], an engine that assembles the portfolio state of a commercial real estate occupier from lease abstracts and operational feeds, and never recommends or acts — meets that gate, and what a team would still need to supply.
+After each specification, a short **worked example** shows how the Portfolio Orchestration Engine (POE) meets that gate and what a team would still need to supply. POE is the illustrative product used throughout the PRD Standard [2]: an engine that assembles the portfolio state of a commercial real estate occupier from lease abstracts and operational feeds, and never recommends or acts.
 
 ### `W0` — Intake and classify
 
@@ -260,7 +260,7 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 
 **Inputs:** approved hub; spoke templates S1, S3 and S4; SDD's method (Part A of [3]).
 
-**Outputs:** S1 design record including the Orchestration section; S3 identity, access and security; S4 risk, jurisdiction and compliance; traceability.csv baseline; ADRs.
+**Outputs:** S1 design record including the Orchestration section; S3 identity, access and security; S4 risk, jurisdiction and compliance; `traceability.csv` baseline; ADRs.
 
 **The agent:** drafts S1, S3 and S4 in SDD's four-layer form from the hub and source; proposes ADRs with rationale; computes the enforcing share.
 
@@ -271,17 +271,17 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 | W2-1 | S1.1 carries an Orchestration section: a pattern chosen in the approved order (single agent → chaining → routing → parallelization → orchestrator-workers → evaluator-optimizer [7]), justification for anything beyond a single agent, the verification approach, and the model and effort choice. The model tier per task class is declared with a pinned identifier and a named successor (VCS VC-02); a premium tier carries its Gate 1 justification; the escalation rule and the exit-ADR pointer are recorded in S1 | S1.1 |
 | W2-2 | Every agent has a behavioral contract (PRE, POST, INV, PROHIB, RES, CONSIST) in the source's IDs | S1.2 |
 | W2-3 | Protocol invariants, staleness, termination and compositionality stated | S1.7 |
-| W2-4 | Zero prompt-only requirements without a named deterministic backstop | traceability.csv |
-| W2-5 | Enforcing share computed and reported (no threshold until a three-product baseline exists) | H14; traceability.csv |
+| W2-4 | Zero prompt-only requirements without a named deterministic backstop | `traceability.csv` |
+| W2-5 | Enforcing share computed and reported (no threshold until a three-product baseline exists) | H14; `traceability.csv` |
 | W2-6 | Role-capability matrix and scope invariants complete; agent identity target state (Entra Agent ID on the Microsoft stack [15]) stated | S3.1, S3.2 |
-| W2-7 | Threat-model rows labeled to OWASP ASI (verified) and MITRE ATLAS technique IDs | S3.4 |
+| W2-7 | Threat-model rows labeled with verified OWASP Top 10 for Agentic Applications [12] entries and MITRE ATLAS [13] technique IDs | S3.4 |
 | W2-8 | Regulatory frame table, and a jurisdiction row for every geography the system is deployed in or whose users use the output | S4.1, S4.2 |
 | W2-9 | Gate 1 approval recorded | AIGB record |
 | W2-10 | Each S3 threat-model row names the implementing artifact (file, setting, hook, policy or vendor admin-plane control) and its control state — specified, implemented or demonstrated (SEC §3); no row is left as an asserted property | S3 rows; SEC control-state table |
 
 **Return path on failure:** W1, via a spec delta, if a contract or ADR contradicts a hub boundary or invariant.
 
-> **Worked example — POE at Gate 1.** This is POE's strongest stage. Its contracts, schemas, protocol, staleness and termination rules, and governance chapter are already in SDD form and become S1, S3 and S4 directly. The Orchestration section is satisfied by a deterministic builder, with a supervisor only for the query assistant. The enforcing share is 85%, with three prompt-only clauses, all backstopped. Still needed before Gate 1: verified OWASP ASI labels, MITRE ATLAS technique IDs, and a jurisdiction row per geography.
+> **Worked example — POE at Gate 1.** This is POE's strongest stage. Its contracts, schemas, protocol, staleness and termination rules, and governance chapter are already in SDD form and become S1, S3 and S4 directly. The Orchestration section is satisfied by a deterministic builder, with a supervisor only for the query assistant. The enforcing share is 85%, with three prompt-only clauses, all backstopped. Still needed before Gate 1: verified OWASP Agentic Top 10 labels, MITRE ATLAS technique IDs, and a jurisdiction row per geography.
 
 ### `W3` — Evaluation specification and machine-readable spec
 
@@ -289,7 +289,7 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 
 **Inputs:** approved hub; S2 template; M templates.
 
-**Outputs:** S2 evaluation specification; M (specs/, AGENTS.md, traceability.csv, changes/); reader-test record.
+**Outputs:** S2 evaluation specification; M (`specs/`, `AGENTS.md`, `traceability.csv`, `changes/`); reader-test record.
 
 **The agent:** drafts S2 from H9 and H11; generates M from the hub and S2; spawns a fresh model instance for the model half of the reader test; records the results.
 
@@ -300,10 +300,10 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 | W3-1 | Every H11 criterion and every H9 "no" mapped to a suite, task family, grader and negative flag | S2.1 |
 | W3-2 | An adversarial boundary suite exists per governing invariant and gates CI | S2.2 |
 | W3-3 | Consistency requirement declared (pass<sup>k</sup> [18] for client-facing or action-taking systems; k and trials stated) | S2.3 |
-| W3-4 | Judge validation plan with at least two named human experts and κ ≥ 0.6 before any judge gates | S2.4 |
+| W3-4 | Judge validation plan with at least two named human experts and κ ≥ 0.6 before any judge-gated result is accepted | S2.4 |
 | W3-5 | Holdout set defined; cost per task, tokens and latency tracked alongside accuracy | S2.5, S2.6 |
 | W3-6 | Drift definitions with thresholds and responses | S2.8 |
-| W3-7 | M generated and validated against the hub — zero discrepancies; every H9 "no" has a negative scenario | M/README, M/specs |
+| W3-7 | M generated and validated against the hub — zero discrepancies; every H9 "no" has a negative scenario | `M/README`, `M/specs` |
 | W3-8 | Reader test run — model half and human panel — with the Standard's Appendix C question set | H0 reader-test record |
 | W3-9 | No unresolved wrong or uncertain reader-test answers | H0 |
 
@@ -327,20 +327,20 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 |---|---|---|
 | W4-1 | All twelve HRN controls present — in Lite form as well; missing controls block deployment | Binding package |
 | W4-2 | Every HRN-01 deny rule cites the H9 boundary or S3.2 scope invariant it enforces | HRN-01 rules with IDs |
-| W4-3 | HRN-04 unattended profile matches the DAS: HUMAN-ONLY and HITL-REQUIRED actions run under it (the agent prepares, never executes a consequential action); AGENT-DIRECTED or FULLY-AUTONOMOUS actions have §7 treatment or are refused; PROHIBITED actions have no tool path | HRN-04 profile |
+| W4-3 | HRN-04 unattended profile matches the DAS: HUMAN-ONLY and HITL-REQUIRED actions run under it (the agent prepares, never executes a consequential action); AGENT-DIRECTED or FULLY-AUTONOMOUS actions have Harness §7 treatment or are refused; PROHIBITED actions have no tool path | HRN-04 profile |
 | W4-4 | HRN-06 ledgers shipped off-host to write-once storage, with retention ≥ max(statutory, EU AI Act post-market, audit cycle) | Ledger configuration |
 | W4-5 | HRN-07 emits GenAI semantic-convention attributes [14]; `gen_ai.agent.id` equals the registry ID; `OTEL_*` exported at process launch | OpenTelemetry configuration |
 | W4-6 | `HARNESS_TRACE_ID` propagates to every subagent and appears on every reviewable artifact | HRN-10 configuration |
 | W4-7 | Managed settings lock bypass and auto modes on Claude Code stacks [16]; an equivalent organization-level lock on other stacks | Managed settings |
 | W4-8 | Gate 2 approval recorded | AI Security Reviewer record |
 | W4-9 | Spend governor (HRN-12) configured per agent and per vendor service — monthly budget, alert threshold and hard cap — with configuration evidence (console export or API response with date), the reconciliation job present, and `org.cost.*` attributes emitted on spans | HRN-12 evidence; run ID |
-| W4-10 | Every rule in the harness binding resolves to a file or setting present in the repository or the vendor admin plane at the pinned version | binding_map.csv |
+| W4-10 | Every rule in the harness binding resolves to a file or setting present in the repository or the vendor admin plane at the pinned version | `binding_map.csv` |
 | W4-11 | A canary run demonstrates that each H9 PROHIBITED action is refused by mechanism, not by instruction; `claude doctor` (or the stack equivalent) shows the Managed Runner Baseline MRB-1 (SEC §6) applied from the intended managed source | Canary run ID; `claude doctor` output |
 | W4-12 | Each policy hook has a unit test asserting exit 2 on malformed or adversarial input; the argument-level guard (HRN-03) is a committed, tested artifact | Hook test report |
 
 **Return path on failure:** W1 (H8, H9), via a spec delta, if a needed permission contradicts a boundary.
 
-> **Worked example — POE at Gate 2.** The binding compiles cleanly. POE's six PROHIBITED DAS rows — recommend, act, communicate, cross tenants, score persons, self-modify — become HRN-01 deny rules citing the invariants they enforce. The HITL-REQUIRED rows (assemble, draft) run under HRN-04. The one AGENT-DIRECTED row (answer a query) is read-only and sampled, and needs its §7 check recorded. POE's audit requirements already satisfy HRN-06's shape. Because POE targets a Databricks estate, W4 also needs the Databricks column (Appendix B) and an agent identity per agent.
+> **Worked example — POE at Gate 2.** The binding compiles cleanly. POE's six PROHIBITED DAS rows — recommend, act, communicate, cross tenants, score persons, self-modify — become HRN-01 deny rules citing the invariants they enforce. The HITL-REQUIRED rows (assemble, draft) run under HRN-04. The one AGENT-DIRECTED row (answer a query) is read-only and sampled, and needs its Harness §7 check recorded. POE's audit requirements already satisfy HRN-06's shape. Because POE targets a Databricks estate, W4 also needs the Databricks column (Appendix B) and an agent identity per agent.
 
 ### `W5` — Build under harness
 
@@ -356,11 +356,11 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 
 | # | Exit check | Evidence |
 |---|---|---|
-| W5-1 | Every completion claim has an evidence ledger accepted by the claim auditor; banned words absent without a ledger | harness-catch-ledger |
+| W5-1 | Every completion claim has an evidence ledger accepted by the claim auditor; banned words absent without a ledger | `harness-catch-ledger` |
 | W5-2 | Regression suite passing in CI on the pinned configuration | CI run ID |
-| W5-3 | No direct edit to specs/; every behavior change entered as a delta | M/changes |
+| W5-3 | No direct edit to `specs/`; every behavior change entered as a delta | `M/changes` |
 | W5-4 | Registry entry finalized — Entra Agent ID (or the stack's agent identity), sponsor, pinned model identifiers, prompt versions | Registry ID |
-| W5-5 | Traceability verification column populated pass/fail against the same requirement IDs | traceability.csv |
+| W5-5 | Traceability verification column populated pass/fail against the same requirement IDs | `traceability.csv` |
 | W5-6 | Containment (a field of the CRISP-AG §5.5 Agent Identity & Registry Record, AIR) exercised — credential revocation, egress cut or orchestrator quarantine — with time-to-halt recorded against the AIR target | AIR containment record |
 | W5-7 | Isolation boundary (HRN-11) test suite (ISO-TEST) passing on the pinned runner image | ISO-TEST run ID |
 
@@ -387,7 +387,7 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 | W6-3 | Red team executed against the OWASP LLM Top 10 2026 [11], the OWASP Agentic Top 10 [12] and MITRE ATLAS [13]; findings and dispositions in the ledger | Harness ledgers |
 | W6-4 | LLM-judge agreement with at least two human experts at κ ≥ 0.6 recorded before any judge-gated result is accepted | S2.4 record |
 | W6-5 | H14 updated — each claim marked demonstrated with its run ID, or left specified | H14 |
-| W6-6 | Annex III agents only — Harness §7 obligations evidenced (human oversight per action, adversarial-testing artifacts, post-market plan, incident path) | §7 record |
+| W6-6 | Annex III agents only — Harness §7 obligations evidenced (human oversight per action, adversarial-testing artifacts, post-market plan, incident path) | Harness §7 record |
 | W6-7 | Gate 3 approval recorded | AI Risk Officer record |
 | W6-8 | Injection evaluation reports attack success rate against a static corpus and an adaptive attacker, with task utility, for defended and undefended configurations (SEC §7); control states move to *demonstrated* here and only here, each with a run ID | SEC §7 report; run IDs |
 
@@ -401,7 +401,7 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 
 **Inputs:** Gate 3 approval; S5; the harness binding; the Harness Specification's §5 metrics.
 
-**Outputs:** canary rollout; runbook and on-call live; §5 metrics live; SLO baseline schedule; quarterly re-evaluation; worksheet re-run date.
+**Outputs:** canary rollout; runbook and on-call live; Harness §5 metrics live; SLO baseline schedule; quarterly re-evaluation; worksheet re-run date.
 
 **The agent:** assembles the deployment checklist and dashboards from S5; monitors drift and opens deltas.
 
@@ -411,10 +411,10 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 |---|---|---|
 | W7-1 | Canary rollout plan with rollback to the last passing configuration | S5.4 |
 | W7-2 | Runbook and on-call rotation live before the first production traffic | S5.4 |
-| W7-3 | §5 metrics emitting, each with a named owner and an alert-runbook link | Dashboards |
+| W7-3 | Harness §5 metrics emitting, each with a named owner and an alert-runbook link | Dashboards |
 | W7-4 | SLO re-baseline scheduled at 90 days of production telemetry | Calendar record |
 | W7-5 | Quarterly re-evaluation and annual worksheet re-run scheduled | Calendar record |
-| W7-6 | High-risk agents only — serious-incident notification path named and owned by Legal | §7 record |
+| W7-6 | High-risk agents only — serious-incident notification path named and owned by Legal | Harness §7 record |
 | W7-7 | Business-objective baseline measurement started (H3) | H3 |
 | W7-8 | Gate 4 approval recorded | AIGB record |
 | W7-9 | One cap event or alert exercised end to end before Gate 4; the model tier table is pinned and each pinned identifier has a named successor in the Vendor Service Profile | Run ID; VSP lifecycle block |
@@ -422,7 +422,7 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 
 **Return path on failure:** the change gate, on drift, a standards change or a request.
 
-> **Worked example — POE at Gate 4.** POE's runbook (S5.4) is drafted, and its four runbook procedures supply the halt switches. Before Gate 4, each §5 metric needs a named owner.
+> **Worked example — POE at Gate 4.** POE's runbook (S5.4) is drafted, and its four runbook procedures supply the halt switches. Before Gate 4, each Harness §5 metric needs a named owner.
 
 ## 7. Harness binding — the PRD compiles into controls
 
@@ -439,7 +439,7 @@ At W4 the agent compiles sections of the product's document set into harness con
 | HRN-01 permission model | H8 DAS (including the six H9 categories); S3.2 role-capability matrix; S1.4 tools | Each PROHIBITED row of the DAS and each "No" cell in S3.2 becomes a deny rule; each HITL-REQUIRED row becomes an ask rule; each tool in S1.4 becomes an allow rule scoped to its agent; destructive or credential-touching actions go behind ask; every rule cites the boundary or scope-invariant ID it enforces | W4-2 |
 | HRN-02 session preflight | S5.2 runtime controls; S6.1 editable surfaces | Preflight verifies pinned model identifiers (SDD CHG-01), prompt versions and halt-switch state, and reads the lessons file | W4-1 |
 | HRN-03 pre-tool guard | S1.3 guardrails; S3.4 threat model | Argument-level guard classes derived from the threat model — destructive, credential, egress, cross-tenant; blocked actions exit 2 and are audited | W4-1 |
-| HRN-04 unattended profile | H8 DAS positions | Actions at HUMAN-ONLY and HITL-REQUIRED run under the unattended profile (the agent prepares; it cannot execute a consequential action); actions at AGENT-DIRECTED or FULLY-AUTONOMOUS require §7 treatment or are refused; PROHIBITED actions have no tool path (HRN-01); protected-file, commit-size and dependency limits are inherited from the reference harness | W4-3 |
+| HRN-04 unattended profile | H8 DAS positions | Actions at HUMAN-ONLY and HITL-REQUIRED run under the unattended profile (the agent prepares; it cannot execute a consequential action); actions at AGENT-DIRECTED or FULLY-AUTONOMOUS require Harness §7 treatment or are refused; PROHIBITED actions have no tool path (HRN-01); protected-file, commit-size and dependency limits are inherited from the reference harness | W4-3 |
 | HRN-05 claim auditor | H14 honest-claims matrix; H11 verification methods | The auditor's evidence-ledger template lists the H11 verification methods; a claim is "demonstrated" only with a run ID; banned words without a ledger are rejected | W5-1 |
 | HRN-06 ledgers | S3.5 audit and logging; S6 change record | Ledgers off-host, write-once, retention ≥ max(statutory, EU AI Act post-market, audit cycle); guard decisions, claims and deltas all append | W4-4 |
 | HRN-07 telemetry | S5.1 observability | OpenTelemetry GenAI attributes; `gen_ai.agent.id` = registry ID; `OTEL_*` exported at process launch so that subprocess telemetry is not lost | W4-5 |
@@ -455,7 +455,7 @@ All twelve controls are present in Lite form. Lite adjusts depth — a smaller a
 
 ### 7.3 Stacks
 
-The Harness Specification gives each control's equivalent on the Claude, OpenAI, Google and Microsoft stacks. This workflow adds a Databricks column, because the series' worked examples target a Databricks estate, and two columns for agents configured inside Microsoft's own products, where the vendor's admin plane is the only harness available. All three are in Appendix B.
+The Harness Specification gives each control's equivalent on the Claude, OpenAI, Google and Microsoft stacks. This workflow adds a Databricks column, because the series' worked examples target a Databricks estate. It also adds two columns for agents configured inside Microsoft's own products, where the vendor's admin plane is the only harness available. All three are in Appendix B.
 
 ## 8. The change gate
 
@@ -463,7 +463,7 @@ Once a product is in production, every change re-enters through one loop, shown 
 
 ![Flowchart of the change gate: trigger, spec delta, suites pass, owners approve, archive, re-run the worksheet, then return to W5 or W7.](./figures/agentic-delivery-workflow/fig-5-change-gate.svg)
 
-*Figure 5 — Any trigger — a drift definition firing, a change request, a standards-watch item landing, the size rule tripping — enters as a spec delta, passes the suites, collects the owners' approvals, archives into specs/, and re-runs the proportionality worksheet. Code or behavior changes return to W5; configuration-only changes within the runtime bounds return to W7.*
+*Figure 5 — Any trigger — a drift definition firing, a change request, a standards-watch item landing, the size rule tripping — enters as a spec delta, passes the suites, collects the owners' approvals, archives into `specs/`, and re-runs the proportionality worksheet. Code or behavior changes return to W5; configuration-only changes within the runtime bounds return to W7.*
 
 **Triggers.** A drift definition fires (S2.8); a change request arrives; a standards-watch item lands (S4.7); the size rule trips (Standard §9.4).
 
@@ -472,7 +472,7 @@ Once a product is in production, every change re-enters through one loop, shown 
 1. A spec delta is written in `M/changes/<name>` with its predicted fix and predicted risk.
 2. The regression and adversarial boundary suites pass on the new configuration.
 3. The spoke owners approve; the AI Risk Officer also approves any change to the model, prompt, judge, estimator, ordering, confidentiality or freshness.
-4. The delta is archived: it folds into specs/, the set's version advances, and the verdict is recorded at the next iteration.
+4. The delta is archived: it folds into `specs/`, the set's version advances, and the verdict is recorded at the next iteration.
 5. The proportionality worksheet is re-run.
 
 **Returns.** Code or behavior changes return to W5; configuration-only changes within the product's runtime bounds return to W7.
@@ -485,11 +485,11 @@ The workflow is meant to be executed by an agent. The *assembling agent* drafts 
 
 ![Flowchart: inputs flow to the assembling agent, which writes only a change branch; a human reviews and a human merges; the agent never merges, edits specs or acts.](./figures/agentic-delivery-workflow/fig-6-assembling-agent.svg)
 
-*Figure 6 — Inputs → assembling agent → a change branch carrying the set, its ledgers and its trace ID → human review (completeness test, reader test) → a human merges and archives. The agent never merges, never edits specs/, and never touches a system of record.*
+*Figure 6 — Inputs → assembling agent → a change branch carrying the set, its ledgers and its trace ID → human review (completeness test, reader test) → a human merges and archives. The agent never merges, never edits `specs/`, and never touches a system of record.*
 
 | Aspect | Design |
 |---|---|
-| Posture | Propose-only: writes to a change branch; never merges; never edits specs/ directly; every "done" audited by HRN-05 |
+| Posture | Propose-only: writes to a change branch; never merges; never edits `specs/` directly; every "done" audited by HRN-05 |
 | Form and positions | **Full** form: it fires the Standard's T7 (enterprise-critical) trigger because its outputs are consumed as inputs to the governance of other agentic systems (§11, conflict 20). Every action on its DAS is PROHIBITED or HITL-REQUIRED; it completes assembly without direction, and a human is upstream of every consequential action |
 | Runtime | Claude Code under the author's reference harness [19], with `HARNESS_UNATTENDED=1`, so that the HRN-04 limits are mechanical, not advisory |
 | Reads | Source specifications, the Standard, the Harness Specification, the assembly kit, prior sets, the registry |
@@ -506,11 +506,11 @@ The point of the posture is symmetry: the agent that writes boundaries for other
 
 **When a claim changes state.** A claim in H14 is *specified* when its enforcing mechanism is named and its verification defined. It becomes *demonstrated* at W6, when the named verification passes on built code at Gate 3 and the run ID is recorded beside it. Engineering evidence at W5 — a claim-auditor ledger — is necessary to enter W6; it does not by itself change the state.
 
-**Metrics.** The Harness Specification's §5 metrics apply to every product — among them guard block rate, claim rejection rate, unattended violation rate, tool success rate, evaluation score and incident time-to-resolution — with SLOs re-baselined after 90 days of production telemetry, plus the product's own success criteria from H11. Every metric has an owner; every alert has a runbook link.
+**Metrics.** The Harness Specification's §5 metrics apply to every product — among them guard block rate, claim rejection rate, unattended violation rate, tool success rate, evaluation score and incident time-to-resolution — with SLOs re-baselined after 90 days of production telemetry. The product's own success criteria from H11 apply as well. Every metric has an owner; every alert has a runbook link.
 
-**The reader test.** The assembling agent spawns a fresh model instance with no context to answer the Standard's Appendix C questions in three personas — a Business-line Technology Lead, an architect and a compliance reviewer — and records the answers; a human panel answers the same questions. Every wrong or uncertain answer is a defect in the document.
+**The reader test.** The assembling agent spawns a fresh model instance, with no context, to answer the Standard's Appendix C questions in three personas — a Business-line Technology Lead, an architect and a compliance reviewer — and records the answers; a human panel answers the same questions. Every wrong or uncertain answer is a defect in the document.
 
-**Red-team catalogs at W6.** The OWASP LLM Top 10 2026 [11], the OWASP Top 10 for Agentic Applications [12] and MITRE ATLAS [13]; findings and dispositions go to the ledger.
+**Red-team catalogs at W6.** The red team is run against the OWASP LLM Top 10 2026 [11], the OWASP Agentic Top 10 [12] and MITRE ATLAS [13]; findings and dispositions go to the ledger.
 
 ## 11. Conflicts resolved
 
@@ -518,13 +518,13 @@ Binding seven documents exposes places where they disagree. The register below r
 
 | # | Between | Conflict | Resolution | Reason |
 |---|---|---|---|---|
-| 1 | Harness Gates 0–4; SDD chapters G1–G6; the Standard's named gates | Three gate numberings | W0–W7 is the spine; each stage records the named gate it closes | One numbering an agent can follow; nothing lost |
+| 1 | Harness Gates 0–4; SDD chapter gates; the Standard's named gates | Three gate numberings | W0–W7 is the spine; each stage records the named gate it closes | One numbering an agent can follow; nothing lost |
 | 2 | Harness roles; Standard role types | Two vocabularies, partial overlap | One RACI with a mapping table (§4) | One vocabulary |
 | 3 | Standard; SDD | Whether a product's SDD specification is a separate document | Spokes S1, S3 and S4 are written in SDD's four-layer form; there is no separate SDD document per product | The only version an agent can produce from one template |
-| 4 | Standard T4; Harness §7 | T4 fires on reliance on a boundary; Harness §7 applies to Annex III systems | T4 → Full form and adversarial boundary suites; §7 only on an Annex III determination at W0 | POE: Full without §7 |
-| 5 | Harness §4, "missing controls block deployment"; Standard proportionality | Whether Lite may omit controls | All controls present in Lite; depth and ownership adjust | Both rules kept true |
+| 4 | Standard T4; Harness §7 | T4 fires on reliance on a boundary; Harness §7 applies to Annex III systems | T4 → Full form and adversarial boundary suites; Harness §7 only on an Annex III determination at W0 | POE: Full without Harness §7 |
+| 5 | Harness §3.3, "missing controls block deployment"; Standard proportionality | Whether Lite may omit controls | All controls present in Lite; depth and ownership adjust | Both rules kept true |
 | 6 | Standard H14; Harness HRN-05 | When "demonstrated" is earned | At W6 with a run ID; W5 evidence is a precondition; SEC control states likewise move to demonstrated only at W6 with a run ID (W6-8) | The gate, not the engineer, changes the state |
-| 9 | Harness §3 model card and impact assessment; Standard registry entry and H0 | Where the per-agent record lives | Hub H0 plus the registry entry serve as the model card; the ISO/IEC 42005 impact assessment is S4.4 | One statement, one place |
+| 9 | Harness §2 model card and §3.1 impact assessment; Standard registry entry and H0 | Where the per-agent record lives | Hub H0 plus the registry entry serve as the model card; the ISO/IEC 42005 impact assessment is S4.4 | One statement, one place |
 | 10 | Harness §4 stacks; worked examples on Databricks | No Databricks column | Appendix B adds one | W4 cannot be executed for those examples without it |
 | 11 | Standard §8.3 change gate; Harness §11 change control | Two change controls | The product change gate (§8) and the workflow's change control (§12.3) are distinct scopes | Both apply |
 | 12 | Standard H8 (Feng levels [17]); CRISP-AG §5.1 (DAS) | Two autonomy vocabularies — per task type versus per action | DAS is normative in the Standard (H8, T1, M); Feng's levels are retained only as the interaction-mode descriptor in the H5 role-impact summary; crosswalk in CRISP-AG §5.1.4 | One enforceable vocabulary; DAS has PROHIBITED, which H9 already is |
@@ -534,7 +534,7 @@ Binding seven documents exposes places where they disagree. The register below r
 | 16 | Standard Full/Lite; CRISP-AG §4 agent class | Two classification schemes | Orthogonal axes: class selects control intensity, form selects ownership depth; class recorded in H0. Class 4 (production-state writes) ⇒ T2; Class 3 ⇒ S1 promotion; staging-only writes carry the Class 4 write controls without the class | No new trigger; both readable together |
 | 17 | Workflow's eight stages; CRISP-AG §6 nine phases | Two lifecycles | Both kept; Appendix D maps phases to stages | Phases are methodological; stages are gated |
 | 18 | CRISP-AG §5.1.1 Legal review level; the RACI | No Legal role | Legal added as a role (§4, Appendix A) | A DAS without Legal is incomplete |
-| 19 | CRISP-AG artifacts (Workflow & Workforce Impact Record; Capability Frontier Map); Standard document set | No home in the set | H5 summary and S5.6 (the workforce record); S2.10 (frontier and graduation); CRISP-AG Appendix A gains a "lives in" column | Every artifact has one place |
+| 19 | CRISP-AG artifacts (Workflow & Workforce Impact Record; Capability Frontier Map); Standard document set | No home in the set | H5 summary and S5.6 (the workforce record); S2.10 (frontier and graduation); CRISP-AG §1.2 gains a "lives in" column | Every artifact has one place |
 | 20 | Standard §9.2 triggers (reach in one action); the assembling agent's systemic reach | No trigger for a system whose outputs govern other systems | The Standard adds T7 (enterprise-critical); the assembling agent fires it and is Full | Reach over time is a different harm from reach in one action |
 | 22 | Harness §4 stack table; VCS Appendix B configured-agent profiles | For an agent configured inside Copilot Studio or Microsoft 365 Copilot there is no harness — the vendor's admin plane is the harness | Appendix B gains Microsoft columns with coverage grades; an Alert-only or None row imposes the DAS ceiling stated in VCS §4 (VC-06) | The controls apply to configured agents; the mechanism differs |
 | 23 | CRISP-AG §5.1.1 Finance / Procurement approval level; the RACI | No role owns the vendor registers, the budgets or the clause checklist | Vendor Control Owner added as the eleventh role; Finance consulted at W2 | A budget without an owner is a number |
@@ -550,14 +550,14 @@ Binding seven documents exposes places where they disagree. The register below r
 ### 12.2 Known gaps
 
 - **Vendor-configured agents have a weaker harness.** For agents configured inside Microsoft Copilot Studio or Microsoft 365 Copilot, several controls can only be met partially, by alert, or not at all (Appendix B). The coverage grades therefore cap autonomy: a Copilot Studio agent with write tools is limited to HITL-REQUIRED because there is no argument-level guard (HRN-03), and every Microsoft 365 Copilot agent is limited to HITL-REQUIRED until an automated spend disconnect is wired and evidenced (HRN-12).
-- **A pending exit check.** From Phase 2 of the vendor-control rollout, the Harness Specification v1.3 fails Gate 0 on a registry pre-entry that has no budget ceiling, cap owner or named enforcing layer, and requires the DAS draft to name a Finance or Procurement approver (the Vendor Control Owner where no such function is seated) for every position that consumes metered vendor capacity. The matching W0 exit check is planned for the next revision of this workflow; until then, W0-13 covers the service register and Vendor Service Profile only.
+- **A pending exit check.** From Phase 2 of the vendor-control rollout, the Harness Specification v1.3 fails Gate 0 on a registry pre-entry that has no budget ceiling, cap owner or named enforcing layer. It also requires the DAS draft to name a Finance or Procurement approver (the Vendor Control Owner where no such function is seated) for every position that consumes metered vendor capacity. A matching W0 exit check for this is not yet part of the workflow; W0-13 covers the service register and Vendor Service Profile only, and adopters may add the check at W0.
 - **Worked examples are specifications, not results.** The POE notes in §6 and the assembling agent in §9 show how a product meets each gate on paper. Under the workflow's own evidence rule (§10), nothing about either is *demonstrated* until W6 runs on built code.
 
 ### 12.3 Change control for the workflow itself
 
 The YAML definition and this document are versioned together. A change is a pull request reviewed by two AIGB members; a change to stage exit checks or to the §7 compile rules additionally requires the AI Risk Officer's sign-off. The AIGB reviews the workflow quarterly against changes in the NIST AI RMF, ISO/IEC 42001, EU AI Act guidance, the OWASP catalogs, MITRE ATLAS and vendor policy — the same cadence as the Harness Specification. All exceptions are logged with an expiry, an owner and a compensating control.
 
-The quarterly review is a single review of the document set the workflow binds rather than of each document separately. Its agenda is the vocabulary-register lint — one owner per term, glossaries generated from a shared register — and the §11 conflicts table.
+The quarterly review is a single review of the documents the workflow binds, rather than a separate review of each. Its agenda is the vocabulary-register lint — one owner per term, glossaries generated from a shared register — and the §11 conflicts table.
 
 ## 13. Conclusion
 
@@ -570,6 +570,8 @@ Research and drafting assistance from Claude (Anthropic); all decisions and clai
 ## How to cite
 
 Reed, D. (2026). *Agentic Delivery Workflow* (Version 1.10). Agentic AI Governance in Practice, Part 7. https://drdavidreed.com/papers/agentic-delivery-workflow/
+
+This paper is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
 
 ## References
 
@@ -584,11 +586,11 @@ Reed, D. (2026). *Agentic Delivery Workflow* (Version 1.10). Agentic AI Governan
 9. ISO/IEC. [*ISO/IEC 42001:2023 — Artificial intelligence management system*](https://www.iso.org/standard/81230.html); [*ISO/IEC 42005:2025 — AI system impact assessment*](https://www.iso.org/standard/44545.html).
 10. European Parliament and Council. [*Regulation (EU) 2024/1689 (Artificial Intelligence Act)*](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024R1689).
 11. OWASP GenAI Security Project. [*OWASP GenAI LLM Top 10 2026*](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/).
-12. OWASP GenAI Security Project. [*OWASP Top 10 for Agentic Applications*](https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/).
+12. OWASP GenAI Security Project. [*OWASP Top 10 for Agentic Applications for 2026*](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/).
 13. MITRE. [*ATLAS — Adversarial Threat Landscape for Artificial-Intelligence Systems*](https://atlas.mitre.org/), data v2026.06.
 14. OpenTelemetry. [*Semantic conventions for generative AI*](https://github.com/open-telemetry/semantic-conventions-genai).
-15. Microsoft Learn. [*What is Microsoft Entra Agent ID?*](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/what-is-agent-id)
-16. Anthropic. [*Claude Code: managed settings*](https://code.claude.com/docs/en/managed-settings).
+15. Microsoft Learn. [*What are agent identities?*](https://learn.microsoft.com/en-us/entra/agent-id/what-are-agent-identities) Microsoft Entra Agent ID documentation.
+16. Anthropic. [*Deploy managed settings*](https://code.claude.com/docs/en/managed-settings). Claude Code documentation.
 17. Feng, K. J. K., McDonald, D. W., and Zhang, A. X. [*Levels of Autonomy for AI Agents*](https://arxiv.org/abs/2506.12469). arXiv:2506.12469, 2025.
 18. Yao, S., Shinn, N., Razavi, P., and Narasimhan, K. [*τ-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains*](https://arxiv.org/abs/2406.12045). arXiv:2406.12045, 2024.
 19. Reed, D. [*The Production Harness: Engineering AI Agents You Can Walk Away From*](/harness-engineering/). 2026.
@@ -612,17 +614,17 @@ A = approves the gate · R = responsible for the artifact · C = consulted · �
 | Vendor Control Owner | C | — | C | — | — | — | — | C |
 | Product engineering | — | — | C | R (M) | C | R | C | C |
 
-Finance is consulted at W2 on budgets (§3; conflict 23) but holds no gate, so it has no row.
+Finance is consulted at W2 on budgets (§4; conflict 23) but holds no gate, so it has no row.
 
 ## Appendix B — Stack columns for HRN-01 to HRN-12
 
-The Databricks column names the Databricks-native equivalent of each control. Where the reference harness runs beside Databricks — a Claude Code build agent targeting a Databricks estate — both apply. The two Microsoft columns give the coverage grade for an agent configured inside Microsoft Copilot Studio (Power Platform admin center plane) and inside Microsoft 365 Copilot (admin-center billing plane). The mechanism and the DAS ceiling for each Microsoft row are owned by, and stated in full in, the Vendor Control Specification's Appendix B.1; they are reproduced here only as coverage grades, so that the twelve controls read across every stack. Coverage: Full / Substantial / Partial / Alert-only / None.
+The Databricks column names the Databricks-native equivalent of each control. Where the reference harness runs beside Databricks — a Claude Code build agent targeting a Databricks estate — both apply. The two Microsoft columns give the coverage grade for an agent configured inside Microsoft Copilot Studio (Power Platform admin center plane) and inside Microsoft 365 Copilot (admin-center billing plane). The mechanism and the DAS ceiling for each Microsoft column are owned by, and stated in full in, the Vendor Control Specification's Appendix B.1; they are reproduced here only as coverage grades, so that the twelve controls read across every stack. Coverage: Full / Substantial / Partial / Alert-only / None.
 
 | Control | Databricks equivalent | Copilot Studio | Microsoft 365 Copilot agents |
 |---|---|---|---|
-| HRN-01 permission model | Unity Catalog grants and ABAC row filters as the permission plane; agent principals hold SELECT on client-scoped inputs and INSERT on staging only; Agent Bricks tool allow-lists; Unity Gateway policies | Substantial (connector-level) | Partial |
+| HRN-01 permission model | Unity Catalog grants and ABAC row filters as the permission plane; agent principals hold SELECT on client-scoped inputs and INSERT on staging only; Agent Bricks tool allow lists; Unity Gateway policies | Substantial (connector-level) | Partial |
 | HRN-02 session preflight | Job or notebook init task verifying the pinned model endpoint, the prompt version from the registry, and halt-switch state in the configuration table | Partial (publish gate) | Partial |
-| HRN-03 pre-tool guard | Agent Bricks guardrails and Unity Gateway input filters; deterministic pre-flight functions before any model call (schema validation, injection screen, natural-person routing) | Partial (no argument-level guard) | None |
+| HRN-03 pre-tool guard | Agent Bricks guardrails and Unity Gateway input filters; deterministic preflight functions before any model call (schema validation, injection screen, natural-person routing) | Partial (no argument-level guard) | None |
 | HRN-04 unattended profile | Scheduled jobs run under a workload identity with no write beyond staging; MLflow-registered configuration pinned per run; no notebook edits from the job identity | Substantial (consumption) / Partial (content) | Substantial by construction |
 | HRN-05 claim auditor | MLflow 3 evaluation runs as the evidence ledger; a claim is accepted only with an MLflow run ID whose metrics meet H11 targets | None | None |
 | HRN-06 ledgers | Append-only, INSERT-only Delta table with a hash-chain job; no UPDATE or DELETE grants; mirrored to write-once object storage with a retention policy | Substantial (once exported) | Substantial (once exported) |
@@ -637,18 +639,18 @@ In the Copilot Studio column the binding constraint for an agent with write tool
 
 ## Appendix C — Illustrative skeleton hub for the assembling agent
 
-A sketch of the first sections of the assembling agent's own hub, to show the Standard's hub form applied to the workflow's worked example.
+This appendix sketches the first sections of the assembling agent's own hub, to show the Standard's hub form applied to the workflow's worked example.
 
 **H0 — proportionality worksheet.** T1 No (the agent proposes; a human merges). T2 No (it writes to a change branch, not a system of record; the branch is staging). T3 No (internal). T4 No (minimal tier). T5 No. T6 No (it drafts documents and makes no decision about a person). T7 **Yes** — its outputs are consumed as inputs to the governance of other agentic systems. **Form: Full.**
 
-**H3 — purpose and safety property.** Purpose: assemble a conforming Agentic PRD document set from a source specification, the Standard and the kit, with every statement traceable to its source or tagged as a draft. Safety property: *nothing the agent writes asserts what its sources do not support, and nothing it does changes the system of record.* Objectives: O-1 zero untagged assertions; O-2 zero invented IDs or figures; O-3 zero merges or specs/ edits; O-4 reader-test defects per set trending down (baselined on the first three sets).
+**H3 — purpose and safety property.** Purpose: assemble a conforming Agentic PRD document set from a source specification, the Standard and the kit, with every statement traceable to its source or tagged as a draft. Safety property: *nothing the agent writes asserts what its sources do not support, and nothing it does changes the system of record.* Objectives: O-1 zero untagged assertions; O-2 zero invented IDs or figures; O-3 zero merges or `specs/` edits; O-4 reader-test defects per set trending down (baselined on the first three sets).
 
 **H4 — governing invariants.**
 
 | ID | Invariant | Enforcement |
 |---|---|---|
 | PROV-INV | Every substantive statement carries a source tag or a draft tag | Deterministic tag check in the kit's quality gates (gate); the claim auditor rejects an untagged "done" (HRN-05) |
-| NOMERGE-INV | The agent never merges and never edits specs/ | HRN-01 deny on specs/** writes and on merge commands; branch protection (permission) |
+| NOMERGE-INV | The agent never merges and never edits `specs/` | HRN-01 deny on `specs/**` writes and on merge commands; branch protection (permission) |
 | NOINVENT-INV | No requirement ID, number or classification is invented; drafts are tagged | ID audit against the source's ID inventory (test); number audit (test) |
 
 **H8 — autonomy and accountability.** Every assembly action sits at HITL-REQUIRED or PROHIBITED on the DAS. Human of record: the reviewer who merges.
@@ -661,7 +663,7 @@ A sketch of the first sections of the assembling agent's own hub, to show the St
 
 Phases are methodological; stages are gated. A phase may span stages; no stage closes without the phase outputs it maps to (CRISP-AG §6; precedence §2.2).
 
-| CRISP-AG phase | Workflow stage(s) | Phase outputs the stage consumes or produces |
+| CRISP-AG phase | Workflow stage(s) | Phase outputs consumed or produced |
 |---|---|---|
 | 1 Business and Stakeholder Understanding | W0; H1–H5 in W1 | Problem statement, baseline, DAS draft, RACI, consequential-decision screen, workforce-impact draft |
 | 2 Operational Context Assembly | W0–W1 | Context specification, constraint log, system inventory; agent identity record created at registry pre-entry; impact-assessment screen at W0, full assessment at W2 |
@@ -683,7 +685,7 @@ Terms owned by this paper are defined here. Terms owned by another paper in the 
 - **Business-line Technology Lead** (§4) — a business line's technology leader; distinct from the Business Line Owner; may hold the Eval Owner role.
 - **Change gate** (§8) — trigger → spec delta → suites pass → owners approve → archive → worksheet re-run; product-level change control. A vendor-initiated change enters as the change class "vendor change absorbed" (STD S6.2; SDD CHG-05).
 - **Precedence of documents** (§2.2) — CRISP-AG owns governance concepts and artifacts; the Standard owns the content and structure of the set; SDD owns specification form; the Harness Specification owns controls and runtime; the Vendor Control Specification owns the terms of vendor use; the Security Specification owns runtime and record security controls; the workflow binds them. A conflict is resolved by editing the non-owning document to cite the owner.
-- **Roles (eleven)** (§4) — AI Governance Board; AI Product Owner; Business Line Owner; AI Risk Officer; Architect; Eval Owner; AI Security Reviewer; Data Protection Officer; Harness Engineer; Legal; Vendor Control Owner (duties defined in VCS §6).
+- **Roles** (§4; eleven in all) — AI Governance Board; AI Product Owner; Business Line Owner; AI Risk Officer; Architect; Eval Owner; AI Security Reviewer; Data Protection Officer; Harness Engineer; Legal; Vendor Control Owner (duties defined in VCS §6).
 - **Stages W0–W7** (§3) — intake and classify; hub; SDD specification; evaluation specification and M; harness binding; build under harness; evaluation and red team; deploy and monitor.
 - **W0 packet** (W0) — the intake bundle carrying the W0 outputs, the decision log, the exception log and the scored exit checklist, including a Vendor Service Profile reference and a register row for every vendor dependency. The AI Product Owner brings it to Gate 0, and it becomes the source specification for W1.
 
@@ -699,7 +701,7 @@ Terms owned by this paper are defined here. Terms owned by another paper in the 
 - **Control state** → Agentic Security Specification, §3 — cited at W2 and W6.
 - **DAS position** → CRISP-AG, §5.1 — cited at W0-11, W1-4 and W4-3.
 - **Full / Lite** → Agentic PRD Standard, §9 — cited at W0-4.
-- **Harness** → Enterprise Agentic AI Harness Specification, §1 — cited at W4.
+- **Harness** → Enterprise Agentic AI Harness Specification, §1.4 — cited at W4.
 - **Harness manifest** → Enterprise Agentic AI Harness Specification, §4 (HRN-09) — cited at W4-10.
 - **HRN controls** → Enterprise Agentic AI Harness Specification, §4 — cited at §7.
 - **Lifecycle gate** → Enterprise Agentic AI Harness Specification, §3 — cited at §3.
@@ -708,7 +710,7 @@ Terms owned by this paper are defined here. Terms owned by another paper in the 
 - **MITRE ATLAS (agentic)** → external source, ATLAS data v2026.06 — cited at W2-7 and W6-3.
 - **Proportionality triggers** → Agentic PRD Standard, §9.2 — cited at W0-4.
 - **Standing governance invariant** → CRISP-AG, §6.3 — cited at conflict 14.
-- **Unattended run** → Enterprise Agentic AI Harness Specification, §1 and HRN-04 — cited at W4-3.
+- **Unattended run** → Enterprise Agentic AI Harness Specification, §1.4 and HRN-04 — cited at W4-3.
 - **Vendor Control Owner** → Vendor Control Specification, §6 — cited at §4.
 - **Vendor Service Profile** → Vendor Control Specification, §4 (VC-03), §7 and Appendix A — cited at W0.
 
