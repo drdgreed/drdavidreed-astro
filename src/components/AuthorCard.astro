@@ -5,18 +5,16 @@
  * trio so updating links once propagates everywhere.
  */
 import { SITE } from '../lib/site-meta';
+import { profile } from '../data/profile';
 
 interface Props {
   /** Variant: 'cta' (listing page) shows status pill; 'bio' (article footer) is fuller. */
   variant?: 'cta' | 'bio';
-  /** "Open to ..." status — null/undefined hides the pill. */
+  /** Optional status pill text — undefined (the default) hides the pill. */
   status?: string;
 }
 
-const {
-  variant = 'cta',
-  status = 'Open to senior AI/ML leadership roles',
-} = Astro.props;
+const { variant = 'cta', status } = Astro.props;
 
 // Pulled from SITE so updating once cascades everywhere.
 const linkedinUrl = SITE.linkedinUrl;
@@ -39,7 +37,7 @@ const emailUrl = `mailto:${SITE.email}`;
       )}
       <h3 class="font-serif text-2xl mt-4 mb-2">David Reed, PhD</h3>
       <p class="text-text-secondary text-sm leading-relaxed">
-        Head of AI/ML & Agentic Delivery at Interview Kickstart. Production
+        {profile.title} at {profile.organization}. Production
         agentic systems, ML engineering at scale, US Patent 6,850,988.
         I write for senior technical leaders who ship.
       </p>

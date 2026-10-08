@@ -1,8 +1,9 @@
 /**
- * Career timeline — from the MASTER resume (Apr 2026 revision).
+ * Career timeline — from the MASTER resume (Apr 2026 revision), plus the
+ * Cushman & Wakefield role (Aug 2026, from LinkedIn).
  * Sorted by startDate descending; render order matches the resume.
  *
- * Two roles are concurrent with Interview Kickstart:
+ * Two roles were concurrent with Interview Kickstart:
  *   - Stealth GenAI Startup (Oct 2023 – Jan 2025, ended)
  *   - Deep Advisors (Jan 2018 – Present, ongoing advisory)
  * Both are kept in the timeline so the full record is visible.
@@ -25,12 +26,28 @@ export interface Experience {
 
 export const experiences: Experience[] = [
   {
+    id: 'cw',
+    company: 'Cushman & Wakefield',
+    title: 'Senior Director, Data Science & AI',
+    startDate: '2026-08-01',
+    endDate: null,
+    isCurrent: true,
+    bulletPoints: [
+      'Lead the enterprise AI function for the Services division — strategy, delivery, operations, and governance — and a multidisciplinary team of data scientists, ML engineers, and AI practitioners.',
+      'Set and execute the enterprise AI roadmap across traditional ML, generative AI, and agentic systems, including multi-agent orchestration and tool-use pipelines that automate complex enterprise workflows.',
+      'Own end-to-end delivery — architecture, model development standards, and scaled deployment across high-value use cases — with data engineering for training and inference pipelines.',
+      'Mature MLOps/LLMOps: CI/CD for training and deployment, model registry, experiment tracking, and production monitoring for drift, degradation, and bias with automated retraining triggers.',
+      'Execute the AI governance framework — model risk, fairness, explainability, privacy, and security — with Legal, Compliance, and Risk on GDPR/CCPA, GenAI IP, and third-party AI due diligence, with human oversight across the lifecycle.',
+      'Internal AI innovation champion and technical mentor: use-case discovery, ideation and PoC sprints, and KPIs/OKRs that tie model performance to business impact.',
+    ],
+  },
+  {
     id: 'ik',
     company: 'Interview Kickstart',
     title: 'Head of AI/ML & Agentic Delivery',
     startDate: '2024-06-01',
-    endDate: null,
-    isCurrent: true,
+    endDate: '2026-07-31',
+    isCurrent: false,
     bulletPoints: [
       'Designed, coded, and shipped a production agentic AI evaluation system from scratch (FastAPI + AssemblyAI + Claude + structured-rubric LLM scoring). Processes 100+ live coaching sessions weekly; drove 22% instructor performance lift and 4.71/5.0 NPS across 400+ MAANG-level instructors.',
       'Lead cross-functional delivery team including FAANG subject-matter expert working groups in agentic AI; coordinate architecture reviews, evaluation standards, and curriculum roadmap.',

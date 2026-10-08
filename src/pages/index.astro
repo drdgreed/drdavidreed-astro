@@ -27,18 +27,6 @@ import { SITE } from '../lib/site-meta';
     ></div>
 
     <div class="section-container text-center relative z-10 py-20">
-      {/* Status pill */}
-      <div
-        class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass-card mb-12"
-        style="animation: badge-glow 2s ease-in-out infinite"
-      >
-        <span class="w-2.5 h-2.5 rounded-full bg-primary animate-pulse" style="box-shadow: 0 0 8px rgb(52 211 153 / 0.8)"></span>
-        <span class="text-sm text-muted-foreground">
-          Open to <span class="text-foreground font-medium">{profile.availability.targetTitles[0]} / {profile.availability.targetTitles[1]}</span>
-          at <span class="text-foreground font-medium">{profile.availability.targetStages.slice(0, 2).join('-')}</span>
-        </span>
-      </div>
-
       {/* Name */}
       <h1 class="heading-hero font-serif font-semibold mb-6 tracking-tight animate-fade-in">
         {profile.name}

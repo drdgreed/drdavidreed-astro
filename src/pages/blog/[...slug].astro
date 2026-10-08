@@ -15,6 +15,7 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import ArticleCard from '../../components/ArticleCard.astro';
 import AuthorCard from '../../components/AuthorCard.astro';
 import InlineCTA from '../../components/InlineCTA.astro';
+import { profile } from '../../data/profile';
 // NewsletterCapture is intentionally not imported. The component is a stub
 // (no provider wired); rendering it would show visitors a non-functional
 // form. Restore the import + usage below when a provider is configured.
@@ -105,7 +106,7 @@ const related = all
       <div class="flex-1 text-sm">
         <div class="font-medium text-text-primary">David Reed, PhD</div>
         <div class="text-text-tertiary">
-          Head of AI/ML & Agentic Delivery ·
+          {profile.title} ·
           <time datetime={publishDate.toISOString()}> {formattedDate}</time> ·
           {readTime} min read
         </div>
