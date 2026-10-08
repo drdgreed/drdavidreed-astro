@@ -8,8 +8,10 @@
  */
 import { experiences, type Experience } from '../data/experience';
 
+// ISO dates parse as UTC midnight; format in UTC too, or a build west of UTC
+// renders every start date as the previous month.
 const fmtMonth = (iso: string) =>
-  new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  new Date(iso).toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 
 const dateRange = (e: Experience) => {
   const start = fmtMonth(e.startDate);

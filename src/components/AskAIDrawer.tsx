@@ -27,7 +27,7 @@ interface Message {
 const SUGGESTED_QUESTIONS = [
   "What's your biggest weakness?",
   'Tell me about a project that failed.',
-  'Why are you open to new roles?',
+  'What do you lead at Cushman & Wakefield?',
   'What would your last manager say about you?',
 ];
 

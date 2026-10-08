@@ -8,7 +8,7 @@ export const SITE = {
   url: 'https://drdavidreed.com',
   name: 'David Reed, PhD',
   description:
-    'Head of AI/ML & Agentic Delivery. Production agentic systems, ML engineering at scale, and writing for senior technical leaders.',
+    'Senior Director, Data Science & AI. Production agentic systems, ML engineering at scale, and writing for senior technical leaders.',
   /** Default share image — used when a page does not provide its own. */
   defaultOgImage: '/og-default.png',
   twitterHandle: undefined, // no Twitter / X presence
@@ -32,12 +32,12 @@ export const PERSON = {
   name: 'David Reed',
   honorificSuffix: 'PhD, MBA, PMP',
   url: SITE.url,
-  jobTitle: 'Head of AI/ML & Agentic Delivery',
+  jobTitle: 'Senior Director, Data Science & AI',
   description:
     'AI/ML engineer specializing in production agentic AI systems — multi-agent architectures, LLM evaluation, RAG, and Model Context Protocol (MCP). Former Master Technologist at HP and Principal TPM-AI at Microsoft. Sole inventor of US Patents 6,850,988 and 6,839,229.',
   worksFor: {
     '@type': 'Organization',
-    name: 'Interview Kickstart',
+    name: 'Cushman & Wakefield',
   },
   alumniOf: [
     {
