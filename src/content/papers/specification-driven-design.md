@@ -464,11 +464,11 @@ The frame is the worksheet in Part A6. Its consequences for this system are a hu
 
 #### B1.6 User journeys
 
-The journeys are hypothetical: Client K is an illustrative occupier client, and the documents, counts and figures are invented for the example.
+The journeys are hypothetical: Client A is an illustrative occupier client, and the documents, counts and figures are invented for the example.
 
 **J1 — Standard base lease.** Tier B fields above threshold go straight through, and every Tier A field is verified.
 
-1. A lease administrator uploads a 78-page executed office lease for Client K. `document_received` is written to the audit store before anything else runs.
+1. A lease administrator uploads a 78-page executed office lease for Client A. `document_received` is written to the audit store before anything else runs.
 2. Preflight passes: OCR quality above threshold, English, all pages present and ordered, no screening content, no injection patterns, no watch-list hit.
 3. IntakeAgent classifies the document as a base lease and opens a new lease family. ExtractionAgent produces 94 fields, each with a citation or a NOT_FOUND status; 31 are Tier A.
 4. CriticalDateAgent derives expiration, three option windows, and a CAM audit deadline, each with a derivation trace to the clauses it used.
@@ -479,9 +479,9 @@ The journeys are hypothetical: Client K is an illustrative occupier client, and 
 
 **J2 — Amendment chain.** A new amendment changes fields that the base lease set.
 
-1. Client K's third amendment arrives: it extends the term by 36 months, changes the base year, and deletes an expansion option.
+1. Client A's third amendment arrives: it extends the term by 36 months, changes the base year, and deletes an expansion option.
 2. IntakeAgent links it to the existing family. AmendmentReconciliationAgent produces effective terms: for each affected base-lease field, the chain (base → amendment 1 → amendment 3) and the resulting value, with citations at every link. It flags one conflict: the amendment references "Section 4.2", but the base lease's rent escalation is in 4.3.
-3. The conflicting field is Tier A and has status AMBIGUOUS, so it routes to the analyst with both clauses side by side. The analyst resolves it, records the interpretation as a client precedent ("Client K amendments cite the original draft's numbering; map 4.2→4.3"), and RELEASES.
+3. The conflicting field is Tier A and has status AMBIGUOUS, so it routes to the analyst with both clauses side by side. The analyst resolves it, records the interpretation as a client precedent ("Client A amendments cite the original draft's numbering; map 4.2→4.3"), and RELEASES.
 4. CriticalDateAgent regenerates the dates from the effective terms; the deleted option's window disappears from the client's calendar with an audit record explaining why.
 
 **Success.** The failure mode independent benchmarks identify — long-distance, cross-document reasoning — is handled by a dedicated agent whose output is a visible chain, and the human resolved the one place the chain was uncertain.
@@ -496,7 +496,7 @@ The journeys are hypothetical: Client K is an illustrative occupier client, and 
 
 **J4 — Critical date approaching.** A derived notice window opens.
 
-1. A renewal option for Client K requires notice between 12 and 9 months before expiration. CriticalDateAgent derived `notice_window_start` and `notice_deadline` at release.
+1. A renewal option for Client A requires notice between 12 and 9 months before expiration. CriticalDateAgent derived `notice_window_start` and `notice_deadline` at release.
 2. A scheduled job (not an agent) raises the item into the account lead's queue at window start, with the derivation and the citations.
 3. The account lead communicates with the client. LAAS records nothing about the client's decision except what a human enters; no agent has any capability to send notice or communicate externally (C-HARD-02, C-HARD-03).
 
@@ -504,7 +504,7 @@ The journeys are hypothetical: Client K is an illustrative occupier client, and 
 
 **J5 — Audit variance.** The monthly reconciliation finds mismatches.
 
-1. AuditAgent's monthly reconciliation compares released abstracts, the lease system of record, and Client K's general-ledger feed for 412 leases.
+1. AuditAgent's monthly reconciliation compares released abstracts, the lease system of record, and Client A's general-ledger feed for 412 leases.
 2. It finds seven variances: five are rent steps the client's system applied a month late; two are abstract-versus-system mismatches introduced by manual edits in the lease system after release.
 3. Each variance is a typed AuditFinding with the three values, their sources, and a proposed classification. The agent corrects nothing. The findings go to the analyst queue; the analyst decides, and any correction to a released abstract creates a new abstract version with its own release record.
 
@@ -512,9 +512,9 @@ The journeys are hypothetical: Client K is an illustrative occupier client, and 
 
 **J6 — Governed playbook evolution.** Repeated reviewer corrections become a proposed client rule.
 
-1. Over a quarter, analysts correct the same Tier B field — "rentable area" — on 23 Client K abstracts, each time to the BOMA 2017 remeasured figure in an exhibit rather than the recital figure.
-2. PlaybookEvolutionAgent, triggered by a scheduled job, identifies the pattern and produces a PlaybookProposal: amend Client K's abstraction playbook to prefer exhibit remeasurement figures with a citation requirement. It cites the 23 cases. It cannot deploy.
-3. The account lead reviews and approves; the amendment is deployed to the playbook store with a PlaybookChangeLog entry. Future extractions for Client K follow the rule, and the reviewer-correction rate on that field falls — which the drift monitor records as an expected shift, not drift.
+1. Over a quarter, analysts correct the same Tier B field — "rentable area" — on 23 Client A abstracts, each time to the BOMA 2017 remeasured figure in an exhibit rather than the recital figure.
+2. PlaybookEvolutionAgent, triggered by a scheduled job, identifies the pattern and produces a PlaybookProposal: amend Client A's abstraction playbook to prefer exhibit remeasurement figures with a citation requirement. It cites the 23 cases. It cannot deploy.
+3. The account lead reviews and approves; the amendment is deployed to the playbook store with a PlaybookChangeLog entry. Future extractions for Client A follow the rule, and the reviewer-correction rate on that field falls — which the drift monitor records as an expected shift, not drift.
 
 **Success.** Institutional knowledge became a governed rule without a model change, with a human approval and an immutable log.
 

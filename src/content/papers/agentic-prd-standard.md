@@ -703,7 +703,7 @@ This section names role types only. People and organizational functions bind per
 | S2 Evaluation spec | Named eval owner — assigned per product at W0; the accountable holder is often the Business-line Technology Lead, and a named engineer is responsible |
 | S3 Identity & security | Security / identity |
 | S4 Risk, jurisdiction & compliance | Compliance / Data Protection, with Model Risk / AI Governance |
-| S5 Operations | Platform Engineering |
+| S5 Operations | Platform operator |
 | S6 Iteration & change record | Product engineering |
 | M | Generated; product engineering maintains the pipeline |
 | Standards watch (S4.7) | AI Risk Officer / AI Governance Board |
@@ -715,7 +715,7 @@ This section names role types only. People and organizational functions bind per
 | Control-state table and isolation boundary (S3.7) | Security / identity (AI Security Reviewer), with the Harness Engineer for the boundary |
 | Judge validation record (S2.4) | Named eval owner — the responsible engineer |
 
-The role types in this table are reconciled with the Agentic Delivery Workflow's eleven roles (Workflow §4). Names the table shares with the Workflow, such as AI Product Owner, Architect, Legal and Vendor Control Owner, need no mapping. The other role types map as follows: Named eval owner → Eval Owner; Security / identity → AI Security Reviewer; Compliance / Data Protection → Data Protection Officer; Model Risk / AI Governance → AI Risk Officer (gate approvals and signatures) and AI Governance Board (ratification and exceptions); Platform Engineering → Harness Engineer. Product engineering is not one of the eleven roles; the Workflow's RACI gives it a row of its own (Workflow Appendix A). Named individuals enter per product at W0.
+The role types in this table are reconciled with the Agentic Delivery Workflow's eleven roles (Workflow §4). Names the table shares with the Workflow, such as AI Product Owner, Architect, Legal and Vendor Control Owner, need no mapping. The other role types map as follows: Named eval owner → Eval Owner; Security / identity → AI Security Reviewer; Compliance / Data Protection → Data Protection Officer; Model Risk / AI Governance → AI Risk Officer (gate approvals and signatures) and AI Governance Board (ratification and exceptions); Platform operator → Harness Engineer. Product engineering is not one of the eleven roles; the Workflow's RACI gives it a row of its own (Workflow Appendix A). Named individuals enter per product at W0.
 
 ## 11. Discussion and limitations
 
@@ -1015,7 +1015,7 @@ The Standard applies its own claims discipline (§8.4) to itself.
 
 | Claim | Defensible? | Evidence |
 |---|---|---|
-| Forty research-backed amendments were applied | Yes | Evidence not published; the cited sources are in the References (§1.7) |
+| Forty research-backed amendments were applied | Reported, not evidenced here | Evidence not published; the cited sources are in the References (§1.7) |
 | EU AI Act dates in S4.2: Regulation (EU) 2026/1744 in force 27 July 2026; Article 50 from 2 August 2026; Art. 50(2) grace to 2 December 2026; Annex III from 2 December 2027; Annex I from 2 August 2028; the Art. 111(2) legacy rule | Yes | EUR-Lex text of Regulation (EU) 2026/1744; Commission Guidelines page [17]; the Code of Practice adequacy date is unverified (§11.2) |
 | The control-state vocabulary (*specified* / *implemented* / *demonstrated* / *retired*) used in H14, S3.4 and S3.7 is SEC's; this Standard uses it and does not define it | Yes | SEC §3 [4]; the series glossary names SEC as owner. Its mapping to external audit vocabularies is SEC's to verify (unverified) |
 | Vendor facts in S1.9, S4.5, S5.5 are cited from VCS and not restated | Yes | VCS §4, VC-01 to VC-09 [5]; the series glossary; §3.1 rule 3 |
@@ -1024,7 +1024,7 @@ The Standard applies its own claims discipline (§8.4) to itself.
 | Hub-and-spoke form scales better than a consolidated document | Reasoned, not demonstrated | Evidence not published; no measurement yet |
 | This is a state-of-the-art definition of an agentic PRD | Not claimed | The Standard claims conformance to the cited practice as of September 2026, not superiority |
 | “Exemplary” ratings in Appendix B.4 | Author's judgment | Not evidence |
-| The reader test was run on the Standard | Yes — on an earlier version, model half only; human-panel half not reported in this version; not yet re-run on the current version | Evidence not published; defects found were repaired in the next version |
+| The reader test was run on the Standard | Reported, not evidenced here — on an earlier version, model half only; human-panel half not reported in this version; not yet re-run on the current version | Evidence not published; defects found were repaired in the next version |
 | Each glossary term has one owning document in the series | Yes | Appendix A defines the terms this paper owns and cites the owner of every other term |
 | T7, the enterprise-critical trigger, reflects cited practice | **No — it is this Standard's own contribution** | No external source supplies a trigger for reach over time; the rationale is in §9.2 |
 

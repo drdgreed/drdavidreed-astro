@@ -150,7 +150,7 @@ The specification set already has a rule for where things go. CRISP-AG §10.1 st
 
 **One coordinated release per phase, through each standard's own change control.** Each phase in §8 ships one coordinated release of the organization's own standards, as it has adopted them from this series: the harness standard by a pull request reviewed by two AIGB members, with AI Risk Officer sign-off where its control set changes (Harness §11); the PRD standard as a new version with its open items closed or carried; the governance framework as a revision with its record of what changed; the design standard with its shared vocabulary updated; and the delivery workflow in its machine-readable definition, which is the workflow's source of truth. Nothing is changed between phases.
 
-> **Naming.** The body that governs AI is referred to as the AI Governance Board (AIGB), as in the Harness Specification and the Workflow. The specification also assumes an Architecture Review Board (ARB) that meets regularly; the split of decisions between the two is in §6.
+> **Naming.** The body that governs AI is referred to as the AI Governance Board (AIGB), as in the Harness Specification and the Workflow. Architecture decisions are taken at architecture review, the Gate 1 review the Architect leads (Workflow W2); the split of decisions between architecture review and the AIGB is in §6.
 
 ## 4. The nine controls
 
@@ -192,9 +192,9 @@ The vendor's own wording behind the Anthropic rows is as follows. On the Console
 
 On Databricks, the Block usage action "Prevents the user from making further requests through Unity Gateway" [49], and `system.billing.usage` is the source of truth for reconciliation. "External Model Spend in Budgets" (Bedrock and Azure AI Foundry through the gateway) is Beta (release note 28 August 2026 [50]), and `system.ai_gateway.external_model_spend` updates hourly. The Unity Gateway API became generally available on 16 September 2026.
 
-On the Microsoft planes, the Copilot Studio limit is set on Licensing › Copilot Studio › Manage Agents in PPAC [9]. Alerts go to environment and tenant admins when usage "approaches the defined limit", at a threshold the product defines. Consumption data is kept daily per environment for three months and monthly for twelve, and usage through Microsoft 365 Copilot Chat appears under a separate product. Pay-as-you-go Copilot Studio environments bill through a billing plan; Microsoft 365 Copilot agents bill on the "Copilot Studio — $0.01 per message" meter [11]. For Foundry, Microsoft's tutorial states: "Notifications are triggered when the budget thresholds are exceeded. Resources aren't affected, and your consumption isn't stopped." [12] Action groups exist only at subscription and resource-group scope; the enforcing step is specified by Platform Engineering; and Foundry Control Plane cost and token tracking is in preview.
+On the Microsoft planes, the Copilot Studio limit is set on Licensing › Copilot Studio › Manage Agents in PPAC [9]. Alerts go to environment and tenant admins when usage "approaches the defined limit", at a threshold the product defines. Consumption data is kept daily per environment for three months and monthly for twelve, and usage through Microsoft 365 Copilot Chat appears under a separate product. Pay-as-you-go Copilot Studio environments bill through a billing plan; Microsoft 365 Copilot agents bill on the "Copilot Studio — $0.01 per message" meter [11]. For Foundry, Microsoft's tutorial states: "Notifications are triggered when the budget thresholds are exceeded. Resources aren't affected, and your consumption isn't stopped." [12] Action groups exist only at subscription and resource-group scope; the enforcing step is specified by the platform operator; and Foundry Control Plane cost and token tracking is in preview.
 
-**Owner.** The Harness Engineer configures the cap and the reconciliation job; the product's S5 owner (Platform Engineering) operates it; the Finance partner receives the monthly showback; the AIGB approves any budget raised more than once in a quarter.
+**Owner.** The Harness Engineer configures the cap and the reconciliation job; the product's S5 owner (the platform operator) operates it; the Finance partner receives the monthly showback; the AIGB approves any budget raised more than once in a quarter.
 
 **Evidence at gates.** Gate 1: budget, threshold, cap and enforcing layer declared in S5.5 with the VSP field that describes the layer's precision. Gate 2 (W4): configuration evidence from the enforcing plane (screenshot or API export with date), reconciliation job present, `org.cost.*` attributes emitted. Gate 4 (W7): one cap event or alert exercised end to end on the canary; `harness_spend_vs_budget` live.
 
@@ -221,7 +221,7 @@ Three couplings make tiering more than a price decision. Retention: on the API, 
 | Microsoft Foundry | Model Router deployment: mode (Balanced / Quality / Cost) and inclusion list are governed configuration; router version 2025-11-18 GA (OpenAI, Anthropic, xAI, DeepSeek, Meta models). `versionUpgradeOption` pinned (VC-05). | Per-model list price; router quality band. | Full (inclusion list is stable configuration; new models not auto-added) |
 | OpenAI / Google / AWS | Pinned identifiers; Google auto-updated aliases prohibited for pinned deployments (VC-05). | Per-model price. | Reference posture |
 
-**Owner.** The AI Product Owner declares the tiers; the Eval Owner evidences the suite pass per tier; the Architect reviews at Gate 1 (ARB); the AIGB approves tier changes as it approves model changes (SDD CHG-03).
+**Owner.** The AI Product Owner declares the tiers; the Eval Owner evidences the suite pass per tier; the Architect reviews at Gate 1 (architecture review); the AIGB approves tier changes as it approves model changes (SDD CHG-03).
 
 **Evidence at gates.** Gate 1: S1.1 carries the tier per task class, the escalation predicate, the premium justification where applicable and the router configuration; S1.9 carries the pinned identifier and successor per tier and per Geo. Gate 3: suite results per tier. Gate 4: `harness_premium_tier_share` live.
 
@@ -261,7 +261,7 @@ A VSP for a service sold on more than one plane needs internal structure. An Ant
 
 **Rule.** The Approved AI Service Register is a single governed list of vendor services approved for agentic use, each with its posture (approved; approved with conditions; pilot only; prohibited; reference posture), approved and prohibited uses, the equivalence profile that applies, its VSP ID, its exit path and the date of its last AIGB review. Harness Specification §9 (vendor posture and the Approved AI Service Register) cites this section. A service not on the register cannot appear in a PRD's S1.9. Where a platform supports an allow-list, the allow-list enforces the register. Illustrative initial rows are in §5.
 
-**Why.** The Harness Specification's adoption roadmap (§10, days 0–30) says "freeze vendor list"; a list can be frozen only if it exists as a governed artifact, and a set of postures in prose is not one. In a buy environment the register is the control that stops the next adoption from happening outside the process: a business unit can configure agents only on a service whose terms are recorded and whose caps are known. It gives the ARB a concrete object to review architecture fit against and the AIGB an object to review risk posture against.
+**Why.** The Harness Specification's adoption roadmap (§10, days 0–30) says "freeze vendor list"; a list can be frozen only if it exists as a governed artifact, and a set of postures in prose is not one. In a buy environment the register is the control that stops the next adoption from happening outside the process: a business unit can configure agents only on a service whose terms are recorded and whose caps are known. It gives architecture review a concrete object to review architecture fit against and the AIGB an object to review risk posture against.
 
 NIST MAP 4.1's inventory of third-party materials is the closest recognized description of the register. ISO/IEC 42001 A.10.3 [65] (unverified) expects a process ensuring supplier services align with the organization's responsible-AI approach, and the register is that process's output. DORA Article 28(3) requires financial entities to maintain a register of information on all contractual arrangements for ICT services; an organization outside DORA's scope may still serve clients within it, and a register in that shape answers their due-diligence requests.
 
@@ -276,7 +276,7 @@ NIST MAP 4.1's inventory of third-party materials is the closest recognized desc
 | Microsoft Foundry | Model Router inclusion list; Azure Policy; Foundry Control Plane (preview — evidence, not control) | Partial |
 | OpenAI / Google / AWS | Not enabled; a proposal to use them starts at "reference posture" | — |
 
-**Owner.** The AIGB approves posture; the ARB approves architecture fit and the equivalence profile; the Vendor Control Owner maintains rows.
+**Owner.** The AIGB approves posture; architecture review (Gate 1) approves architecture fit and the equivalence profile; the Vendor Control Owner maintains rows.
 
 **Evidence at gates.** W0: every dependency on the register. Gate 1: S1.9 cites only registered services. Quarterly: the AIGB reviews the register.
 
@@ -340,7 +340,7 @@ For built agents on Microsoft, "Microsoft Foundry Agent Service" [20] is the run
 | Rate and loop limits, no spend cap | ServiceNow Now Assist | Assists pool; no documented cap or post-exhaustion enforcement | Spike alerts (`alert.assist_spike_*`) | Rate-limit rules per hour, instance or user; `kill_switch.mode`; recursion maxima | ≤ HITL-REQUIRED |
 | Gateway-governed (not SaaS-configured) | Databricks Agent Bricks behind Unity Gateway | Unity Gateway budget with Block usage | Send alert | Gateway rate limits | None from consumption |
 
-**Owner.** Platform Engineering verifies the equivalence profile against the tenant's licenses and current admin documentation; the Harness Engineer owns the profile; Legal reviews the DAS ceiling; the ARB approves the profile.
+**Owner.** The platform operator verifies the equivalence profile against the tenant's licenses and current admin documentation; the Harness Engineer owns the profile; Legal reviews the DAS ceiling; architecture review approves the profile.
 
 **Evidence at gates.** W0: the profile named in the packet for any configured agent. Gate 1: DAS positions consistent with the ceiling. Gate 2: admin-plane configuration evidence per row (for example, a policy export, a dated screenshot of the per-agent limit, the agent-registry record). Gate 4: the platform's cost export connected to HRN-07.
 
@@ -408,7 +408,7 @@ From 13 July 2026 [73] the Bank of England, PRA and FCA oversee Critical Third P
 | Microsoft Foundry | Model Router / deployment layer; Agent Framework | Application Insights export; storage account | Alternate model in inclusion list | PaaS |
 | OpenAI / Google / AWS | Reference posture | — | — | — |
 
-**Owner.** The Architect owns the exit ADR (ARB); the Vendor Control Owner maintains the VSP exit block; Platform Engineering runs the drill; the AIGB receives the concentration report.
+**Owner.** The Architect owns the exit ADR (architecture review); the Vendor Control Owner maintains the VSP exit block; the platform operator runs the drill; the AIGB receives the concentration report.
 
 **Evidence at gates.** Gate 1: one exit ADR per vendor dependency in S1.8 (Phase 3 onward). Gate 4: binding pinned in configuration. Annually: drill record (date, duration, pass) and concentration report.
 
@@ -496,13 +496,13 @@ Two rules apply across the register. First, MCP servers the organization's agent
 
 **Data Protection Officer.** Owns the data-protection block of every VSP; closes or assigns every open item with a date; holds the DPIA, which is not final while an open item lacks an owner or date; approves any tier change that alters retention class.
 
-**Platform Engineering.** Operates the caps; verifies the configured-agent equivalence profiles against the organization's licenses; specifies and wires the enforcing automation where a vendor plane is alert-only (for example, a cloud-budget action group or a billing-policy disconnect runbook); runs the substitution drill.
+**Platform operator.** Operates the caps; verifies the configured-agent equivalence profiles against the organization's licenses; specifies and wires the enforcing automation where a vendor plane is alert-only (for example, a cloud-budget action group or a billing-policy disconnect runbook); runs the substitution drill.
 
 **Harness Engineer.** Configures HRN-12 per agent; implements the reconciliation job and the lifecycle preflight check; owns the configured-agent profile; may hold the Vendor Control Owner role where the organization has no Procurement or third-party-risk function.
 
-**The decision split between the two boards.** The ARB owns architecture fit: tier design, gateway binding, exit paths and exit ADRs, and equivalence profiles. The AIGB owns risk posture: register postures, budgets raised repeatedly, exceptions, the clause checklist, vendor-change decisions with a DAS consequence, and the concentration report. A single item should not need both unless it changes a register posture and an architecture at once. The Finance / Procurement seat enters the CRISP-AG §5.1.1 approval matrix for any AGENT-DIRECTED or FULLY-AUTONOMOUS position whose actions consume metered vendor capacity, any budget above a threshold the AIGB sets, and any new registered service.
+**The decision split between architecture review and the AIGB.** Architecture review owns architecture fit: tier design, gateway binding, exit paths and exit ADRs, and equivalence profiles. The AIGB owns risk posture: register postures, budgets raised repeatedly, exceptions, the clause checklist, vendor-change decisions with a DAS consequence, and the concentration report. A single item should not need both unless it changes a register posture and an architecture at once. The Finance / Procurement seat enters the CRISP-AG §5.1.1 approval matrix for any AGENT-DIRECTED or FULLY-AUTONOMOUS position whose actions consume metered vendor capacity, any budget above a threshold the AIGB sets, and any new registered service.
 
-**RACI marks.** The Workflow's unified RACI carries the eleventh role with the following marks: W0 — Vendor Control Owner Consulted (VSP references, register rows); W2 (Gate 1) — Vendor Control Owner Consulted (VSP currency), Finance Consulted (budget); W4 (Gate 2) — Platform Engineering Responsible for cap configuration evidence; W7 (Gate 4) — Vendor Control Owner Consulted; change gate — Vendor Control Owner Responsible for CHG-05 capture. The Workflow's RACI (WF §4 and Appendix A) is authoritative.
+**RACI marks.** The Workflow's unified RACI carries the eleventh role with the following marks: W0 — Vendor Control Owner Consulted (VSP references, register rows); W2 (Gate 1) — Vendor Control Owner Consulted (VSP currency), Finance Consulted (budget); W4 (Gate 2) — Platform operator Responsible for cap configuration evidence; W7 (Gate 4) — Vendor Control Owner Consulted; change gate — Vendor Control Owner Responsible for CHG-05 capture. The Workflow's RACI (WF §4 and Appendix A) is authoritative.
 
 ## 7. Vendor Service Profile schema
 
@@ -534,7 +534,7 @@ The schedule assumes an organization with two review bodies. Three rules keep th
 
 | Phase | Indicative length | Theme | What the organization's standards change | What becomes mandatory |
 |---|---|---|---|---|
-| 0 — Stabilize | Immediate; a few weeks | Switch on the caps that exist; inventory; baseline current spend; rehearse a retirement | Nothing normative. Open items registered; this specification reviewed by the AIGB and the ARB | Nothing in the standards. Operationally: per-agent limits on every live configured agent where the platform offers them; budgets on every policy-level billing plane; gateway budgets in alert mode; spend limits on direct API and enterprise subscriptions |
+| 0 — Stabilize | Immediate; a few weeks | Switch on the caps that exist; inventory; baseline current spend; rehearse a retirement | Nothing normative. Open items registered; this specification reviewed by the AIGB and at architecture review | Nothing in the standards. Operationally: per-agent limits on every live configured agent where the platform offers them; budgets on every policy-level billing plane; gateway budgets in alert mode; spend limits on direct API and enterprise subscriptions |
 | 1 — Define and observe | About one quarter | The artifacts exist; the metrics are tracked; two pilots run | This specification and the Security Specification adopted; vendor-control definitions added to the PRD template, the governance artifacts, the harness controls (HRN-12 in observe mode) and the design standard | VSPs for the current vendors; register published; tier declared for pilots; cost metrics tracked, not thresholded |
 | 2 — Alert and gate | About one quarter | Gates check the artifacts; alerts fire; vendor changes are tracked | Gate checks added to the delivery workflow (W0, W2, W4 and W7 exit checks) and to the PRD, harness and design standards | For new products: VSP and register row at W0; tier justification at Gate 1; budget with 80% alert before production. Vendor Change Register live. Clause checklist ratified |
 | 3 — Enforce and retrofit | About one quarter | Hard caps everywhere; retrofit; contracts; first drill | Thresholds set from Phase 1–2 telemetry and made normative in the PRD and harness standards | Hard cap and tier table on every production agent, built or configured; premium-tier ceiling per product; exit ADR per dependency; clause checklist at every renewal; substitution drill #1 |
@@ -645,9 +645,9 @@ The mapping is to the controls of this document. Where only a secondary source i
 |---|---|
 | Over-control slows adoption and drives agents outside the process | The Lite form keeps four items always on (VSP reference, budget and cap, tier declaration, registry entry); every control is observed before it is enforced; caps are sized from the pilots; "approved with conditions" lets a service be used while its terms are completed |
 | A vendor will not supply terms, action inventory or notice | CRISP-AG §5.8 and VC-06 turn that into a DAS ceiling rather than a blocked deployment; the register records the posture; the AIGB decides whether to live with the ceiling |
-| Two boards, limited bandwidth | One coordinated release per phase; monthly digest limited to vendor changes inside 90 days; the ARB/AIGB split in §6 sends each item to one body |
+| Limited governance bandwidth | One coordinated release per phase; monthly digest limited to vendor changes inside 90 days; the architecture-review/AIGB split in §6 sends each item to one body |
 | The Vendor Control Owner role has no natural home | Where an organization has no Procurement or third-party-risk function, the role may sit with the Harness Engineer; duties are defined by artifacts, so the seat can move later without the controls changing |
-| Vendor admin controls are blunter than the harness (a hard stop that turns the agent off; daily data; approximate blocking; cloud budgets that do not stop consumption; a policy-level stop that removes user access; §12.3) | Alert thresholds before the stop; overflow posture per environment in Phase 0; headroom on approximate caps with monthly reconciliation; enforcing automations specified by Platform Engineering for alert-only planes; the equivalence profile states the limitation and the DAS consequence |
+| Vendor admin controls are blunter than the harness (a hard stop that turns the agent off; daily data; approximate blocking; cloud budgets that do not stop consumption; a policy-level stop that removes user access; §12.3) | Alert thresholds before the stop; overflow posture per environment in Phase 0; headroom on approximate caps with monthly reconciliation; enforcing automations specified by the platform operator for alert-only planes; the equivalence profile states the limitation and the DAS consequence |
 | Shadow adoption of a new vendor service | Register plus platform allow-lists (Unity Gateway endpoints; Power Platform DLP; Foundry inclusion lists); the shadow-AI amnesty pattern of CRISP-AG §5.7 applied once to vendor services in Phase 1 |
 | Deprecation cadence outruns the process | Five-day capture; named successor per pin; programmatic lifecycle sources read by preflight; preview models excluded from production unless notice ≥ substitution window; a live vendor retirement rehearsed in Phase 0 |
 | Lifecycle diverges by channel (Opus 4.1 retired at Anthropic, still served on Databricks) | Register tracks each channel's date; the VSP carries per-channel lifecycle fields |
@@ -666,7 +666,7 @@ Every external claim in this specification carries its publisher, title and date
 | ISO/IEC 42001:2023 Annex A control text for A.10.2, A.10.3 and A.10.4 [65] | Control titles from a secondary source [66] | Controls are cited by number; no control wording is quoted |
 | Anthropic sub-processor list [45] | Primary source not confirmed | The Anthropic VSP sub-processor field is populated by the Vendor Control Owner from the live page in Phase 0 |
 | FOCUS specification v1.3 (ratified 5 December 2025) and its lack of AI fields [81] | Secondary source only | The showback export is built on FOCUS v1.2 [80] with `x_` custom columns |
-| Google Cloud Billing budget and AWS Budgets cap behavior on Vertex AI and Bedrock | Primary source not confirmed | Both are recorded as alert-only until Platform Engineering confirms otherwise |
+| Google Cloud Billing budget and AWS Budgets cap behavior on Vertex AI and Bedrock | Primary source not confirmed | Both are recorded as alert-only until the platform operator confirms otherwise |
 | Stanford AI Index inference-price figures (the 2025 280× figure and the 2026 trend) [85] | Report summary only; the 280× figure is from a secondary source | The direction of the trend is used; neither the 280× figure nor any 2026 figure is quoted as verified fact |
 | Anthropic Console behavior when a workspace spend limit is reached [35] | Not stated in the vendor documentation | Console coverage for HRN-12 is "Partial" until confirmed |
 | OpenAI project budgets and usage limits as an HRN-12 equivalent | Primary source not confirmed | OpenAI is a reference posture, not a live dependency |
@@ -844,7 +844,7 @@ The schema defines one record per vendor service. Fields marked "Yes" in the Alw
 
 ## Appendix B — Configured-agent equivalence profiles
 
-These profiles are proposed. Platform Engineering verifies everything here against the tenant's licenses and the current admin documentation before it becomes normative in Phase 2. Coverage is stated as Full, Substantial, Partial, Alert-only or None. The DAS ceiling column states the highest position a configured agent may hold on that row's evidence alone; the agent's ceiling is the lowest across rows.
+These profiles are proposed. The platform operator verifies everything here against the tenant's licenses and the current admin documentation before it becomes normative in Phase 2. Coverage is stated as Full, Substantial, Partial, Alert-only or None. The DAS ceiling column states the highest position a configured agent may hold on that row's evidence alone; the agent's ceiling is the lowest across rows.
 
 ### B.1 Microsoft — two planes
 
