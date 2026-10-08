@@ -700,6 +700,8 @@ Research and drafting assistance from Claude (Anthropic); all decisions and clai
 
 Reed, D. (2026). *Enterprise Agentic AI Harness Specification* (Version 1.3). Agentic AI Governance in Practice, Part 4. https://drdavidreed.com/papers/agentic-harness-specification/
 
+This paper is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+
 ## References
 
 1. Reed, D. [*CRISP-AG: An Artifact-Centered Framework for Enterprise Agentic AI Governance*](/papers/crisp-ag/), v3.0. Agentic AI Governance in Practice, Part 1, 2026.

@@ -1014,6 +1014,8 @@ Research and drafting assistance from Claude (Anthropic); all decisions and clai
 
 Reed, D. (2026). *CRISP-AG: An Artifact-Centered Framework for Enterprise Agentic AI Governance* (Version 3.0). Agentic AI Governance in Practice, Part 1. https://drdavidreed.com/papers/crisp-ag/
 
+This paper is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+
 ## References
 
 1. Chapman, P., et al. *CRISP-DM 1.0: Step-by-step Data Mining Guide*. SPSS Inc., 2000.

@@ -2337,6 +2337,8 @@ Research and drafting assistance from Claude (Anthropic); all decisions and clai
 
 Reed, D. (2026). *Specification-Driven Design for Agentic Systems* (Version 1.0.3). Agentic AI Governance in Practice, Part 3. https://drdavidreed.com/papers/specification-driven-design/
 
+This paper is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+
 ## References
 
 1. Piskala, D. B. [*Spec-Driven Development: From Code to Contract in the Age of AI Coding Assistants*](https://arxiv.org/abs/2602.00180). arXiv:2602.00180, January 2026. Single-author preprint that defines the spec-first, spec-anchored and spec-as-source tiers; a conceptual practitioner guide that reports no experiment.

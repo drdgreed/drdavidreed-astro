@@ -765,6 +765,8 @@ Research and drafting assistance from Claude (Anthropic); all decisions and clai
 
 Reed, D. (2026). *Agentic PRD Standard* (Version 3.10.2). Agentic AI Governance in Practice, Part 2. https://drdavidreed.com/papers/agentic-prd-standard/
 
+This paper is licensed under [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/).
+
 ## References
 
 1. Reed, D. [*CRISP-AG: An Artifact-Centered Framework for Enterprise Agentic AI Governance*](/papers/crisp-ag/), v3.0. Agentic AI Governance in Practice, Part 1, 2026.
