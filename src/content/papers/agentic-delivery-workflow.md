@@ -268,7 +268,7 @@ After each specification, a short **worked example** shows how the Portfolio Orc
 
 | # | Exit check | Evidence |
 |---|---|---|
-| W2-1 | S1.1 carries an Orchestration section: a pattern chosen in the approved order (single agent → chaining → routing → parallelization → orchestrator-workers → evaluator-optimizer [7]), justification for anything beyond a single agent, the verification approach, and the model and effort choice. The model tier per task class is declared with a pinned identifier and a named successor (VCS VC-02); a premium tier carries its Gate 1 justification; the escalation rule and the exit-ADR pointer are recorded in S1 | S1.1 |
+| W2-1 | S1.1 carries an Orchestration section: a pattern chosen in the approved order (single agent → chaining → routing → parallelization → orchestrator-workers → evaluator-optimizer; this paper's ordering of the patterns in [7], which recommends the simplest solution first), justification for anything beyond a single agent, the verification approach, and the model and effort choice. The model tier per task class is declared with a pinned identifier and a named successor (VCS VC-02); a premium tier carries its Gate 1 justification; the escalation rule and the exit-ADR pointer are recorded in S1 | S1.1 |
 | W2-2 | Every agent has a behavioral contract (PRE, POST, INV, PROHIB, RES, CONSIST) in the source's IDs | S1.2 |
 | W2-3 | Protocol invariants, staleness, termination and compositionality stated | S1.7 |
 | W2-4 | Zero prompt-only requirements without a named deterministic backstop | `traceability.csv` |
@@ -491,7 +491,7 @@ The workflow is meant to be executed by an agent. The *assembling agent* drafts 
 |---|---|
 | Posture | Propose-only: writes to a change branch; never merges; never edits `specs/` directly; every "done" audited by HRN-05 |
 | Form and positions | **Full** form: it fires the Standard's T7 (enterprise-critical) trigger because its outputs are consumed as inputs to the governance of other agentic systems (§11, conflict 20). Every action on its DAS is PROHIBITED or HITL-REQUIRED; it completes assembly without direction, and a human is upstream of every consequential action |
-| Runtime | Claude Code under the author's reference harness [19], with `HARNESS_UNATTENDED=1`, so that the HRN-04 limits are mechanical, not advisory |
+| Runtime | Claude Code under the author's reference harness [19], with `HARNESS_UNATTENDED=1`, so that HRN-04's protected-file, commit-size and new-dependency limits are mechanical, not advisory |
 | Reads | Source specifications, the Standard, the Harness Specification, the assembly kit, prior sets, the registry |
 | Writes | A change branch in a governed specification repository — nothing else |
 | Deferred capabilities | Reading document stores through connectors; opening pull requests. Each enters as a spec delta through the change gate when wanted |
@@ -618,7 +618,7 @@ Finance is consulted at W2 on budgets (§4; conflict 23) but holds no gate, so i
 
 ## Appendix B — Stack columns for HRN-01 to HRN-12
 
-The Databricks column names the Databricks-native equivalent of each control. Where the reference harness runs beside Databricks — a Claude Code build agent targeting a Databricks estate — both apply. The two Microsoft columns give the coverage grade for an agent configured inside Microsoft Copilot Studio (Power Platform admin center plane) and inside Microsoft 365 Copilot (admin-center billing plane). The mechanism and the DAS ceiling for each Microsoft column are owned by, and stated in full in, the Vendor Control Specification's Appendix B.1; they are reproduced here only as coverage grades, so that the twelve controls read across every stack. Coverage: Full / Substantial / Partial / Alert-only / None.
+The Databricks column gives this paper's own mapping of each control to a Databricks-native equivalent. Where the reference harness runs beside Databricks — a Claude Code build agent targeting a Databricks estate — both apply. The two Microsoft columns give the coverage grade for an agent configured inside Microsoft Copilot Studio (Power Platform admin center plane) and inside Microsoft 365 Copilot (admin-center billing plane). The mechanism and the DAS ceiling for each Microsoft column are owned by, and stated in full in, the Vendor Control Specification's Appendix B.1; they are reproduced here only as coverage grades, so that the twelve controls read across every stack. Coverage: Full / Substantial / Partial / Alert-only / None.
 
 | Control | Databricks equivalent | Copilot Studio | Microsoft 365 Copilot agents |
 |---|---|---|---|
