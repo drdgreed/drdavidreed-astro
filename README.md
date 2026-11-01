@@ -54,7 +54,7 @@ src/
     blog/index.astro
     blog/[...slug].astro
     rss.xml.js
-  styles/global.css       ← @theme tokens + utilities
+  styles/global.css       ← Tailwind directives, CSS variables, utilities
 
 public/
   logo.png                ← site logo
@@ -117,9 +117,9 @@ All hand-edited:
 
 ## Design tokens
 
-Colors and fonts live in `src/styles/global.css` under `@theme`. Tailwind v4
-generates utilities automatically. Both explicit tokens (`bg-bg-card`) and
-Lovable-style aliases (`bg-card`, `text-foreground`) work.
+Colors and fonts live in `tailwind.config.mjs` (Tailwind 3, under `theme.extend`),
+with CSS-variable copies in `src/styles/global.css` for use outside Tailwind. Both
+explicit tokens (`bg-bg-card`) and Lovable-style aliases (`bg-card`, `text-foreground`) work.
 
 ## Deploy
 
