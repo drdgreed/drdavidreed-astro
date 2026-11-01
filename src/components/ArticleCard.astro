@@ -35,19 +35,19 @@ const formattedDate = publishDate.toLocaleDateString('en-US', {
       <img
         src={coverImage}
         alt=""
-        class={`w-full ${featured ? 'h-full object-cover aspect-[4/3] md:aspect-auto' : 'aspect-[16/9] object-cover'}`}
+        class={`w-full ${featured ? 'h-full object-cover aspect-4/3 md:aspect-auto' : 'aspect-video object-cover'}`}
         loading="lazy"
       />
     </a>
   )}
-  <div class={`p-6 md:p-8 ${featured ? 'md:w-1/2 md:p-10 flex flex-col justify-center' : ''}`}>
+  <div class={`p-6 md:p-8 ${featured ? 'md:w-1/2 flex flex-col justify-center' : ''}`}>
     <div class="flex items-center gap-3 text-xs text-text-tertiary mb-3">
-      <span class="px-2 py-0.5 rounded bg-accent-dark text-accent">{cat.label}</span>
+      <span class="px-2 py-0.5 rounded-sm bg-accent-dark text-accent">{cat.label}</span>
       <time datetime={publishDate.toISOString()}>{formattedDate}</time>
       <span aria-hidden="true">·</span>
       <span>{readTime} min read</span>
     </div>
-    <h3 class={`font-serif ${featured ? 'text-3xl md:text-4xl' : 'text-xl'} leading-tight mb-3`}>
+    <h3 class={`font-serif ${featured ? 'text-3xl md:text-4xl/10' : 'text-xl'} leading-tight mb-3`}>
       <a href={href} class="group-hover:text-accent transition-colors">{title}</a>
     </h3>
     <p class="text-text-secondary text-sm leading-relaxed line-clamp-3">{description}</p>
