@@ -86,7 +86,7 @@
     padding-inline: 1.5rem;
   }
 
-  /* Glowing CTA button (Ask AI, primary calls). */
+  /* Glowing CTA button (primary calls to action). */
   .btn-glow {
     position: relative;
     overflow: hidden;

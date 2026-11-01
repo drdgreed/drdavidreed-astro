@@ -13,7 +13,7 @@ initial deploy history, see git log; for the deferred AI features, see Appendix 
 |---|---|
 | Live URL | **https://drdavidreed.com** (apex primary) |
 | WWW URL | https://www.drdavidreed.com → 308 → apex |
-| Stack | Astro 6 (static) · Tailwind 3 + PostCSS · React 19 (unused islands) · MDX |
+| Stack | Astro 7 (static) · Tailwind 3 + PostCSS · MDX |
 | Host | Vercel (Hobby plan), project **`drdavidreed-astro-qkw6`** |
 | Repo | https://github.com/drdgreed/drdavidreed-astro (public, `main` branch) |
 | DNS | IONOS — A `@` → `216.198.79.1`, CNAME `www` → `ef57219ee060f05f.vercel-dns-017.com` |
@@ -131,10 +131,6 @@ Global propagation check: https://www.whatsmydns.net/#A/drdavidreed.com
 
 Currently the deployed site needs **zero** env vars (no API endpoints, no analytics SDK).
 
-The local `.env.development.local` holds an `ANTHROPIC_API_KEY` left over from the
-deferred AI features. It's gitignored and unused in production. Leave it for the
-day we re-introduce AI features (Appendix A).
-
 ---
 
 ## Vercel configuration
@@ -240,16 +236,13 @@ drdavidreed-astro/
 │   │   └── rss.xml.ts               /rss.xml
 │   ├── content/blog/                MDX articles
 │   ├── content.config.ts            blog frontmatter schema
-│   ├── components/                  Astro + React components
-│   │   ├── AskAIDrawer.tsx          ⚠️ preserved, unused (see Appendix A)
-│   │   └── FitCheck.tsx             ⚠️ preserved, unused (see Appendix A)
+│   ├── components/                  Astro components
 │   ├── layouts/BaseLayout.astro     html scaffold, nav, footer, SEO
 │   ├── data/                        profile, experience, portfolio, skills
 │   ├── lib/                         site-meta, seo-types, categories
 │   └── styles/global.css            Tailwind directives + design tokens
 ├── public/                          static assets (favicon, logo, og-default)
-├── api/                             ⚠️ gitignored — see Appendix A
-├── astro.config.mjs                 integrations: react, mdx, sitemap
+├── astro.config.mjs                 integrations: mdx, sitemap
 ├── postcss.config.mjs               Tailwind via PostCSS
 ├── tailwind.config.mjs              theme tokens, content globs
 ├── vercel.json                      build + install + headers
@@ -258,63 +251,12 @@ drdavidreed-astro/
 
 ---
 
-## Appendix A — Re-introducing AI features (deferred)
+## Appendix A — Retired AI features
 
-The original plan included two AI features that are removed from the live site
-but preserved on disk:
-
-| Feature | Component | Endpoint |
-|---|---|---|
-| "Ask AI About Me" drawer | `src/components/AskAIDrawer.tsx` | `api/chat.ts` (streaming SSE) |
-| Fit Check JD analyzer | `src/components/FitCheck.tsx` | `api/analyze.ts` (JSON verdict) |
-
-### Why they're not deployed today
-
-Top-level `api/` directory + Astro v6 **without** the `@astrojs/vercel` adapter
-doesn't route Vercel functions reliably. We diagnosed this by deploying a
-five-line `api/ping.ts` hello-world — it timed out at 300 s with no console
-output, proving the bug is infrastructure, not Anthropic SDK code.
-
-### What to do when re-introducing
-
-1. **Install the Vercel adapter:**
-
-   ```bash
-   npx astro add vercel
-   ```
-
-   This:
-   - Adds `@astrojs/vercel` to dependencies
-   - Modifies `astro.config.mjs` to set `adapter: vercel()` and `output: 'server'` (or `'hybrid'`)
-   - Wires up Vercel's runtime properly
-
-2. **Move handlers into Astro's endpoint convention:**
-
-   ```
-   api/chat.ts      →    src/pages/api/chat.ts
-   api/analyze.ts   →    src/pages/api/analyze.ts
-   api/_lib/...     →    src/lib/server/...  (or wherever fits)
-   ```
-
-   In Astro, an endpoint is just a `.ts` file under `src/pages/` exporting
-   `GET`/`POST` functions. The adapter packages each as a Vercel function.
-
-3. **Re-mount the React islands in `BaseLayout.astro`:**
-
-   - Add `<AskAIDrawer client:load />` mount (and the trigger button)
-   - Add `/fit-check/` route as `src/pages/fit-check.astro`
-
-4. **Add the env var in Vercel:** `ANTHROPIC_API_KEY` for Production + Preview.
-
-5. **Remove `api/` from `.gitignore`** (or just delete the top-level `api/`
-   since handlers now live in `src/pages/api/`).
-
-6. **Verify end-to-end before pushing:** `npm run build` should produce both
-   static pages AND function bundles in `.vercel/output/`.
-
-The `AskAIDrawer.tsx` and `FitCheck.tsx` components are kept on disk because
-they encode the streaming UI + UX, which is the non-trivial part. Swapping the
-fetch URLs to the new Astro endpoint paths is the only client-side change.
+The "Ask AI About Me" chat drawer and the Fit Check job-description analyzer
+were never live on this deploy and were retired in November 2026. Their code,
+the profile context they used, and the steps for bringing them back are
+archived in the private repo `drdgreed/drdavidreed-site-archive` (`ask-ai/`).
 
 ---
 
@@ -325,7 +267,6 @@ fetch URLs to the new Astro endpoint paths is the only client-side change.
 | Vercel Hobby | Free up to 100 GB bandwidth/month | $0 |
 | Domain (drdavidreed.com, IONOS) | ~$15/year | already paid |
 | SSL certificate | Free via Let's Encrypt | $0 |
-| Anthropic API (when AI features return) | ~$3/M input, ~$15/M output tokens | $1–10/month at low volume |
 
 **Enable Vercel Web Analytics**: Project → Analytics tab → Enable. Privacy-
 friendly, no cookies, free on Hobby.

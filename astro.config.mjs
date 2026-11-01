@@ -1,7 +1,6 @@
 // @ts-check
 import { defineConfig, passthroughImageService } from 'astro/config';
 
-import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { unified } from '@astrojs/markdown-remark';
@@ -32,7 +31,6 @@ export default defineConfig({
   image: { service: passthroughImageService() },
 
   integrations: [
-    react(),
     mdx(),
     sitemap({
       filter: (page) => !page.includes('/draft/'),

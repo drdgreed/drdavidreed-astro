@@ -6,14 +6,6 @@ dist/
 # dependencies
 node_modules/
 
-# api/ — Vercel serverless functions for /api/chat and /api/analyze.
-# Held back from initial deploy because top-level api/ + Astro v6
-# without @astrojs/vercel adapter doesn't reliably route functions.
-# Files preserved locally; to re-introduce, install @astrojs/vercel
-# adapter and move handlers to src/pages/api/*.ts (Astro endpoint
-# convention) instead of top-level api/.
-api/
-
 # logs
 npm-debug.log*
 yarn-debug.log*
