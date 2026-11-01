@@ -4,6 +4,7 @@ import { defineConfig, passthroughImageService } from 'astro/config';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
+import { unified } from '@astrojs/markdown-remark';
 import rehypeUnpublishedPapers from './src/lib/rehype-unpublished-papers.mjs';
 
 // Production site URL — used by sitemap, RSS, and canonical links.
@@ -17,7 +18,14 @@ export default defineConfig({
   site: SITE,
 
   // Links to series papers that are not yet published render as plain text.
-  markdown: { rehypePlugins: [rehypeUnpublishedPapers] },
+  // Astro 7 defaults to a Markdown processor without rehype support, so the
+  // unified (remark/rehype) processor is selected explicitly to keep the plugin.
+  markdown: { processor: unified({ rehypePlugins: [rehypeUnpublishedPapers] }) },
+
+  // Keep Astro 6's HTML-aware whitespace handling. Astro 7's default ('jsx')
+  // drops the space between adjacent inline elements, e.g. a title and its
+  // version label.
+  compressHTML: true,
 
   // Paper figures are SVG and need no optimization; passthrough avoids a
   // sharp dependency. Revisit if raster images are added to content.
