@@ -11,6 +11,10 @@
 
 @import 'tailwindcss';
 
+/* v3 look: apply hover: styles on every device, as v3 did. v4 limits them to
+   devices that can hover, so a tapped element on a phone loses its hover look. */
+@custom-variant hover (&:hover);
+
 @theme {
   --color-bg-primary: #000000;
   --color-bg-card: #0a0a0a;
