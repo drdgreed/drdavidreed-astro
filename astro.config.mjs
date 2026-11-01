@@ -4,15 +4,12 @@ import { defineConfig, passthroughImageService } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import { unified } from '@astrojs/markdown-remark';
+import tailwindcss from '@tailwindcss/vite';
 import rehypeUnpublishedPapers from './src/lib/rehype-unpublished-papers.mjs';
 
 // Production site URL — used by sitemap, RSS, and canonical links.
 const SITE = 'https://drdavidreed.com';
 
-// Tailwind is wired in via `postcss.config.mjs` (Astro auto-detects it).
-// We avoided @astrojs/tailwind (doesn't support Astro 6) and @tailwindcss/vite
-// (rolldown ABI issues breaking Vercel builds). The PostCSS path is the
-// boring, stable one.
 export default defineConfig({
   site: SITE,
 
@@ -29,6 +26,12 @@ export default defineConfig({
   // Paper figures are SVG and need no optimization; passthrough avoids a
   // sharp dependency. Revisit if raster images are added to content.
   image: { service: passthroughImageService() },
+
+  // Tailwind 4 through its Vite plugin, the setup Tailwind documents for Astro.
+  // The PostCSS route failed under Astro 7's Vite: it resolved
+  // `@import 'tailwindcss'` as a file path. (The Vite plugin broke on Vercel in
+  // May 2026 under Astro 6; it builds there again under Astro 7.)
+  vite: { plugins: [tailwindcss()] },
 
   integrations: [
     mdx(),

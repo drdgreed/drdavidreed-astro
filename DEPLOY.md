@@ -13,7 +13,7 @@ initial deploy history, see git log; for the deferred AI features, see Appendix 
 |---|---|
 | Live URL | **https://drdavidreed.com** (apex primary) |
 | WWW URL | https://www.drdavidreed.com → 308 → apex |
-| Stack | Astro 7 (static) · Tailwind 3 + PostCSS · MDX |
+| Stack | Astro 7 (static) · Tailwind 4 (Vite plugin) · MDX |
 | Host | Vercel (Hobby plan), project **`drdavidreed-astro-qkw6`** |
 | Repo | https://github.com/drdgreed/drdavidreed-astro (public, `main` branch) |
 | DNS | IONOS — A `@` → `216.198.79.1`, CNAME `www` → `ef57219ee060f05f.vercel-dns-017.com` |
@@ -167,7 +167,7 @@ Currently the deployed site needs **zero** env vars (no API endpoints, no analyt
 | `npm error Invalid Version:` | Lockfile issue | We bypass via `installCommand`. If it returns, check `package.json` for `^` ranges that resolved to a malformed version. |
 | `LegacyContentConfigError` | Astro v6 expects `src/content.config.ts` at project root, not `src/content/config.ts` | Move/rename the config file. |
 | TypeScript error in MDX frontmatter | Schema mismatch | Check the frontmatter against `src/content.config.ts` |
-| Tailwind classes don't apply | PostCSS misconfigured | Verify `postcss.config.mjs` exports both `tailwindcss` and `autoprefixer` plugins |
+| Tailwind classes don't apply | Vite plugin missing | Verify `astro.config.mjs` has `vite: { plugins: [tailwindcss()] }` and `global.css` starts with `@import 'tailwindcss'` |
 
 ### Site is live but something's wrong
 
@@ -240,11 +240,9 @@ drdavidreed-astro/
 │   ├── layouts/BaseLayout.astro     html scaffold, nav, footer, SEO
 │   ├── data/                        profile, experience, portfolio, skills
 │   ├── lib/                         site-meta, seo-types, categories
-│   └── styles/global.css            Tailwind directives + design tokens
+│   └── styles/global.css            Tailwind import + @theme design tokens
 ├── public/                          static assets (favicon, logo, og-default)
 ├── astro.config.mjs                 integrations: mdx, sitemap
-├── postcss.config.mjs               Tailwind via PostCSS
-├── tailwind.config.mjs              theme tokens, content globs
 ├── vercel.json                      build + install + headers
 └── package.json                     no scripts beyond standard astro ones
 ```

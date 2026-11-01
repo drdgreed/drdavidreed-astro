@@ -132,7 +132,7 @@ const categoryColor = (cat: PortfolioCategory) => {
                 <p class="text-sm text-muted-foreground mb-4 flex-1">{item.description}</p>
                 <div class="flex flex-wrap gap-2">
                   {item.tags.slice(0, 6).map((t) => (
-                    <span class="text-xs bg-muted/50 text-muted-foreground border border-border px-2 py-1 rounded">{t}</span>
+                    <span class="text-xs bg-muted/50 text-muted-foreground border border-border px-2 py-1 rounded-sm">{t}</span>
                   ))}
                 </div>
                 <span class="text-xs text-primary opacity-0 group-hover:opacity-100 transition-opacity mt-4">
@@ -159,7 +159,7 @@ const categoryColor = (cat: PortfolioCategory) => {
     aria-modal="true"
     role="dialog"
   >
-    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" data-modal-backdrop></div>
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-xs" data-modal-backdrop></div>
     <div class="relative glass-card max-w-2xl w-full max-h-[85vh] overflow-y-auto p-8">
       <button
         type="button"
@@ -181,7 +181,8 @@ const categoryColor = (cat: PortfolioCategory) => {
       <div data-modal-tags class="flex flex-wrap gap-2 mb-6"></div>
       <a
         data-modal-link
-        class="hidden inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors"
+        hidden
+        class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors"
       >
         View Project →
       </a>
@@ -223,7 +224,7 @@ const categoryColor = (cat: PortfolioCategory) => {
     tagContainer.replaceChildren(); // clear without using innerHTML
     tags.forEach((t) => {
       const span = document.createElement('span');
-      span.className = 'text-xs bg-muted/50 text-muted-foreground border border-border px-2 py-1 rounded';
+      span.className = 'text-xs bg-muted/50 text-muted-foreground border border-border px-2 py-1 rounded-sm';
       span.textContent = t;
       tagContainer.appendChild(span);
     });
@@ -240,9 +241,9 @@ const categoryColor = (cat: PortfolioCategory) => {
         linkEl.removeAttribute('target');
         linkEl.removeAttribute('rel');
       }
-      linkEl.classList.remove('hidden');
+      linkEl.hidden = false;
     } else {
-      linkEl.classList.add('hidden');
+      linkEl.hidden = true;
     }
 
     modal.classList.remove('hidden');

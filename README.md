@@ -3,7 +3,7 @@
 Personal site + blog for David Reed, PhD. Migrated from Lovable to Astro for SEO,
 performance, and editorial control.
 
-**Stack:** Astro 7 (static) · TypeScript strict · Tailwind 3 + PostCSS · MDX (blog) ·
+**Stack:** Astro 7 (static) · TypeScript strict · Tailwind 4 (Vite plugin) · MDX (blog) ·
 `@astrojs/sitemap` · `@astrojs/rss` · deployed to Vercel.
 
 ---
@@ -54,7 +54,7 @@ src/
     blog/index.astro
     blog/[...slug].astro
     rss.xml.js
-  styles/global.css       ← Tailwind directives, CSS variables, utilities
+  styles/global.css       ← Tailwind import, @theme tokens, base styles, utilities
 
 public/
   logo.png                ← site logo
@@ -117,9 +117,10 @@ All hand-edited:
 
 ## Design tokens
 
-Colors and fonts live in `tailwind.config.mjs` (Tailwind 3, under `theme.extend`),
-with CSS-variable copies in `src/styles/global.css` for use outside Tailwind. Both
-explicit tokens (`bg-bg-card`) and Lovable-style aliases (`bg-card`, `text-foreground`) work.
+Colors and fonts live in the `@theme` block of `src/styles/global.css` (Tailwind 4).
+Both explicit tokens (`bg-bg-card`) and Lovable-style aliases (`bg-card`,
+`text-foreground`) work. Rules marked "v3 look" in that file pin Tailwind 3
+behavior that v4 changed, so the site looks the same as before the upgrade.
 
 ## Deploy
 
